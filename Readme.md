@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Natalia Shuvaeva](https://up.htmlacademy.ru/ecmascript/9/user/1006565).
-* Наставник: `Александр Мастеров`(https://htmlacademy.ru/profile/id912463).
+* Наставник: [`Александр Мастеров`](https://htmlacademy.ru/profile/id912463).
 
 ---
 
