@@ -1,10 +1,10 @@
 import {
-  menu,
-  route,
-  filters,
-  addEdit,
-  sort,
-  cards
+  routeTemplate,
+  menuTemplate,
+  filtersTemplate,
+  sortTemplate,
+  cardsTemplate,
+  addEditTemplate
 } from "./components/index";
 
 import {
@@ -12,22 +12,25 @@ import {
   addSection
 } from "./render";
 
+import {
+  routeData,
+  editData
+} from "./data";
+
 const routePlace = document.querySelector(`.trip-main__trip-info`);
-addSection(routePlace, route, `afterbegin`);
+const routeMarkup = getMarkup(routeData, routeTemplate);
+addSection(routePlace, routeMarkup, `afterbegin`);
 
 const menuPlace = document.querySelector(`.trip-controls h2:first-child`);
-addSection(menuPlace, menu, `afterend`);
+addSection(menuPlace, menuTemplate(), `afterend`);
 
 const filtersPlace = document.querySelector(`.trip-controls h2:last-child`);
-addSection(filtersPlace, filters, `afterend`);
+addSection(filtersPlace, filtersTemplate(), `afterend`);
 
 const contentPlace = document.querySelector(`.trip-events`);
-addSection(contentPlace, sort, `beforeend`);
+addSection(contentPlace, sortTemplate(), `beforeend`);
 
-addSection(contentPlace, addEdit, `beforeend`);
+const addEditMarkup = getMarkup(editData, addEditTemplate);
+addSection(contentPlace, addEditMarkup, `beforeend`);
 
-addSection(contentPlace, cards, `beforeend`);
-
-
-
-
+addSection(contentPlace, cardsTemplate(), `beforeend`);

@@ -1,19 +1,13 @@
-const route = () => `
+const routeTemplate = ({cityStart, cityFinish, date} = {}) => `
 <div class="trip-info__main">
   <h1 class="trip-info__title">
-    Amsterdam &mdash; ... &mdash; Amsterdam
+    ${cityStart} &mdash; ... &mdash; ${cityFinish}
   </h1>
 
   <p class="trip-info__dates">
-    Mar 18&nbsp;&mdash;&nbsp;21
+    ${date}
   </p>
 </div>
+`;
 
-<p class="trip-info__cost">
-  Total: &euro;&nbsp;
-  <span class="trip-info__cost-value">
-    1230
-  </span>
-</p>`;
-
-export {route};
+export {routeTemplate};
