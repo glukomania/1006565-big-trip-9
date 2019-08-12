@@ -1,16 +1,16 @@
-import {routeTemplate} from "./route";
-import {menuTemplate} from "./menu";
-import {filtersTemplate} from "./filters";
-import {sortTemplate} from "./sort";
-import {cardsTemplate} from "./cards";
-import {addEditTemplate} from "./add-edit";
+import {routeMarkup} from "./route";
+import {menuMarkup} from "./menu";
+import {filtersMarkup} from "./filters";
+import {sortMarkup} from "./sort";
+import {cardsMarkup} from "./cards";
+import {addEditMarkup} from "./add-edit";
 
 
 export {
-  routeTemplate,
-  menuTemplate,
-  filtersTemplate,
-  sortTemplate,
-  cardsTemplate,
-  addEditTemplate
+  routeMarkup,
+  menuMarkup,
+  filtersMarkup,
+  sortMarkup,
+  cardsMarkup,
+  addEditMarkup
 };

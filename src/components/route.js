@@ -1,4 +1,4 @@
-const routeTemplate = ({cityStart, cityFinish, date} = {}) => `
+const routeMarkup = ({cityStart, cityFinish, date} = {}) => `
 <div class="trip-info__main">
   <h1 class="trip-info__title">
     ${cityStart} &mdash; ... &mdash; ${cityFinish}
@@ -10,4 +10,4 @@ const routeTemplate = ({cityStart, cityFinish, date} = {}) => `
 </div>
 `;
 
-export {routeTemplate};
+export {routeMarkup};

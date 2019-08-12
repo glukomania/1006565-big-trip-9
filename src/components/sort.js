@@ -1,7 +1,7 @@
 import {getMarkup} from "../render";
 import {sortData} from "../data";
 
-const sortSection = ({type, path = ``} = {}) => `
+const sortTemplate = ({type, path = ``} = {}) => `
 <div class="trip-sort__item  trip-sort__item--${type}">
   <input id="sort-${type}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${type}">
   <label class="trip-sort__btn" for="sort-${type}">
@@ -11,15 +11,15 @@ const sortSection = ({type, path = ``} = {}) => `
 </div>
 `;
 
-const sortMarkup = getMarkup(sortData, sortSection);
+const sortBlock = getMarkup(sortData, sortTemplate);
 
-const sortTemplate = () => `
+const sortMarkup = () => `
 <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
   <span class="trip-sort__item  trip-sort__item--day">
     Day
   </span>
 
-  ${sortMarkup}
+  ${sortBlock}
 
   <span class="trip-sort__item  trip-sort__item--offers">
     Offers
@@ -27,4 +27,4 @@ const sortTemplate = () => `
 </form>
 `;
 
-export {sortTemplate};
+export {sortMarkup};
