@@ -1,7 +1,9 @@
 import {getMarkup} from "../render";
 import {transports, activities, cities} from "../data";
+import {getDate} from "../getDateFormat.js";
 
-const transportTemplate = (transport) => {
+
+const getTransportTemplate = (transport) => {
   const transportLowCase = transport.toLowerCase();
   return `
   <div class="event__type-item">
@@ -22,7 +24,7 @@ const transportTemplate = (transport) => {
   </div>`;
 };
 
-const activityTemplate = (activity) => {
+const getActivityTemplate = (activity) => {
   const activityLow = activity.toLowerCase();
   return `
   <div class="event__type-item">
@@ -42,16 +44,16 @@ const activityTemplate = (activity) => {
   </div>`;
 };
 
-const cityListTemplate = (city) => {
+const getCityListTemplate = (city) => {
   return `<option value="${city}"></option>`;
 };
 
-const transportBlock = getMarkup(transports, transportTemplate);
-const activityBlock = getMarkup(activities, activityTemplate);
-const citiesBlock = getMarkup(cities, cityListTemplate);
+const transportBlock = getMarkup(transports, getTransportTemplate);
+const activityBlock = getMarkup(activities, getActivityTemplate);
+const citiesBlock = getMarkup(cities, getCityListTemplate);
 
 
-const addEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency = ``} = {}) => `
+const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency = ``} = {}) => `
 <form class="trip-events__item  event  event--edit" action="#" method="post">
   <header class="event__header">
     <div class="event__type-wrapper">
@@ -124,7 +126,7 @@ const addEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency = `
         id="event-start-time-1"
         type="text"
         name="event-start-time"
-        value="${dateFrom}"
+        value="${getDate(dateFrom)}"
       >
       &mdash;
       <label
@@ -138,7 +140,7 @@ const addEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency = `
         id="event-end-time-1"
         type="text"
         name="event-end-time"
-        value="${dateTo}"
+        value="${getDate(dateTo)}"
       >
     </div>
 
@@ -167,4 +169,4 @@ const addEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency = `
 </form>
 `;
 
-export {addEditMarkup};
+export {getAddEditMarkup};

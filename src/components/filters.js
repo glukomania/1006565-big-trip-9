@@ -1,7 +1,7 @@
 import {getMarkup} from "../render";
 import {filtersData} from "../data";
 
-const filterTemplate = (filter) => `
+const getFilterTemplate = (filter) => `
 <div class="trip-filters__filter">
   <input id="filter-${filter.toLowerCase()}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" checked>
   <label class="trip-filters__filter-label" for="filter-everything">
@@ -10,9 +10,9 @@ const filterTemplate = (filter) => `
 </div>
 `;
 
-const renderBlock = getMarkup(filtersData, filterTemplate);
+const renderBlock = getMarkup(filtersData, getFilterTemplate);
 
-const filtersMarkup = () => `
+const getFiltersMarkup = () => `
 <form class="trip-filters" action="#" method="get">
   ${renderBlock}
 
@@ -22,4 +22,4 @@ const filtersMarkup = () => `
 </form>
 `;
 
-export {filtersMarkup};
+export {getFiltersMarkup};

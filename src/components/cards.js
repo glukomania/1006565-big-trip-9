@@ -1,14 +1,21 @@
 import {getMarkup} from "../render";
-import {date, eventData} from "../data";
+import {
+  date,
+  eventData
+} from "../data";
+import {
+  getDate,
+  getDuration,
+  getTime
+} from "../getDateFormat.js";
 
-const eventTemplate = ({
+
+const getEventTemplate = ({
   type,
   eventText,
   timeStart,
-  timeStartFormat,
   timeEnd,
-  timeEndFormat,
-  duration, price,
+  price,
   offers = [],
   offerprice
 }) => `
@@ -27,11 +34,11 @@ const eventTemplate = ({
 
     <div class="event__schedule">
       <p class="event__time">
-        <time class="event__start-time" datetime="${timeStart}">${timeStartFormat}</time>
+        <time class="event__start-time" datetime="${timeStart}">${getDate(timeStart)}</time>
         &mdash;
-        <time class="event__end-time" datetime="${timeEnd}">${timeEndFormat}</time>
+        <time class="event__end-time" datetime="${timeEnd}">${getDate(timeEnd)}</time>
       </p>
-      <p class="event__duration">${duration}</p>
+      <p class="event__duration">${getDuration(timeStart, timeEnd)}</p>
     </div>
 
     <p class="event__price">
@@ -54,32 +61,32 @@ const eventTemplate = ({
 </li>
 `;
 
-const eventsBlock = (number) => {
+const getEventsBlock = (number) => {
   const dayEvent = eventData[number];
-  return getMarkup(dayEvent, eventTemplate);
+  return getMarkup(dayEvent, getEventTemplate);
 };
 
-const dayTemplate = ({number, datetime, dates} = {}) => `
+const dayTemplate = ({number, dayDate} = {}) => `
 <li class="trip-days__item  day">
   <div class="day__info">
     <span class="day__counter">${number}</span>
-    <time class="day__date" datetime="${datetime}">${dates}</time>
+    <time class="day__date" datetime="${getTime(dayDate)}">${getDate(dayDate)}</time>
   </div>
 
   <ul class="trip-events__list">
 
-    ${eventsBlock(number)}
+    ${getEventsBlock(number)}
   </ul>
 </li>
 `;
 
 const dateBlock = getMarkup(date, dayTemplate);
 
-const cardsMarkup = () => `
+const getCardsMarkup = () => `
 <ul class="trip-days">
   ${dateBlock}
 </ul>
 `;
 
 
-export {cardsMarkup};
+export {getCardsMarkup};

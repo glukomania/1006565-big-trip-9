@@ -1,16 +1,16 @@
-import {routeMarkup} from "./route";
-import {menuMarkup} from "./menu";
-import {filtersMarkup} from "./filters";
-import {sortMarkup} from "./sort";
-import {cardsMarkup} from "./cards";
-import {addEditMarkup} from "./add-edit";
+import {getRouteMarkup} from "./route";
+import {getMenuMarkup} from "./menu";
+import {getFiltersMarkup} from "./filters";
+import {getSortMarkup} from "./sort";
+import {getCardsMarkup} from "./cards";
+import {getAddEditMarkup} from "./add-edit";
 
 
 export {
-  routeMarkup,
-  menuMarkup,
-  filtersMarkup,
-  sortMarkup,
-  cardsMarkup,
-  addEditMarkup
+  getRouteMarkup,
+  getMenuMarkup,
+  getFiltersMarkup,
+  getSortMarkup,
+  getCardsMarkup,
+  getAddEditMarkup
 };
