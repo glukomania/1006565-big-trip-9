@@ -1,8 +1,8 @@
 import {getMarkup} from "../render";
 import {transports, activities, cities} from "../data";
 
-const transportTemplate = (transportData) => {
-  const transportLowCase = transportData.toLowerCase();
+const transportTemplate = (transport) => {
+  const transportLowCase = transport.toLowerCase();
   return `
   <div class="event__type-item">
     <input
@@ -17,13 +17,13 @@ const transportTemplate = (transportData) => {
       class="event__type-label
       event__type-label--${transportLowCase}"
       for="event-type-${transportLowCase}-1">
-        ${transportData}
+        ${transport}
     </label>
   </div>`;
 };
 
-const activityTemplate = (activityData) => {
-  const activityLow = activityData.toLowerCase();
+const activityTemplate = (activity) => {
+  const activityLow = activity.toLowerCase();
   return `
   <div class="event__type-item">
     <input
@@ -37,13 +37,13 @@ const activityTemplate = (activityData) => {
       class="event__type-label
       event__type-label--${activityLow}"
       for="event-type-${activityLow}-1">
-        ${activityData}
+        ${activity}
     </label>
   </div>`;
 };
 
-const cityListTemplate = (cityData) => {
-  return `<option value="${cityData}"></option>`;
+const cityListTemplate = (city) => {
+  return `<option value="${city}"></option>`;
 };
 
 const transportBlock = getMarkup(transports, transportTemplate);
