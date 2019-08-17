@@ -8,7 +8,13 @@ const addSection = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
+// randomizer
+const getRandomElement = (min, max) => {
+  return Math.floor(Math.random() * (max - min)) + min;
+};
+
 export {
   addSection,
-  getMarkup
+  getMarkup,
+  getRandomElement
 };

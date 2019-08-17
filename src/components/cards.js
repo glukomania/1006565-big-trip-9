@@ -1,13 +1,13 @@
-import {getMarkup} from "../render";
+import {getMarkup} from "../utils";
 import {
   date,
-  eventData
+  event,
 } from "../data";
 import {
-  getDate,
-  getDuration,
-  getTime
-} from "../getDateFormat.js";
+  formatDate,
+  formatTime,
+  getDuration
+} from "../getDateFormat";
 
 
 const getEventTemplate = ({
@@ -34,9 +34,9 @@ const getEventTemplate = ({
 
     <div class="event__schedule">
       <p class="event__time">
-        <time class="event__start-time" datetime="${timeStart}">${getDate(timeStart)}</time>
+        <time class="event__start-time" datetime="${timeStart}">${formatTime(timeStart)}</time>
         &mdash;
-        <time class="event__end-time" datetime="${timeEnd}">${getDate(timeEnd)}</time>
+        <time class="event__end-time" datetime="${timeEnd}">${formatTime(timeEnd)}</time>
       </p>
       <p class="event__duration">${getDuration(timeStart, timeEnd)}</p>
     </div>
@@ -48,9 +48,9 @@ const getEventTemplate = ({
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
       <li class="event__offer">
-        <span class="event__offer-title">${offers}</span>
+        <span class="event__offer-title">${offers.offer}</span>
         &plus;
-        &euro;&nbsp;<span class="event__offer-price">${offerprice}</span>
+        &euro;&nbsp;<span class="event__offer-price">${offers.price}</span>
         </li>
     </ul>
 
@@ -61,16 +61,16 @@ const getEventTemplate = ({
 </li>
 `;
 
-const getEventsBlock = (number) => {
-  const dayEvent = eventData[number];
-  return getMarkup(dayEvent, getEventTemplate);
+const getEventsBlock = () => {
+  // const dayEvent = eventData[number];
+  return getMarkup(event, getEventTemplate);
 };
 
 const dayTemplate = ({number, dayDate} = {}) => `
 <li class="trip-days__item  day">
   <div class="day__info">
     <span class="day__counter">${number}</span>
-    <time class="day__date" datetime="${getTime(dayDate)}">${getDate(dayDate)}</time>
+    <time class="day__date" datetime="${formatDate(dayDate)}">${formatDate(dayDate)}</time>
   </div>
 
   <ul class="trip-events__list">

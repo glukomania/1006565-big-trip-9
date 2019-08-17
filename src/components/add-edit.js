@@ -1,6 +1,6 @@
-import {getMarkup} from "../render";
+import {getMarkup} from "../utils";
 import {transports, activities, cities} from "../data";
-import {getDate} from "../getDateFormat.js";
+import {formatDate} from "../getDateFormat.js";
 
 
 const getTransportTemplate = (transport) => {
@@ -126,7 +126,7 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
         id="event-start-time-1"
         type="text"
         name="event-start-time"
-        value="${getDate(dateFrom)}"
+        value="${formatDate(dateFrom)}"
       >
       &mdash;
       <label
@@ -140,7 +140,7 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
         id="event-end-time-1"
         type="text"
         name="event-end-time"
-        value="${getDate(dateTo)}"
+        value="${formatDate(dateTo)}"
       >
     </div>
 

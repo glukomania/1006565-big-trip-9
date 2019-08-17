@@ -1,4 +1,4 @@
-import {getMarkup} from "../render";
+import {getMarkup} from "../utils";
 import {sortData} from "../data";
 
 const getSortTemplate = ({type, path = ``} = {}) => `

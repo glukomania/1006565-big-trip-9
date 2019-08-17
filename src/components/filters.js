@@ -1,4 +1,4 @@
-import {getMarkup} from "../render";
+import {getMarkup} from "../utils";
 import {filtersData} from "../data";
 
 const getFilterTemplate = (filter) => `
