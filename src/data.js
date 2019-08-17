@@ -87,6 +87,21 @@ const event = [
   },
 ];
 
+const price = (eventData) => {
+  let sum = 0;
+  for (let i = 0; i < event.length; i++) {
+    sum = sum + eventData[i];
+    if (eventData.offers) {
+      for (let j = 0; j < eventData.offers.length; j++) {
+        sum = sum + eventData.offers[i];
+      }
+    }
+  }
+  return sum;
+};
+
+const setPrice = price(event);
+
 export {
   routeData,
   filtersData,
@@ -96,5 +111,6 @@ export {
   cities,
   date,
   event,
-  offersList
+  offersList,
+  setPrice
 };

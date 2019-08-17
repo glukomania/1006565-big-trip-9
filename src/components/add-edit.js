@@ -72,7 +72,7 @@ const offerTemplate = ({id, text, price}) => `
 
 const getOfferMarkup = getMarkup(offersList, offerTemplate);
 
-const getEventDetailsTemplate = `
+const getEventDetailsTemplate = (eventText) => `
 <section class="event__details">
 
   <section class="event__section  event__section--offers">
@@ -86,7 +86,7 @@ const getEventDetailsTemplate = `
 
   <section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
+    <p class="event__destination-description">${eventText}</p>
 
     <div class="event__photos-container">
       <div class="event__photos-tape">
@@ -228,7 +228,7 @@ const getAddEditMarkup = ({
     </button>
     ${isAdd ? `` : optionBlock()}
   </header>
-  ${isAdd ? `` : getEventDetailsTemplate}
+  ${isAdd ? `` : getEventDetailsTemplate(eventText)}
 </form>
 
 

@@ -4,7 +4,8 @@ import {
   getFiltersMarkup,
   getSortMarkup,
   getCardsMarkup,
-  getAddEditMarkup
+  getAddEditMarkup,
+  priceMarkup
 } from "./components/index";
 
 import {
@@ -20,6 +21,7 @@ import {
 const routePlace = document.querySelector(`.trip-main__trip-info`);
 const routeBlock = getMarkup(routeData, getRouteMarkup);
 addSection(routePlace, routeBlock, `afterbegin`);
+addSection(routePlace, priceMarkup(), `beforeend`);
 
 const menuPlace = document.querySelector(`.trip-controls h2:first-child`);
 addSection(menuPlace, getMenuMarkup(), `afterend`);
