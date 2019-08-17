@@ -14,7 +14,7 @@ import {
 
 import {
   routeData,
-  editData
+  event
 } from "./data";
 
 const routePlace = document.querySelector(`.trip-main__trip-info`);
@@ -30,7 +30,10 @@ addSection(filtersPlace, getFiltersMarkup(), `afterend`);
 const contentPlace = document.querySelector(`.trip-events`);
 addSection(contentPlace, getSortMarkup(), `beforeend`);
 
-const addEditBlock = getMarkup(editData, getCardsMarkup);
+const eventToEdit = event.slice(0, 1);
+const addEditBlock = getMarkup(eventToEdit, getAddEditMarkup);
 addSection(contentPlace, addEditBlock, `beforeend`);
 
-addSection(contentPlace, getAddEditMarkup(), `beforeend`);
+const cardsBlock = getMarkup(event, getCardsMarkup);
+addSection(contentPlace, cardsBlock, `beforeend`);
+

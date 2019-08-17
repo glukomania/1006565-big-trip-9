@@ -2,7 +2,6 @@ import {getMarkup} from "../utils";
 import {transports, activities, cities} from "../data";
 import {formatDate} from "../getDateFormat.js";
 
-
 const getTransportTemplate = (transport) => {
   const transportLowCase = transport.toLowerCase();
   return `
@@ -53,7 +52,16 @@ const activityBlock = getMarkup(activities, getActivityTemplate);
 const citiesBlock = getMarkup(cities, getCityListTemplate);
 
 
-const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency = ``} = {}) => `
+const getAddEditMarkup = ({
+  type,
+  city,
+  activity,
+  eventText,
+  timeStart,
+  timeEnd,
+  price,
+  offers
+}) => `
 <form class="trip-events__item  event  event--edit" action="#" method="post">
   <header class="event__header">
     <div class="event__type-wrapper">
@@ -64,7 +72,7 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
         <img
           class="event__type-icon"
           width="17" height="17"
-          src="img/icons/flight.png"
+          src="img/icons/${type}.png"
           alt="Event type icon">
       </label>
       <input
@@ -100,7 +108,7 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
         class="event__label
         event__type-output"
         for="event-destination-1">
-          ${eventName}
+          ${eventText}
       </label>
       <input
         class="event__input
@@ -126,7 +134,7 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
         id="event-start-time-1"
         type="text"
         name="event-start-time"
-        value="${formatDate(dateFrom)}"
+        value="${formatDate(timeStart)}"
       >
       &mdash;
       <label
@@ -140,14 +148,14 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
         id="event-end-time-1"
         type="text"
         name="event-end-time"
-        value="${formatDate(dateTo)}"
+        value="${formatDate(timeEnd)}"
       >
     </div>
 
     <div class="event__field-group  event__field-group--price">
       <label class="event__label" for="event-price-1">
         <span class="visually-hidden">Price</span>
-        ${currency}
+        ${price} &euro;&nbsp;
       </label>
       <input
         class="event__input

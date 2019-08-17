@@ -3,6 +3,7 @@ import {
   date,
   event,
 } from "../data";
+
 import {
   formatDate,
   formatTime,
@@ -16,8 +17,7 @@ const getEventTemplate = ({
   timeStart,
   timeEnd,
   price,
-  offers = [],
-  offerprice
+  offers = []
 }) => `
 <li class="trip-events__item">
   <div class="event">
