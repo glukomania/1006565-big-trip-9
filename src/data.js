@@ -46,11 +46,12 @@ const transports = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Fligh
 const activities = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
 const cities = [`Amsterdam`, `Saint-Petersburg`, `Chamonix`, `Geneva`, `Praha`, `Berlin`];
 
-const offers = [
-  {offer: `add luggage`, price: 10},
-  {offer: `Switch to comfort class`, price: 150},
-  {offer: `Add meal`, price: 2},
-  {offer: `Choose seats`, price: 9}
+const offersList = [
+  {id: `luggage`, text: `add luggage`, price: 10},
+  {id: `comfort`, text: `Switch to comfort class`, price: 150},
+  {id: `meal`, text: `Add meal`, price: 2},
+  {id: `seats`, text: `Choose seats`, price: 9},
+  {id: `train`, text: `Choose seats`, price: 9}
 ];
 
 const getDate = new Date();
@@ -72,7 +73,7 @@ const event = [
     timeStart: past,
     timeEnd: getDate,
     price: getRandomElement(10, 200),
-    offers: offers[getRandomElement(0, 3)]
+    offers: offersList[getRandomElement(0, 3)]
   },
   {
     type: transports[getRandomElement(0, transports.length)],
@@ -82,7 +83,7 @@ const event = [
     timeStart: past,
     timeEnd: getDate,
     price: getRandomElement(10, 200),
-    offers: offers[getRandomElement(0, 3)]
+    offers: offersList[getRandomElement(0, 3)]
   },
 ];
 
@@ -94,5 +95,6 @@ export {
   activities,
   cities,
   date,
-  event
+  event,
+  offersList
 };

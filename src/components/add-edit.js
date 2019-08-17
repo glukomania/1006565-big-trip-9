@@ -1,5 +1,5 @@
 import {getMarkup} from "../utils";
-import {transports, activities, cities} from "../data";
+import {transports, activities, cities, offersList} from "../data";
 import {formatDate} from "../getDateFormat.js";
 
 const getTransportTemplate = (transport) => {
@@ -47,20 +47,73 @@ const getCityListTemplate = (city) => {
   return `<option value="${city}"></option>`;
 };
 
+const optionBlock = () => `
+<input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+<label class="event__favorite-btn" for="event-favorite-1">
+  <span class="visually-hidden">Add to favorite</span>
+  <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+    <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+  </svg>
+</label>
+
+<button class="event__rollup-btn" type="button">
+  <span class="visually-hidden">Open event</span>
+</button>
+`;
+const offerTemplate = ({id, text, price}) => `
+<div class="event__offer-selector">
+<input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" checked>
+<label class="event__offer-label" for="event-offer-${id}-1">
+  <span class="event__offer-title">${text}</span>
+  &plus;
+  &euro;&nbsp;<span class="event__offer-price">${price}</span>
+</label>
+</div>`;
+
+const getOfferMarkup = getMarkup(offersList, offerTemplate);
+
+const getEventDetailsTemplate = `
+<section class="event__details">
+
+  <section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+    <div class="event__available-offers">
+     ${getOfferMarkup}
+
+    </div>
+  </section>
+
+  <section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
+
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+        <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
+        <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
+        <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
+        <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
+        <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
+      </div>
+    </div>
+  </section>
+</section>
+`;
+
 const transportBlock = getMarkup(transports, getTransportTemplate);
 const activityBlock = getMarkup(activities, getActivityTemplate);
 const citiesBlock = getMarkup(cities, getCityListTemplate);
 
 
 const getAddEditMarkup = ({
+  isAdd = false,
   type,
   city,
-  activity,
   eventText,
   timeStart,
   timeEnd,
-  price,
-  offers
+  price
 }) => `
 <form class="trip-events__item  event  event--edit" action="#" method="post">
   <header class="event__header">
@@ -116,7 +169,7 @@ const getAddEditMarkup = ({
         id="event-destination-1"
         type="text"
         name="event-destination"
-        value=""
+        value="${city}"
         list="destination-list-1"
       >
       <datalist id="destination-list-1">
@@ -155,7 +208,7 @@ const getAddEditMarkup = ({
     <div class="event__field-group  event__field-group--price">
       <label class="event__label" for="event-price-1">
         <span class="visually-hidden">Price</span>
-        ${price} &euro;&nbsp;
+        &euro;&nbsp;
       </label>
       <input
         class="event__input
@@ -163,7 +216,7 @@ const getAddEditMarkup = ({
         id="event-price-1"
         type="text"
         name="event-price"
-        value=""
+        value="${price}"
       >
     </div>
 
@@ -171,10 +224,14 @@ const getAddEditMarkup = ({
       Save
     </button>
     <button class="event__reset-btn" type="reset">
-      Cancel
+      ${isAdd ? `Cancel` : `Delete`}
     </button>
+    ${isAdd ? `` : optionBlock()}
   </header>
+  ${isAdd ? `` : getEventDetailsTemplate}
 </form>
+
+
 `;
 
 export {getAddEditMarkup};
