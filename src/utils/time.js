@@ -2,7 +2,7 @@ import {TIME_HALF_DAY} from "../constants";
 import {getRandomNumber} from "./randomizers";
 
 const getRandomDateStart = () => {
-  const startDate = new Date() - getRandomNumber(TIME_HALF_DAY, 2 * TIME_HALF_DAY) ;
+  const startDate = new Date() - getRandomNumber(TIME_HALF_DAY, 2 * TIME_HALF_DAY);
   return new Date(startDate);
 };
 
