@@ -1,6 +1,6 @@
 import {getMarkup} from "../utils/dom";
 import {transports, activities, cities, offersList} from "../data";
-import {formatDate} from "../getDateFormat.js";
+import {formatDate} from "../date.js";
 
 const getTransportTemplate = (transport) => {
   const transportLowCase = transport.toLowerCase();

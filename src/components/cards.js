@@ -8,7 +8,7 @@ import {
   formatDate,
   formatTime,
   getDuration
-} from "../getDateFormat";
+} from "../date";
 
 
 const getEventTemplate = ({
