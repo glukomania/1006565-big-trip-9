@@ -1,13 +1,12 @@
-import {getRandomElement} from "./utils";
-import {formatDate} from "./getDateFormat";
+import {
+  getRandomNumber,
+  getRandomItem,
+  getRandomValues} from "./utils/randomizers";
+import {
+  getRandomDateStart,
+  getRandomDateFinish,
+} from "./utils/time";
 
-const routeData = [
-  {
-    cityStart: `Amsterdam`,
-    cityFinish: `Amsterdam`,
-    date: `Mar 18 - 21`
-  }
-];
 
 const description = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -54,53 +53,41 @@ const offersList = [
   {id: `train`, text: `Choose seats`, price: 9}
 ];
 
-const getDate = new Date();
-let past = new Date();
-past.setTime(1332403882588);
-
-const date = [
-  {number: `1`, datetime: getDate, dates: formatDate(getDate)},
-  {number: `2`, datetime: getDate, dates: `test`},
-  {number: `3`, datetime: getDate, dates: `test`},
-];
-
-const event = [
-  {
-    type: transports[getRandomElement(0, transports.length)],
-    city: cities[getRandomElement(0, 5)],
-    activity: activities[getRandomElement(0, 3)],
-    eventText: description[getRandomElement(0, description.length)],
-    timeStart: past,
-    timeEnd: getDate,
-    price: getRandomElement(10, 200),
-    offers: offersList[getRandomElement(0, 3)]
-  },
-  {
-    type: transports[getRandomElement(0, transports.length)],
-    city: cities[getRandomElement(0, 5)],
-    activity: activities[getRandomElement(0, 3)],
-    eventText: description[getRandomElement(0, description.length)],
-    timeStart: past,
-    timeEnd: getDate,
-    price: getRandomElement(10, 200),
-    offers: offersList[getRandomElement(0, 3)]
-  },
-];
-
-const price = (eventData) => {
-  let sum = 0;
-  for (let i = 0; i < event.length; i++) {
-    sum = sum + eventData[i];
-    if (eventData.offers) {
-      for (let j = 0; j < eventData.offers.length; j++) {
-        sum = sum + eventData.offers[i];
-      }
-    }
-  }
-  return sum;
+const getRandomOffers = () => {
+  const randomOffers = new Set(getRandomValues(offersList, getRandomNumber(0, 3)));
+  return randomOffers;
 };
 
-const setPrice = price(event);
+
+const makeEvent = () => ({
+  type: getRandomItem(transports),
+  city: getRandomItem(cities),
+  activity: getRandomItem(activities),
+  eventText: getRandomItem(description),
+  timeStart: getRandomDateStart(),
+  timeEnd: getRandomDateFinish(),
+  price: getRandomNumber(10, 200),
+  offers: Array.from(getRandomOffers()),
+}
+);
+
+const getEvents = (num) =>
+  new Array(num).fill(null).map(makeEvent);
+
+const events = getEvents(3);
+
+const date = [
+  {number: `1`, datetime: events[0].timeStart},
+  {number: `2`, datetime: events[1].timeStart},
+];
+
+const routeData = [
+  {
+    cityStart: events[0].city,
+    cityFinish: events[events.length - 1].city,
+    date: events[0].timeStart
+  }
+];
 
 export {
   routeData,
@@ -110,7 +97,6 @@ export {
   activities,
   cities,
   date,
-  event,
+  events,
   offersList,
-  setPrice
 };

@@ -1,4 +1,4 @@
-import {getMarkup} from "../utils";
+import {getMarkup} from "../utils/dom";
 import {filtersData} from "../data";
 
 const getFilterTemplate = (filter) => `

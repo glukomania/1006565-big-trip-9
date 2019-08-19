@@ -1,4 +1,4 @@
-import {getMarkup} from "../utils";
+import {getMarkup} from "../utils/dom";
 import {transports, activities, cities, offersList} from "../data";
 import {formatDate} from "../getDateFormat.js";
 

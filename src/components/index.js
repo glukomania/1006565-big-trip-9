@@ -4,7 +4,7 @@ import {getFiltersMarkup} from "./filters";
 import {getSortMarkup} from "./sort";
 import {getCardsMarkup} from "./cards";
 import {getAddEditMarkup} from "./add-edit";
-import {priceMarkup} from "./totalPrice";
+import {getPriceMarkup} from "./totalPrice";
 
 
 export {
@@ -14,5 +14,5 @@ export {
   getSortMarkup,
   getCardsMarkup,
   getAddEditMarkup,
-  priceMarkup
+  getPriceMarkup
 };
