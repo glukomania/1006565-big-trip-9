@@ -1,7 +1,6 @@
-import {getMarkup} from "../render";
-import {transports, activities, cities} from "../data";
-import {getDate} from "../getDateFormat.js";
-
+import {getMarkup} from "../utils/dom";
+import {transports, activities, cities, offers} from "../data";
+import {formatDate} from "../date";
 
 const getTransportTemplate = (transport) => {
   const transportLowCase = transport.toLowerCase();
@@ -48,12 +47,74 @@ const getCityListTemplate = (city) => {
   return `<option value="${city}"></option>`;
 };
 
+const getOptionBlock = () => `
+<input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+<label class="event__favorite-btn" for="event-favorite-1">
+  <span class="visually-hidden">Add to favorite</span>
+  <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+    <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+  </svg>
+</label>
+
+<button class="event__rollup-btn" type="button">
+  <span class="visually-hidden">Open event</span>
+</button>
+`;
+const getOfferTemplate = ({id, text, price}) => `
+<div class="event__offer-selector">
+<input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" checked>
+<label class="event__offer-label" for="event-offer-${id}-1">
+  <span class="event__offer-title">${text}</span>
+  &plus;
+  &euro;&nbsp;<span class="event__offer-price">${price}</span>
+</label>
+</div>`;
+
+const getOfferMarkup = getMarkup(offers, getOfferTemplate);
+
+const getEventDetailsTemplate = (eventText) => `
+<section class="event__details">
+
+  <section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+    <div class="event__available-offers">
+     ${getOfferMarkup}
+
+    </div>
+  </section>
+
+  <section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">${eventText}</p>
+
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+        <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
+        <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
+        <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
+        <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
+        <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
+      </div>
+    </div>
+  </section>
+</section>
+`;
+
 const transportBlock = getMarkup(transports, getTransportTemplate);
 const activityBlock = getMarkup(activities, getActivityTemplate);
 const citiesBlock = getMarkup(cities, getCityListTemplate);
 
 
-const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency = ``} = {}) => `
+const getAddEditMarkup = ({
+  isAdd = false,
+  type,
+  city,
+  eventText,
+  timeStart,
+  timeEnd,
+  price
+}) => `
 <form class="trip-events__item  event  event--edit" action="#" method="post">
   <header class="event__header">
     <div class="event__type-wrapper">
@@ -64,7 +125,7 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
         <img
           class="event__type-icon"
           width="17" height="17"
-          src="img/icons/flight.png"
+          src="img/icons/${type}.png"
           alt="Event type icon">
       </label>
       <input
@@ -100,7 +161,7 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
         class="event__label
         event__type-output"
         for="event-destination-1">
-          ${eventName}
+          ${eventText}
       </label>
       <input
         class="event__input
@@ -108,7 +169,7 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
         id="event-destination-1"
         type="text"
         name="event-destination"
-        value=""
+        value="${city}"
         list="destination-list-1"
       >
       <datalist id="destination-list-1">
@@ -126,7 +187,7 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
         id="event-start-time-1"
         type="text"
         name="event-start-time"
-        value="${getDate(dateFrom)}"
+        value="${formatDate(timeStart)}"
       >
       &mdash;
       <label
@@ -140,14 +201,14 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
         id="event-end-time-1"
         type="text"
         name="event-end-time"
-        value="${getDate(dateTo)}"
+        value="${formatDate(timeEnd)}"
       >
     </div>
 
     <div class="event__field-group  event__field-group--price">
       <label class="event__label" for="event-price-1">
         <span class="visually-hidden">Price</span>
-        ${currency}
+        &euro;&nbsp;
       </label>
       <input
         class="event__input
@@ -155,7 +216,7 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
         id="event-price-1"
         type="text"
         name="event-price"
-        value=""
+        value="${price}"
       >
     </div>
 
@@ -163,10 +224,14 @@ const getAddEditMarkup = ({eventName = ``, dateFrom = ``, dateTo = ``, currency 
       Save
     </button>
     <button class="event__reset-btn" type="reset">
-      Cancel
+      ${isAdd ? `Cancel` : `Delete`}
     </button>
+    ${isAdd ? `` : getOptionBlock()}
   </header>
+  ${isAdd ? `` : getEventDetailsTemplate(eventText)}
 </form>
+
+
 `;
 
 export {getAddEditMarkup};

@@ -1,5 +1,5 @@
-import {getMarkup} from "../render";
-import {sortData} from "../data";
+import {getMarkup} from "../utils/dom";
+import {sortTypes} from "../data";
 
 const getSortTemplate = ({type, path = ``} = {}) => `
 <div class="trip-sort__item  trip-sort__item--${type}">
@@ -11,7 +11,7 @@ const getSortTemplate = ({type, path = ``} = {}) => `
 </div>
 `;
 
-const sortBlock = getMarkup(sortData, getSortTemplate);
+const sortBlock = getMarkup(sortTypes, getSortTemplate);
 
 const getSortMarkup = () => `
 <form class="trip-events__trip-sort  trip-sort" action="#" method="get">

@@ -1,14 +1,27 @@
-const routeData = [
-  {
-    cityStart: `Amsterdam`,
-    cityFinish: `Amsterdam`,
-    date: `Mar 18 - 21`
-  }
-];
+import {
+  getRandomNumber,
+  getRandomItem,
+  getRandomValues} from "./utils/randomizers";
+import {
+  getRandomDateStart,
+  getRandomDateFinish,
+} from "./utils/time";
 
-const filtersData = [`Everything`, `Future`, `Past`];
 
-const sortData = [
+const descriptions = [
+  `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
+  `Cras aliquet varius magna, non porta ligula feugiat eget.`,
+  `Fusce tristique felis at fermentum pharetra.`,
+  `Aliquam id orci ut lectus varius viverra.`,
+  `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`,
+  `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`,
+  `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.`,
+  `Sed sed nisi sed augue convallis suscipit in sed felis.`,
+  `Aliquam erat volutpat.`, `Nunc fermentum tortor ac porta dapibus.`,
+  `In rutrum ac purus sit amet tempus.`];
+const filterTypes = [`Everything`, `Future`, `Past`];
+
+const sortTypes = [
   {
     type: `event`
   },
@@ -29,50 +42,61 @@ const sortData = [
   }];
 
 const transports = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`];
-const activities = [`Check-in`, `Sightseeing`, `Restaurant`];
-const cities = [`Amsterdam`, `Saint-Petersburg`, `Chamonix`, `Geneva`];
+const activities = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
+const cities = [`Amsterdam`, `Saint-Petersburg`, `Chamonix`, `Geneva`, `Praha`, `Berlin`];
 
-const editData = [
+const offers = [
+  {id: `luggage`, text: `add luggage`, price: 10},
+  {id: `comfort`, text: `Switch to comfort class`, price: 150},
+  {id: `meal`, text: `Add meal`, price: 2},
+  {id: `seats`, text: `Choose seats`, price: 9},
+  {id: `train`, text: `Choose seats`, price: 9}
+];
+
+const getRandomOffers = () => {
+  const randomOffers = new Set(getRandomValues(offers, getRandomNumber(0, 3)));
+  return randomOffers;
+};
+
+
+const makeEvent = () => ({
+  type: getRandomItem(transports),
+  city: getRandomItem(cities),
+  activity: getRandomItem(activities),
+  eventText: getRandomItem(descriptions),
+  timeStart: getRandomDateStart(),
+  timeEnd: getRandomDateFinish(),
+  price: getRandomNumber(10, 200),
+  offers: Array.from(getRandomOffers()),
+}
+);
+
+const getEvents = (num) =>
+  new Array(num).fill(null).map(makeEvent);
+
+const events = getEvents(3);
+
+const dates = [
+  {number: `1`, datetime: events[0].timeStart},
+  {number: `2`, datetime: events[1].timeStart},
+];
+
+const routePoints = [
   {
-    eventName: `Sightseeing at`,
-    dateFrom: `18/03/19 00:00`,
-    dateTo: `18/03/19 00:00`,
-    currency: `&euro;`
+    cityStart: events[0].city,
+    cityFinish: events[events.length - 1].city,
+    date: events[0].timeStart
   }
 ];
 
-const date = [
-  {number: `1`, datetime: `2019-03-18`, dates: `MAR 18`},
-  {number: `2`, datetime: `2019-03-19`, dates: `MAR 19`},
-  {number: `3`, datetime: `2019-03-18`, dates: `MAR 20`},
-];
-
-const eventData = {
-  '1': [
-    {type: `taxi`, eventText: `Taxi to airport`, timeStart: `2019-03-18T10:30`, timeStartFormat: `10:30`, timeEnd: `2019-03-18T11:00`, timeEndFormat: `11:00`, duration: `1H 30M`, price: `20`, offers: [`Order Uber`], offerprice: `20`},
-    {type: `flight`, eventText: `Flight to Geneva`, timeStart: `2019-03-18T12:25`, timeStartFormat: `12:25`, timeEnd: `2019-03-18T13:35`, timeEndFormat: `13:35`, duration: `1H 30M`, price: `160`, offers: [`Add luggage`, `Switch to comfort`], offerprice: [`50`, `80`]},
-    {type: `drive`, eventText: `Drive to Chamonix`, timeStart: `2019-03-18T14:30`, timeStartFormat: `14:30`, timeEnd: `2019-03-18T11:00`, timeEndFormat: `16:05`, duration: `1H 10M`, price: `160`, offers: [`Rent a car`], offerprice: `200`},
-    {type: `drive`, eventText: `Check into hotel`, timeStart: `2019-03-18T12:25`, timeStartFormat: `12:25`, timeEnd: `2019-03-18T13:35`, timeEndFormat: `13:35`, duration: `1H 30M`, price: `600`, offers: [`Add breakfast`], offerprice: `50`},
-  ],
-  '2': [
-    {type: `drive`, eventText: `Drive to Geneva`, timeStart: `2019-03-19T10:00`, timeStartFormat: `10:00`, timeEnd: `2019-03-19T11:00`, timeEndFormat: `11:00`, duration: `1H`, price: `20`, offers: [], offerprice: ``},
-    {type: `sightseeing`, eventText: `Natural History Museum`, timeStart: `2019-03-19T11:20`, timeStartFormat: `11:20`, timeEnd: `2019-03-19T13:00`, timeEndFormat: `13:00`, duration: `1H 20M`, price: `50`, offers: [`Book tickets`, `Lunch in city`], offerprice: [`40`, `30`]},
-    {type: `drive`, eventText: `Drive to Chamonix`, timeStart: `2019-03-19T18:00"`, timeStartFormat: `18:00`, timeEnd: `2019-03-19T19:00`, timeEndFormat: `19:00`, duration: `1H`, price: `20`, offers: [], offerprice: []}
-  ],
-  '3': [
-    {type: `drive`, eventText: `Drive to airport`, timeStart: `2019-03-20T08:25`, timeStartFormat: `08:25`, timeEnd: `2019-03-20T09:25`, timeEndFormat: `09:25`, duration: `1H`, price: `20`, offers: [], offerprice: []},
-    {type: `flight`, eventText: `Flight to Amsterdam`, timeStart: `2019-03-20T11:15`, timeStartFormat: `11:15`, timeEnd: `2019-03-20T12:15`, timeEndFormat: `12:15`, duration: `1H`, price: `180`, offers: [`Add luggage`, `Switch to comfort`], offerprice: [`30`, `100`]},
-  ]
-};
-
 export {
-  routeData,
-  filtersData,
-  sortData,
+  routePoints,
+  filterTypes,
+  sortTypes,
   transports,
   activities,
-  editData,
   cities,
-  date,
-  eventData
+  dates,
+  events,
+  offers,
 };

@@ -1,4 +1,4 @@
-import {getDate} from "../getDateFormat.js";
+import {formatDate} from "../date.js";
 
 const getRouteMarkup = ({cityStart, cityFinish, dateStart} = {}) => `
 <div class="trip-info__main">
@@ -7,7 +7,7 @@ const getRouteMarkup = ({cityStart, cityFinish, dateStart} = {}) => `
   </h1>
 
   <p class="trip-info__dates">
-    ${getDate(dateStart)}
+    ${formatDate(dateStart)}
   </p>
 </div>
 `;
