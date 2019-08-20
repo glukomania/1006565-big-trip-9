@@ -14,12 +14,12 @@ import {
 } from "./utils/dom";
 
 import {
-  routeData,
+  routePoints,
   events
 } from "./data";
 
 const routePlace = document.querySelector(`.trip-main__trip-info`);
-const routeBlock = getMarkup(routeData, getRouteMarkup);
+const routeBlock = getMarkup(routePoints, getRouteMarkup);
 addSection(routePlace, routeBlock, `afterbegin`);
 addSection(routePlace, getPriceMarkup(), `beforeend`);
 

@@ -8,7 +8,7 @@ import {
 } from "./utils/time";
 
 
-const description = [
+const descriptions = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
   `Cras aliquet varius magna, non porta ligula feugiat eget.`,
   `Fusce tristique felis at fermentum pharetra.`,
@@ -19,9 +19,9 @@ const description = [
   `Sed sed nisi sed augue convallis suscipit in sed felis.`,
   `Aliquam erat volutpat.`, `Nunc fermentum tortor ac porta dapibus.`,
   `In rutrum ac purus sit amet tempus.`];
-const filtersData = [`Everything`, `Future`, `Past`];
+const filterTypes = [`Everything`, `Future`, `Past`];
 
-const sorting = [
+const sortTypes = [
   {
     type: `event`
   },
@@ -45,7 +45,7 @@ const transports = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Fligh
 const activities = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
 const cities = [`Amsterdam`, `Saint-Petersburg`, `Chamonix`, `Geneva`, `Praha`, `Berlin`];
 
-const offersList = [
+const offers = [
   {id: `luggage`, text: `add luggage`, price: 10},
   {id: `comfort`, text: `Switch to comfort class`, price: 150},
   {id: `meal`, text: `Add meal`, price: 2},
@@ -54,7 +54,7 @@ const offersList = [
 ];
 
 const getRandomOffers = () => {
-  const randomOffers = new Set(getRandomValues(offersList, getRandomNumber(0, 3)));
+  const randomOffers = new Set(getRandomValues(offers, getRandomNumber(0, 3)));
   return randomOffers;
 };
 
@@ -63,7 +63,7 @@ const makeEvent = () => ({
   type: getRandomItem(transports),
   city: getRandomItem(cities),
   activity: getRandomItem(activities),
-  eventText: getRandomItem(description),
+  eventText: getRandomItem(descriptions),
   timeStart: getRandomDateStart(),
   timeEnd: getRandomDateFinish(),
   price: getRandomNumber(10, 200),
@@ -76,12 +76,12 @@ const getEvents = (num) =>
 
 const events = getEvents(3);
 
-const date = [
+const dates = [
   {number: `1`, datetime: events[0].timeStart},
   {number: `2`, datetime: events[1].timeStart},
 ];
 
-const routeData = [
+const routePoints = [
   {
     cityStart: events[0].city,
     cityFinish: events[events.length - 1].city,
@@ -90,13 +90,13 @@ const routeData = [
 ];
 
 export {
-  routeData,
-  filtersData,
-  sorting,
+  routePoints,
+  filterTypes,
+  sortTypes,
   transports,
   activities,
   cities,
-  date,
+  dates,
   events,
-  offersList,
+  offers,
 };

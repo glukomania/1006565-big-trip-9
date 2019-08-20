@@ -1,6 +1,6 @@
 import {getMarkup} from "../utils/dom";
 import {
-  date,
+  dates,
   events,
 } from "../data";
 
@@ -45,7 +45,7 @@ const getEventTemplate = ({
       &euro;&nbsp;<span class="event__price-value">${price}</span>
     </p>
 
-    ${offersTemplate(offers)}
+    ${getOffersTemplate(offers)}
 
     <button class="event__rollup-btn" type="button">
       <span class="visually-hidden">Open event</span>
@@ -54,9 +54,9 @@ const getEventTemplate = ({
 </li>
 `;
 
-const getOffersBlock = (offers) => getMarkup(offers, offerBlok);
+const getOffersBlock = (offers) => getMarkup(offers, getOfferBlok);
 
-const offersTemplate = (offers) => {
+const getOffersTemplate = (offers) => {
   return `
   <h4 class="visually-hidden">Offers:</h4>
   <ul class="event__selected-offers">
@@ -64,7 +64,7 @@ const offersTemplate = (offers) => {
   </ul>`;
 };
 
-const offerBlok = ({text, price}) => `
+const getOfferBlok = ({text, price}) => `
 <li class="event__offer">
 <span class="event__offer-title">${text}</span>
 &plus;
@@ -73,7 +73,7 @@ const offerBlok = ({text, price}) => `
 
 const getEventsBlock = () => getMarkup(events, getEventTemplate);
 
-const dayTemplate = ({number, dayDate} = {}) => `
+const getDayTemplate = ({number, dayDate} = {}) => `
 <li class="trip-days__item  day">
   <div class="day__info">
     <span class="day__counter">${number}</span>
@@ -86,7 +86,7 @@ const dayTemplate = ({number, dayDate} = {}) => `
 </li>
 `;
 
-const dateBlock = getMarkup(date, dayTemplate);
+const dateBlock = getMarkup(dates, getDayTemplate);
 
 const getCardsMarkup = () => `
 <ul class="trip-days">

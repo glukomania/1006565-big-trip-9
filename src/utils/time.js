@@ -8,8 +8,8 @@ const getRandomDateStart = () => {
 
 const getRandomDateFinish = () => {
   const now = new Date();
-  let finish = now - getRandomNumber(1, TIME_HALF_DAY);
-  let finishDate = new Date(finish);
+  const finish = now - getRandomNumber(1, TIME_HALF_DAY);
+  const finishDate = new Date(finish);
   return finishDate;
 };
 

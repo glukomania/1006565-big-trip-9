@@ -1,5 +1,5 @@
 import {getMarkup} from "../utils/dom";
-import {filtersData} from "../data";
+import {filterTypes} from "../data";
 
 const getFilterTemplate = (filter) => `
 <div class="trip-filters__filter">
@@ -10,7 +10,7 @@ const getFilterTemplate = (filter) => `
 </div>
 `;
 
-const renderBlock = getMarkup(filtersData, getFilterTemplate);
+const renderBlock = getMarkup(filterTypes, getFilterTemplate);
 
 const getFiltersMarkup = () => `
 <form class="trip-filters" action="#" method="get">

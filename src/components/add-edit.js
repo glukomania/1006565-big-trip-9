@@ -1,6 +1,6 @@
 import {getMarkup} from "../utils/dom";
-import {transports, activities, cities, offersList} from "../data";
-import {formatDate} from "../date.js";
+import {transports, activities, cities, offers} from "../data";
+import {formatDate} from "../date";
 
 const getTransportTemplate = (transport) => {
   const transportLowCase = transport.toLowerCase();
@@ -47,7 +47,7 @@ const getCityListTemplate = (city) => {
   return `<option value="${city}"></option>`;
 };
 
-const optionBlock = () => `
+const getOptionBlock = () => `
 <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
 <label class="event__favorite-btn" for="event-favorite-1">
   <span class="visually-hidden">Add to favorite</span>
@@ -60,7 +60,7 @@ const optionBlock = () => `
   <span class="visually-hidden">Open event</span>
 </button>
 `;
-const offerTemplate = ({id, text, price}) => `
+const getOfferTemplate = ({id, text, price}) => `
 <div class="event__offer-selector">
 <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" checked>
 <label class="event__offer-label" for="event-offer-${id}-1">
@@ -70,7 +70,7 @@ const offerTemplate = ({id, text, price}) => `
 </label>
 </div>`;
 
-const getOfferMarkup = getMarkup(offersList, offerTemplate);
+const getOfferMarkup = getMarkup(offers, getOfferTemplate);
 
 const getEventDetailsTemplate = (eventText) => `
 <section class="event__details">
@@ -226,7 +226,7 @@ const getAddEditMarkup = ({
     <button class="event__reset-btn" type="reset">
       ${isAdd ? `Cancel` : `Delete`}
     </button>
-    ${isAdd ? `` : optionBlock()}
+    ${isAdd ? `` : getOptionBlock()}
   </header>
   ${isAdd ? `` : getEventDetailsTemplate(eventText)}
 </form>
