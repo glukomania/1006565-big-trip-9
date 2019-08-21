@@ -85,6 +85,7 @@ const renderEvent = (eventMock) => {
   .querySelector(`.event__save-btn`)
   .addEventListener(`click`, () => {
     contentPlace.replaceChild(event.getElement(), eventAddEdit.getElement());
+    eventAddEdit.removeElement();
     document.removeEventListener(`keydown`, onEscKeyDown);
   });
 

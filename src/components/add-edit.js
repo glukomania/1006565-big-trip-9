@@ -237,6 +237,10 @@ class AddEdit {
     </form>
     `;
   }
+
+  removeElement() {
+    this._element = null;
+  }
 }
 
 export {AddEdit};

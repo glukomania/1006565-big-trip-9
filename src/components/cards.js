@@ -103,6 +103,10 @@ class Event {
     `;
   }
 
+  removeElement() {
+    this._element = null;
+  }
+
 }
 
 export {Event};
