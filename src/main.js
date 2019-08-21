@@ -1,8 +1,8 @@
 import {
   Route,
-  getMenuMarkup,
-  getFiltersMarkup,
-  getSortMarkup,
+  Menu,
+  Filter,
+  Sort,
   getCardsMarkup,
   getAddEditMarkup,
   getPriceMarkup
@@ -11,8 +11,7 @@ import {
 import {
   getMarkup,
   addSection,
-  insertSection,
-  Position,
+  appendSection,
   createElement
 } from "./utils/dom";
 
@@ -21,7 +20,7 @@ import {
   events
 } from "./data";
 
-// route
+// Route
 const routePlace = document.querySelector(`.trip-main__trip-info`);
 const renderRoute = (routeMock) => {
   const route = new Route(routeMock, `section`, [`board`, `container`]);
@@ -29,21 +28,38 @@ const renderRoute = (routeMock) => {
 };
 const route = routePoints.map(renderRoute).join(`\n`);
 const routeBlock = createElement(route, `div`, [`trip-info__main`]);
-insertSection(routePlace, routeBlock, Position.BEFOREEND);
+appendSection(routePlace, routeBlock);
 
-// menu
+// Menu
 const menuPlace = document.querySelector(`.trip-controls h2:first-child`);
-addSection(menuPlace, getMenuMarkup(), `afterend`);
+const renderMenu = () => {
+  const menu = new Menu();
+  addSection(menuPlace, menu.getTemplate(), `afterend`);
+};
+renderMenu();
 
+// Filters
 const filtersPlace = document.querySelector(`.trip-controls h2:last-child`);
-addSection(filtersPlace, getFiltersMarkup(), `afterend`);
 
+const renderFilter = () => {
+  const filter = new Filter();
+  addSection(filtersPlace, filter.getTemplate(), `afterend`);
+};
+renderFilter();
+
+// Sorting
 const contentPlace = document.querySelector(`.trip-events`);
-addSection(contentPlace, getSortMarkup(), `beforeend`);
+const renderSorting = () => {
+  const sorting = new Sort();
+  addSection(contentPlace, sorting.getTemplate(), `afterend`);
+};
+renderSorting();
 
-const addEditBlock = getMarkup(events.slice(0, 1), getAddEditMarkup);
-addSection(contentPlace, addEditBlock, `beforeend`);
+// addSection(contentPlace, Sort(), `beforeend`);
 
-const cardsBlock = getMarkup(events.slice(1, events.length), getCardsMarkup);
-addSection(contentPlace, cardsBlock, `beforeend`);
+// const addEditBlock = getMarkup(events.slice(0, 1), getAddEditMarkup);
+// addSection(contentPlace, addEditBlock, `beforeend`);
+
+// const cardsBlock = getMarkup(events.slice(1, events.length), getCardsMarkup);
+// addSection(contentPlace, cardsBlock, `beforeend`);
 

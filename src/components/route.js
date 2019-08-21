@@ -1,5 +1,4 @@
 import {formatDate} from "../date.js";
-import {createElement} from "../utils/dom";
 
 class Route {
   constructor({cityStart, cityFinish, dateStart}, selector, _classNames) {
@@ -8,13 +7,6 @@ class Route {
     this._dateStart = dateStart;
     this._element = null;
     this._selector = selector;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate(), this._selector, this._classNames);
-    }
-    return this._element;
   }
 
   getTemplate() {

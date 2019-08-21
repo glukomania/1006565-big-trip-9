@@ -1,7 +1,7 @@
 import {Route} from "./route";
-import {getMenuMarkup} from "./menu";
-import {getFiltersMarkup} from "./filters";
-import {getSortMarkup} from "./sort";
+import {Menu} from "./menu";
+import {Filter} from "./filters";
+import {Sort} from "./sort";
 import {getCardsMarkup} from "./cards";
 import {getAddEditMarkup} from "./add-edit";
 import {getPriceMarkup} from "./totalPrice";
@@ -9,9 +9,9 @@ import {getPriceMarkup} from "./totalPrice";
 
 export {
   Route,
-  getMenuMarkup,
-  getFiltersMarkup,
-  getSortMarkup,
+  Menu,
+  Filter,
+  Sort,
   getCardsMarkup,
   getAddEditMarkup,
   getPriceMarkup

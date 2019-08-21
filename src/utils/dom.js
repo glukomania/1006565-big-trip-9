@@ -1,10 +1,5 @@
 // utility module
 
-const Position = {
-  AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
-};
-
 // gets all html parts together
 const getMarkup = (dataList, generator) =>
   dataList.map(generator).join(`\n`);
@@ -14,15 +9,8 @@ const addSection = (container, template, place) =>
   container.insertAdjacentHTML(place, template);
 
 // insert a new block inside an existing selector
-const insertSection = (container, element, place) => {
-  switch (place) {
-    case Position.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case Position.BEFOREEND:
-      container.append(element);
-      break;
-  }
+const appendSection = (container, element) => {
+  container.append(element);
 };
 
 // creates an element and puts it to the dom
@@ -40,7 +28,6 @@ const createElement = (template, selector = `div`, classNames) => {
 export {
   addSection,
   getMarkup,
-  Position,
-  insertSection,
+  appendSection,
   createElement
 };
