@@ -1,4 +1,6 @@
-import {getMarkup} from "../utils/dom";
+import {
+  createElement
+} from "../utils/dom";
 import {
   dates,
   events,
@@ -11,88 +13,96 @@ import {
 } from "../date";
 
 
-const getEventTemplate = ({
-  type,
-  eventText,
-  timeStart,
-  timeEnd,
-  price,
-  offers
-}) => `
-<li class="trip-events__item">
-  <div class="event">
-    <div class="event__type">
-      <img
-        class="event__type-icon"
-        width="42" height="42"
-        src="img/icons/${type}.png"
-        alt="Event type icon">
-    </div>
-    <h3 class="event__title">
-      ${eventText}
-    </h3>
+class Event {
+  constructor({type, eventText, timeStart, timeEnd, price, offers}) {
+    this._element = null;
+    this._type = type;
+    this._eventText = eventText;
+    this._timeStart = timeStart;
+    this._timeEnd = timeEnd;
+    this._price = price;
+    this._offers = offers;
+  }
 
-    <div class="event__schedule">
-      <p class="event__time">
-        <time class="event__start-time" datetime="${timeStart}">${formatTime(timeStart)}</time>
-        &mdash;
-        <time class="event__end-time" datetime="${timeEnd}">${formatTime(timeEnd)}</time>
-      </p>
-      <p class="event__duration">${getDuration(timeStart, timeEnd)}</p>
-    </div>
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
 
-    <p class="event__price">
-      &euro;&nbsp;<span class="event__price-value">${price}</span>
-    </p>
+  getTemplate() {
+    const getEventTemplate = () => `
+    <li class="trip-events__item">
+      <div class="event">
+        <div class="event__type">
+          <img
+            class="event__type-icon"
+            width="42" height="42"
+            src="img/icons/${this._type}.png"
+            alt="Event type icon">
+        </div>
+        <h3 class="event__title">
+          ${this._eventText}
+        </h3>
 
-    ${getOffersTemplate(offers)}
+        <div class="event__schedule">
+          <p class="event__time">
+            <time class="event__start-time" datetime="${this._timeStart}">${formatTime(this._timeStart)}</time>
+            &mdash;
+            <time class="event__end-time" datetime="${this._timeEnd}">${formatTime(this._timeEnd)}</time>
+          </p>
+          <p class="event__duration">${getDuration(this._timeStart, this._timeEnd)}</p>
+        </div>
 
-    <button class="event__rollup-btn" type="button">
-      <span class="visually-hidden">Open event</span>
-    </button>
-  </div>
-</li>
-`;
+        <p class="event__price">
+          &euro;&nbsp;<span class="event__price-value">${this._price}</span>
+        </p>
 
-const getOffersBlock = (offers) => getMarkup(offers, getOfferBlok);
+        ${getOffersTemplate(this._offers)}
 
-const getOffersTemplate = (offers) => {
-  return `
-  <h4 class="visually-hidden">Offers:</h4>
-  <ul class="event__selected-offers">
-    ${getOffersBlock(offers)}
-  </ul>`;
-};
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
+      </div>
+    </li>
+    `;
 
-const getOfferBlok = ({text, price}) => `
-<li class="event__offer">
-<span class="event__offer-title">${text}</span>
-&plus;
-&euro;&nbsp;<span class="event__offer-price">${price}</span>
-</li>`;
+    const getOfferBlok = ({text, price}) => `
+    <li class="event__offer">
+    <span class="event__offer-title">${text}</span>
+    &plus;
+    &euro;&nbsp;<span class="event__offer-price">${price}</span>
+    </li>`;
 
-const getEventsBlock = () => getMarkup(events, getEventTemplate);
+    const getOffersTemplate = () => {
+      return `
+      <h4 class="visually-hidden">Offers:</h4>
+      <ul class="event__selected-offers">
+        ${this._offers.map(getOfferBlok).join(`\n`)}
+      </ul>`;
+    };
 
-const getDayTemplate = ({number, dayDate} = {}) => `
-<li class="trip-days__item  day">
-  <div class="day__info">
-    <span class="day__counter">${number}</span>
-    <time class="day__date" datetime="${formatDate(dayDate)}">${formatDate(dayDate)}</time>
-  </div>
+    const getDayTemplate = ({number, dayDate} = {}) => `
+    <li class="trip-days__item  day">
+      <div class="day__info">
+        <span class="day__counter">${number}</span>
+        <time class="day__date" datetime="${formatDate(dayDate)}">${formatDate(dayDate)}</time>
+      </div>
 
-  <ul class="trip-events__list">
-    ${getEventsBlock(number)}
-  </ul>
-</li>
-`;
+      <ul class="trip-events__list">
+        ${events.map(getEventTemplate).join(`\n`)}
+      </ul>
+    </li>
+    `;
 
-const dateBlock = getMarkup(dates, getDayTemplate);
+    return `
+    <ul class="trip-days">
+      ${dates.map(getDayTemplate).join(`\n`)}
+    </ul>
+    `;
+  }
 
-const getCardsMarkup = () => `
-<ul class="trip-days">
-  ${dateBlock}
-</ul>
-`;
+}
 
-
-export {getCardsMarkup};
+export {Event};

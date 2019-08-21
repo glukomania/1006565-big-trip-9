@@ -19,7 +19,7 @@ class Sort {
       <span class="trip-sort__item  trip-sort__item--day">
         Day
       </span>
-      ${sortTypes.map(getSortTemplate)}
+      ${sortTypes.map(getSortTemplate).join(`\n`)}
       <span class="trip-sort__item  trip-sort__item--offers">
         Offers
       </span>

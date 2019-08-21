@@ -45,7 +45,7 @@ const transports = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Fligh
 const activities = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
 const cities = [`Amsterdam`, `Saint-Petersburg`, `Chamonix`, `Geneva`, `Praha`, `Berlin`];
 
-const offers = [
+const offersMock = [
   {id: `luggage`, text: `add luggage`, price: 10},
   {id: `comfort`, text: `Switch to comfort class`, price: 150},
   {id: `meal`, text: `Add meal`, price: 2},
@@ -54,7 +54,7 @@ const offers = [
 ];
 
 const getRandomOffers = () => {
-  const randomOffers = new Set(getRandomValues(offers, getRandomNumber(0, 3)));
+  const randomOffers = new Set(getRandomValues(offersMock, getRandomNumber(0, 3)));
   return randomOffers;
 };
 
@@ -98,5 +98,5 @@ export {
   cities,
   dates,
   events,
-  offers,
+  offersMock,
 };

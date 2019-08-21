@@ -3,9 +3,9 @@ import {
   Menu,
   Filter,
   Sort,
-  getCardsMarkup,
-  getAddEditMarkup,
-  getPriceMarkup
+  Event,
+  AddEdit,
+  Price
 } from "./components/index";
 
 import {
@@ -30,6 +30,14 @@ const route = routePoints.map(renderRoute).join(`\n`);
 const routeBlock = createElement(route, `div`, [`trip-info__main`]);
 appendSection(routePlace, routeBlock);
 
+// Total price
+const renderPrice = () => {
+  const totalPrice = new Price();
+  addSection(routePlace, totalPrice.getTemplate(), `beforeend`);
+};
+renderPrice();
+
+
 // Menu
 const menuPlace = document.querySelector(`.trip-controls h2:first-child`);
 const renderMenu = () => {
@@ -51,15 +59,37 @@ renderFilter();
 const contentPlace = document.querySelector(`.trip-events`);
 const renderSorting = () => {
   const sorting = new Sort();
-  addSection(contentPlace, sorting.getTemplate(), `afterend`);
+  addSection(contentPlace, sorting.getTemplate(), `afterbegin`);
 };
 renderSorting();
 
-// addSection(contentPlace, Sort(), `beforeend`);
+// cards
+const renderEvent = (eventMock) => {
+  const event = new Event(eventMock);
+  const eventAddEdit = new AddEdit(eventMock);
+  const onEscKeyDown = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      contentPlace.replaceChild(event.getElement(), eventAddEdit.getElement());
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
 
-// const addEditBlock = getMarkup(events.slice(0, 1), getAddEditMarkup);
-// addSection(contentPlace, addEditBlock, `beforeend`);
+  event.getElement()
+  .querySelector(`.event__rollup-btn`)
+  .addEventListener(`click`, () => {
+    contentPlace.replaceChild(eventAddEdit.getElement(), event.getElement());
+    document.addEventListener(`keydown`, onEscKeyDown);
+  });
 
-// const cardsBlock = getMarkup(events.slice(1, events.length), getCardsMarkup);
-// addSection(contentPlace, cardsBlock, `beforeend`);
+  eventAddEdit.getElement()
+  .querySelector(`.event__save-btn`)
+  .addEventListener(`click`, () => {
+    contentPlace.replaceChild(event.getElement(), eventAddEdit.getElement());
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
 
+  appendSection(contentPlace, event.getElement());
+};
+
+
+events.forEach((eventMock) => renderEvent(eventMock));
