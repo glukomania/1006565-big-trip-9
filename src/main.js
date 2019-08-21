@@ -1,5 +1,5 @@
 import {
-  getRouteMarkup,
+  Route,
   getMenuMarkup,
   getFiltersMarkup,
   getSortMarkup,
@@ -10,7 +10,10 @@ import {
 
 import {
   getMarkup,
-  addSection
+  addSection,
+  insertSection,
+  Position,
+  createElement
 } from "./utils/dom";
 
 import {
@@ -18,11 +21,17 @@ import {
   events
 } from "./data";
 
+// route
 const routePlace = document.querySelector(`.trip-main__trip-info`);
-const routeBlock = getMarkup(routePoints, getRouteMarkup);
-addSection(routePlace, routeBlock, `afterbegin`);
-addSection(routePlace, getPriceMarkup(), `beforeend`);
+const renderRoute = (routeMock) => {
+  const route = new Route(routeMock, `section`, [`board`, `container`]);
+  return route.getTemplate();
+};
+const route = routePoints.map(renderRoute).join(`\n`);
+const routeBlock = createElement(route, `div`, [`trip-info__main`]);
+insertSection(routePlace, routeBlock, Position.BEFOREEND);
 
+// menu
 const menuPlace = document.querySelector(`.trip-controls h2:first-child`);
 addSection(menuPlace, getMenuMarkup(), `afterend`);
 
