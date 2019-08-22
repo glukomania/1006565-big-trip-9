@@ -1,6 +1,4 @@
 class Menu {
-  constructor() {
-  }
 
   getTemplate() {
     return `
@@ -12,4 +10,4 @@ class Menu {
   }
 }
 
-export {Menu};
+export default Menu;

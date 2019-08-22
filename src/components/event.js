@@ -1,20 +1,16 @@
 import {
   createElement
 } from "../utils/dom";
-import {
-  dates,
-  events,
-} from "../data";
+
 
 import {
-  formatDate,
   formatTime,
   getDuration
-} from "../date";
+} from "./event-date";
 
 
 class Event {
-  constructor({type, eventText, timeStart, timeEnd, price, offers}) {
+  constructor({type, eventText, timeStart, timeEnd, price, offers}, selector, classes) {
     this._element = null;
     this._type = type;
     this._eventText = eventText;
@@ -22,17 +18,36 @@ class Event {
     this._timeEnd = timeEnd;
     this._price = price;
     this._offers = offers;
+    this._selector = selector;
+    this._classes = classes;
   }
 
   getElement() {
     if (!this._element) {
-      this._element = createElement(this.getTemplate());
+      this._element = createElement(this.getTemplate(), this._selector, this._classes);
     }
     return this._element;
   }
 
+  _getOfferBlok({text, price}) {
+    return `
+    <li class="event__offer">
+    <span class="event__offer-title">${text}</span>
+    &plus;
+    &euro;&nbsp;<span class="event__offer-price">${price}</span>
+    </li>`;
+  }
+
+  _getOffersTemplate() {
+    return `
+    <h4 class="visually-hidden">Offers:</h4>
+    <ul class="event__selected-offers">
+      ${this._offers.map(this._getOfferBlok).join(`\n`)}
+    </ul>`;
+  }
+
   getTemplate() {
-    const getEventTemplate = () => `
+    return `
     <li class="trip-events__item">
       <div class="event">
         <div class="event__type">
@@ -59,47 +74,13 @@ class Event {
           &euro;&nbsp;<span class="event__price-value">${this._price}</span>
         </p>
 
-        ${getOffersTemplate(this._offers)}
+        ${this._getOffersTemplate(this._offers)}
 
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
       </div>
     </li>
-    `;
-
-    const getOfferBlok = ({text, price}) => `
-    <li class="event__offer">
-    <span class="event__offer-title">${text}</span>
-    &plus;
-    &euro;&nbsp;<span class="event__offer-price">${price}</span>
-    </li>`;
-
-    const getOffersTemplate = () => {
-      return `
-      <h4 class="visually-hidden">Offers:</h4>
-      <ul class="event__selected-offers">
-        ${this._offers.map(getOfferBlok).join(`\n`)}
-      </ul>`;
-    };
-
-    const getDayTemplate = ({number, dayDate} = {}) => `
-    <li class="trip-days__item  day">
-      <div class="day__info">
-        <span class="day__counter">${number}</span>
-        <time class="day__date" datetime="${formatDate(dayDate)}">${formatDate(dayDate)}</time>
-      </div>
-
-      <ul class="trip-events__list">
-        ${events.map(getEventTemplate).join(`\n`)}
-      </ul>
-    </li>
-    `;
-
-    return `
-    <ul class="trip-days">
-      ${dates.map(getDayTemplate).join(`\n`)}
-    </ul>
     `;
   }
 
@@ -109,4 +90,4 @@ class Event {
 
 }
 
-export {Event};
+export default Event;

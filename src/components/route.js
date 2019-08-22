@@ -1,12 +1,12 @@
-import {formatDate} from "../date.js";
+import {formatDate} from "./route-date";
 
 class Route {
-  constructor({cityStart, cityFinish, dateStart}, selector, _classNames) {
+  constructor({cityStart, cityFinish, dateStart, dateEnd}) {
     this._cityStart = cityStart;
     this._cityFinish = cityFinish;
     this._dateStart = dateStart;
+    this._dateEnd = dateEnd;
     this._element = null;
-    this._selector = selector;
   }
 
   getTemplate() {
@@ -17,7 +17,7 @@ class Route {
   </h1>
 
   <p class="trip-info__dates">
-    ${formatDate(this._dateStart)}
+    ${formatDate(this._dateStart, this._dateEnd)}
   </p>
 </div>
     `;
@@ -25,4 +25,4 @@ class Route {
 }
 
 
-export {Route};
+export default Route;

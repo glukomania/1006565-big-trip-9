@@ -1,10 +1,11 @@
 import {transports, activities, cities} from "../data";
-import {formatDate} from "../date";
+import {formatDate, formatTime} from "./add-edit-date";
 import {createElement} from "../utils/dom";
 
 class AddEdit {
-  constructor({type, eventText, timeStart, timeEnd, price, offers}, isAdd = `false`) {
+  constructor({type, eventText, city, timeStart, timeEnd, price, offers}, selector, classes, isAdd = false) {
     this._element = null;
+    this._city = city;
     this._type = type;
     this._eventText = eventText;
     this._timeStart = timeStart;
@@ -12,113 +13,121 @@ class AddEdit {
     this._price = price;
     this._offers = offers;
     this._isAdd = isAdd;
+    this._selector = selector;
+    this._classes = classes;
   }
 
   getElement() {
     if (!this._element) {
-      this._element = createElement(this.getTemplate());
+      this._element = createElement(this.getTemplate(), this._selector, this._classes);
     }
     return this._element;
   }
 
-  getTemplate() {
-    const getTransportTemplate = (transport) => {
-      const transportLowCase = transport.toLowerCase;
-      return `
-      <div class="event__type-item">
-        <input
-          id="event-type-${transportLowCase}-1"
-          class="event__type-input
-          visually-hidden"
-          type="radio"
-          name="event-type"
-          value="${transportLowCase}"
-        >
-        <label
-          class="event__type-label
-          event__type-label--${transportLowCase}"
-          for="event-type-${transportLowCase}-1">
-            ${transport}
-        </label>
-      </div>`;
-    };
-
-    const getActivityTemplate = (activity) => {
-      const activityLow = activity.toLowerCase();
-      return `
-      <div class="event__type-item">
-        <input
-          id="event-type-${activityLow}-1"
-          class="event__type-input
-          visually-hidden" type="radio"
-          name="event-type"
-          value="${activityLow}"
-        >
-        <label
-          class="event__type-label
-          event__type-label--${activityLow}"
-          for="event-type-${activityLow}-1">
-            ${activity}
-        </label>
-      </div>`;
-    };
-
-    const getCityListTemplate = () => {
-      return `<option value="${this._city}"></option>`;
-    };
-
-    const getOptionBlock = () => `
-    <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
-    <label class="event__favorite-btn" for="event-favorite-1">
-      <span class="visually-hidden">Add to favorite</span>
-      <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
-        <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
-      </svg>
-    </label>
-
-    <button class="event__rollup-btn" type="button">
-      <span class="visually-hidden">Open event</span>
-    </button>
-    `;
-    const getOfferTemplate = ({id, text, price}) => `
-    <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" checked>
-    <label class="event__offer-label" for="event-offer-${id}-1">
-      <span class="event__offer-title">${text}</span>
-      &plus;
-      &euro;&nbsp;<span class="event__offer-price">${price}</span>
-    </label>
+  _getTransportTemplate(transport) {
+    const transportLowCase = transport.toLowerCase();
+    return `
+    <div class="event__type-item">
+      <input
+        id="event-type-${transportLowCase}-1"
+        class="event__type-input
+        visually-hidden"
+        type="radio"
+        name="event-type"
+        value="${transportLowCase}"
+      >
+      <label
+        class="event__type-label
+        event__type-label--${transportLowCase}"
+        for="event-type-${transportLowCase}-1">
+          ${transport}
+      </label>
     </div>`;
+  }
 
-    const getEventDetailsTemplate = () => `
-    <section class="event__details">
+  _getActivityTemplate(activity) {
+    const activityLow = activity.toLowerCase();
+    return `
+    <div class="event__type-item">
+      <input
+        id="event-type-${activityLow}-1"
+        class="event__type-input
+        visually-hidden" type="radio"
+        name="event-type"
+        value="${activityLow}"
+      >
+      <label
+        class="event__type-label
+        event__type-label--${activityLow}"
+        for="event-type-${activityLow}-1">
+          ${activity}
+      </label>
+    </div>`;
+  }
 
-      <section class="event__section  event__section--offers">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+  _getCityListTemplate(city) {
+    return `<option value="${city}"></option>`;
+  }
 
-        <div class="event__available-offers">
-         ${this._offers.map(getOfferTemplate).join(`\n`)}
+  _getOptionBlock() {
+    return `
+  <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+  <label class="event__favorite-btn" for="event-favorite-1">
+    <span class="visually-hidden">Add to favorite</span>
+    <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+      <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+    </svg>
+  </label>
 
-        </div>
-      </section>
+  <button class="event__rollup-btn" type="button">
+    <span class="visually-hidden">Open event</span>
+  </button>`;
+  }
 
-      <section class="event__section  event__section--destination">
-        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${this._eventText}</p>
+  _getOfferTemplate({id, text, price}) {
+    return `
+  <div class="event__offer-selector">
+  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" checked>
+  <label class="event__offer-label" for="event-offer-${id}-1">
+    <span class="event__offer-title">${text}</span>
+    &plus;
+    &euro;&nbsp;<span class="event__offer-price">${price}</span>
+  </label>
+  </div>`;
+  }
 
-        <div class="event__photos-container">
-          <div class="event__photos-tape">
-            <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
-            <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
-          </div>
-        </div>
-      </section>
+  _getEventDetailsTemplate() {
+    return `
+  <section class="event__details">
+
+    <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+      <div class="event__available-offers">
+       ${this._offers.map(this._getOfferTemplate).join(`\n`)}
+
+      </div>
     </section>
-    `;
 
+    <section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${this._eventText}</p>
+
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+          <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
+          <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
+          <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
+          <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
+          <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
+        </div>
+      </div>
+    </section>
+  </section>
+  `;
+  }
+
+  getTemplate() {
     return `
     <form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
@@ -130,7 +139,7 @@ class AddEdit {
             <img
               class="event__type-icon"
               width="17" height="17"
-              src="img/icons/${this._type}.png"
+              src="img/icons/${this._type.toLowerCase()}.png"
               alt="Event type icon">
           </label>
           <input
@@ -146,7 +155,7 @@ class AddEdit {
                 Transfer
               </legend>
 
-              ${transports.map(getTransportTemplate).join(`\n`)}
+              ${transports.map(this._getTransportTemplate).join(`\n`)}
 
             </fieldset>
 
@@ -155,7 +164,7 @@ class AddEdit {
                 Activity
               </legend>
 
-              ${activities.map(getActivityTemplate)}
+              ${activities.map(this._getActivityTemplate).join(`\n`)}
 
             </fieldset>
           </div>
@@ -178,7 +187,7 @@ class AddEdit {
             list="destination-list-1"
           >
           <datalist id="destination-list-1">
-            ${cities.map(getCityListTemplate).join(`\n`)}
+            ${cities.map(this._getCityListTemplate).join(`\n`)}
           </datalist>
         </div>
 
@@ -192,7 +201,7 @@ class AddEdit {
             id="event-start-time-1"
             type="text"
             name="event-start-time"
-            value="${formatDate(this._timeStart)}"
+            value="${formatDate(this._timeStart)} ${formatTime(this._timeStart)}"
           >
           &mdash;
           <label
@@ -206,7 +215,7 @@ class AddEdit {
             id="event-end-time-1"
             type="text"
             name="event-end-time"
-            value="${formatDate(this._timeEnd)}"
+            value="${formatDate(this._timeEnd)} ${formatTime(this._timeEnd)}"
           >
         </div>
 
@@ -231,9 +240,9 @@ class AddEdit {
         <button class="event__reset-btn" type="reset">
           ${this._isAdd ? `Cancel` : `Delete`}
         </button>
-        ${this._isAdd ? `` : getOptionBlock()}
+        ${this._isAdd ? `` : this._getOptionBlock()}
       </header>
-      ${this._isAdd ? `` : getEventDetailsTemplate(this._eventText)}
+      ${this._isAdd ? `` : this._getEventDetailsTemplate(this._eventText)}
     </form>
     `;
   }
@@ -243,4 +252,4 @@ class AddEdit {
   }
 }
 
-export {AddEdit};
+export default AddEdit;

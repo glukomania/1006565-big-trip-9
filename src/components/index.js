@@ -1,11 +1,11 @@
-import {Route} from "./route";
-import {Menu} from "./menu";
-import {Filter} from "./filters";
-import {Sort} from "./sort";
-import {Event} from "./cards";
-import {AddEdit} from "./add-edit";
-import {Price} from "./totalPrice";
-
+import Route from "./route";
+import Menu from "./menu";
+import Filter from "./filters";
+import Sort from "./sort";
+import Event from "./event";
+import AddEdit from "./add-edit";
+import Price from "./totalPrice";
+import DayNumber from "./day-number";
 
 export {
   Route,
@@ -14,5 +14,6 @@ export {
   Sort,
   Event,
   AddEdit,
-  Price
+  Price,
+  DayNumber
 };

@@ -42,7 +42,7 @@ const sortTypes = [
   }];
 
 const transports = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`];
-const activities = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
+const activities = [`Check-in`, `Sightseeing`, `Restaurant`];
 const cities = [`Amsterdam`, `Saint-Petersburg`, `Chamonix`, `Geneva`, `Praha`, `Berlin`];
 
 const offersMock = [
@@ -85,7 +85,8 @@ const routePoints = [
   {
     cityStart: events[0].city,
     cityFinish: events[events.length - 1].city,
-    date: events[0].timeStart
+    dateStart: events[0].timeStart,
+    dateEnd: events[events.length - 1].timeEnd
   }
 ];
 

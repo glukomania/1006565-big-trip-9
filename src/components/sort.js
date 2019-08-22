@@ -1,8 +1,6 @@
 import {sortTypes} from "../data";
 
 class Sort {
-  constructor() {
-  }
 
   getTemplate() {
     const getSortTemplate = ({type, path = ``} = {}) => `
@@ -30,4 +28,4 @@ class Sort {
 }
 
 
-export {Sort};
+export default Sort;

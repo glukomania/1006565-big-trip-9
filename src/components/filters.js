@@ -1,8 +1,6 @@
 import {filterTypes} from "../data";
 
 class Filter {
-  constructor() {
-  }
 
   getTemplate() {
     const getFilterTemplate = (filter) => `
@@ -26,4 +24,4 @@ class Filter {
   }
 }
 
-export {Filter};
+export default Filter;

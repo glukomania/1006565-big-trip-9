@@ -1,8 +1,6 @@
 import {setPrice} from "../utils/price";
 
 class Price {
-  constructor() {
-  }
 
   getTemplate() {
     return `
@@ -12,4 +10,4 @@ class Price {
   }
 }
 
-export {Price};
+export default Price;
