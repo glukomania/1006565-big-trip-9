@@ -1,40 +1,72 @@
 import {
-  getRouteMarkup,
-  getMenuMarkup,
-  getFiltersMarkup,
-  getSortMarkup,
-  getCardsMarkup,
-  getAddEditMarkup,
-  getPriceMarkup
+  Route,
+  Menu,
+  Filter,
+  Sort,
+  Price,
+  DayNumber
 } from "./components/index";
 
 import {
-  getMarkup,
-  addSection
+  addSection,
+  appendSection,
+  createElement
 } from "./utils/dom";
 
 import {
   routePoints,
-  events
+  points,
+  dates
 } from "./data";
 
 const routePlace = document.querySelector(`.trip-main__trip-info`);
-const routeBlock = getMarkup(routePoints, getRouteMarkup);
-addSection(routePlace, routeBlock, `afterbegin`);
-addSection(routePlace, getPriceMarkup(), `beforeend`);
-
 const menuPlace = document.querySelector(`.trip-controls h2:first-child`);
-addSection(menuPlace, getMenuMarkup(), `afterend`);
-
 const filtersPlace = document.querySelector(`.trip-controls h2:last-child`);
-addSection(filtersPlace, getFiltersMarkup(), `afterend`);
-
 const contentPlace = document.querySelector(`.trip-events`);
-addSection(contentPlace, getSortMarkup(), `beforeend`);
 
-const addEditBlock = getMarkup(events.slice(0, 1), getAddEditMarkup);
-addSection(contentPlace, addEditBlock, `beforeend`);
+const renderRoute = (routeMock) => {
+  const route = new Route(routeMock, `section`, [`board`, `container`]);
+  return route.getTemplate();
+};
 
-const cardsBlock = getMarkup(events.slice(1, events.length), getCardsMarkup);
-addSection(contentPlace, cardsBlock, `beforeend`);
+const renderPrice = () => {
+  const totalPrice = new Price();
+  addSection(routePlace, totalPrice.getTemplate(), `beforeend`);
+};
 
+const renderMenu = () => {
+  const menu = new Menu();
+  addSection(menuPlace, menu.getTemplate(), `afterend`);
+};
+
+const renderFilter = () => {
+  const filter = new Filter();
+  addSection(filtersPlace, filter.getTemplate(), `afterend`);
+};
+
+const renderSorting = () => {
+  const sorting = new Sort();
+  addSection(contentPlace, sorting.getTemplate(), `afterbegin`);
+};
+
+const renderDate = (dateMock, pointItems) => {
+  const date = new DayNumber(dateMock, `ul`, [`trip-days`], pointItems);
+  appendSection(contentPlace, date.getElement());
+};
+// Rendering
+
+const route = routePoints.map(renderRoute).join(`\n`);
+const routeBlock = createElement(route, `div`, [`trip-info__main`]);
+appendSection(routePlace, routeBlock);
+
+renderPrice();
+
+renderMenu();
+
+renderFilter();
+
+// Sorting
+renderSorting();
+
+// const eventBlock =  ;
+dates.forEach((date) => renderDate(date, points));

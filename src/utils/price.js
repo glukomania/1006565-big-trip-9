@@ -1,5 +1,5 @@
 
-import {events} from "../data";
+import {points} from "../data";
 
 const getPrice = (array, key, extraKey) => {
   let sum = 0;
@@ -15,6 +15,6 @@ const getPrice = (array, key, extraKey) => {
   return sum;
 };
 
-const setPrice = getPrice(events, `price`, `offers`);
+const setPrice = getPrice(points, `price`, `offers`);
 
 export {setPrice};

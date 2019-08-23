@@ -42,10 +42,10 @@ const sortTypes = [
   }];
 
 const transports = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`];
-const activities = [`Check-in`, `Sightseeing`, `Restaurant`, `Trip`];
+const activities = [`Check-in`, `Sightseeing`, `Restaurant`];
 const cities = [`Amsterdam`, `Saint-Petersburg`, `Chamonix`, `Geneva`, `Praha`, `Berlin`];
 
-const offers = [
+const offersMock = [
   {id: `luggage`, text: `add luggage`, price: 10},
   {id: `comfort`, text: `Switch to comfort class`, price: 150},
   {id: `meal`, text: `Add meal`, price: 2},
@@ -54,7 +54,7 @@ const offers = [
 ];
 
 const getRandomOffers = () => {
-  const randomOffers = new Set(getRandomValues(offers, getRandomNumber(0, 3)));
+  const randomOffers = new Set(getRandomValues(offersMock, getRandomNumber(0, 3)));
   return randomOffers;
 };
 
@@ -63,7 +63,7 @@ const makeEvent = () => ({
   type: getRandomItem(transports),
   city: getRandomItem(cities),
   activity: getRandomItem(activities),
-  eventText: getRandomItem(descriptions),
+  pointText: getRandomItem(descriptions),
   timeStart: getRandomDateStart(),
   timeEnd: getRandomDateFinish(),
   price: getRandomNumber(10, 200),
@@ -74,18 +74,19 @@ const makeEvent = () => ({
 const getEvents = (num) =>
   new Array(num).fill(null).map(makeEvent);
 
-const events = getEvents(3);
+const points = getEvents(3);
 
 const dates = [
-  {number: `1`, datetime: events[0].timeStart},
-  {number: `2`, datetime: events[1].timeStart},
+  {number: `1`, datetime: points[0].timeStart},
+  {number: `2`, datetime: points[1].timeStart},
 ];
 
 const routePoints = [
   {
-    cityStart: events[0].city,
-    cityFinish: events[events.length - 1].city,
-    date: events[0].timeStart
+    cityStart: points[0].city,
+    cityFinish: points[points.length - 1].city,
+    dateStart: points[0].timeStart,
+    dateEnd: points[points.length - 1].timeEnd
   }
 ];
 
@@ -97,6 +98,6 @@ export {
   activities,
   cities,
   dates,
-  events,
-  offers,
+  points,
+  offersMock,
 };

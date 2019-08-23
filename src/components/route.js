@@ -1,15 +1,28 @@
-import {formatDate} from "../date.js";
+import {formatDate} from "./route-date";
 
-const getRouteMarkup = ({cityStart, cityFinish, dateStart} = {}) => `
+class Route {
+  constructor({cityStart, cityFinish, dateStart, dateEnd}) {
+    this._cityStart = cityStart;
+    this._cityFinish = cityFinish;
+    this._dateStart = dateStart;
+    this._dateEnd = dateEnd;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return `
 <div class="trip-info__main">
   <h1 class="trip-info__title">
-    ${cityStart} &mdash; ... &mdash; ${cityFinish}
+    ${this._cityStart} &mdash; ... &mdash; ${this._cityFinish}
   </h1>
 
   <p class="trip-info__dates">
-    ${formatDate(dateStart)}
+    ${formatDate(this._dateStart, this._dateEnd)}
   </p>
 </div>
-`;
+    `;
+  }
+}
 
-export {getRouteMarkup};
+
+export default Route;

@@ -1,18 +1,19 @@
-import {getRouteMarkup} from "./route";
-import {getMenuMarkup} from "./menu";
-import {getFiltersMarkup} from "./filters";
-import {getSortMarkup} from "./sort";
-import {getCardsMarkup} from "./cards";
-import {getAddEditMarkup} from "./add-edit";
-import {getPriceMarkup} from "./totalPrice";
-
+import Route from "./route";
+import Menu from "./menu";
+import Filter from "./filter";
+import Sort from "./sort";
+import Point from "./point";
+import AddEdit from "./add-edit";
+import Price from "./price";
+import DayNumber from "./day-number";
 
 export {
-  getRouteMarkup,
-  getMenuMarkup,
-  getFiltersMarkup,
-  getSortMarkup,
-  getCardsMarkup,
-  getAddEditMarkup,
-  getPriceMarkup
+  Route,
+  Menu,
+  Filter,
+  Sort,
+  Point,
+  AddEdit,
+  Price,
+  DayNumber
 };
