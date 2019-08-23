@@ -4,7 +4,7 @@ import {
 
 
 import {
-  formatTime,
+  timeFormat,
   getDuration
 } from "./point-date";
 
@@ -41,14 +41,14 @@ class Point {
             alt="Event type icon">
         </div>
         <h3 class="event__title">
-          ${this._pointText }
+          ${this._pointText}
         </h3>
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${this._timeStart}">${formatTime(this._timeStart)}</time>
+            <time class="event__start-time" datetime="${this._timeStart}">${timeFormat(this._timeStart)}</time>
             &mdash;
-            <time class="event__end-time" datetime="${this._timeEnd}">${formatTime(this._timeEnd)}</time>
+            <time class="event__end-time" datetime="${this._timeEnd}">${timeFormat(this._timeEnd)}</time>
           </p>
           <p class="event__duration">${getDuration(this._timeStart, this._timeEnd)}</p>
         </div>
@@ -59,7 +59,7 @@ class Point {
 
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${this._offers.map(this._getOfferBlok).join(`\n`)}
+          ${this._offers.map(this._getOfferBlock).join(`\n`)}
         </ul>
 
         <button class="event__rollup-btn" type="button">
@@ -74,7 +74,7 @@ class Point {
     this._element = null;
   }
 
-  _getOfferBlok({text, price}) {
+  _getOfferBlock({text, price}) {
     return `
     <li class="event__offer">
     <span class="event__offer-title">${text}</span>

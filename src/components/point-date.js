@@ -11,8 +11,8 @@ const getTimeFormat = new Intl.DateTimeFormat(`en-GB`, {
   minute: `numeric`,
 });
 
-const formatDate = (date) => getDateFormat.format(date).toUpperCase();
-const formatTime = (date) => getTimeFormat.format(date);
+const dateFormat = (date) => getDateFormat.format(date).toUpperCase();
+const timeFormat = (date) => getTimeFormat.format(date);
 
 const getDuration = (timeStart, timeFinish) => {
   let hours = timeFinish.getHours() - timeStart.getHours();
@@ -45,7 +45,7 @@ const getDuration = (timeStart, timeFinish) => {
 };
 
 export {
-  formatDate,
-  formatTime,
+  dateFormat,
+  timeFormat,
   getDuration,
 };

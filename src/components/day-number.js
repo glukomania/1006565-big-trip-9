@@ -5,7 +5,7 @@ import {
 import AddEdit from "./add-edit";
 import Point from "./point";
 import {isEscapeKey} from "../utils/predicators";
-import {formatDate} from "./point-date";
+import {dateFormat} from "./point-date";
 
 class DayNumber {
   constructor({number, dayDate}, selector, classes, points) {
@@ -15,6 +15,31 @@ class DayNumber {
     this._classes = classes;
     this._points = points;
     this._element = null;
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate(), this._selector, this._classes);
+      const container = this._element.querySelector(`.trip-events__list`);
+      this._points.forEach((point) => this._addListeners(point, container));
+    }
+
+    return this._element;
+  }
+
+  getTemplate() {
+    return `
+    <li class="trip-days__item  day">
+    <div class="day__info">
+      <span class="day__counter">${this._number}</span>
+      <time class="day__date" datetime="${dateFormat(this._dayDate)}">${dateFormat(this._dayDate)}</time>
+    </div>
+
+    <ul class="trip-events__list">
+
+    </ul>
+  </li>
+    `;
   }
 
   _addListeners(point, container) {
@@ -43,30 +68,6 @@ class DayNumber {
     appendSection(container, pointItem.getElement());
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate(), this._selector, this._classes);
-      const container = this._element.querySelector(`.trip-events__list`);
-      this._points.forEach((point) => this._addListeners(point, container));
-    }
-
-    return this._element;
-  }
-
-  getTemplate() {
-    return `
-    <li class="trip-days__item  day">
-    <div class="day__info">
-      <span class="day__counter">${this._number}</span>
-      <time class="day__date" datetime="${formatDate(this._dayDate)}">${formatDate(this._dayDate)}</time>
-    </div>
-
-    <ul class="trip-events__list">
-
-    </ul>
-  </li>
-    `;
-  }
 }
 
 export default DayNumber;

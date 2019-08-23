@@ -1,10 +1,10 @@
 import Route from "./route";
 import Menu from "./menu";
-import Filter from "./filters";
+import Filter from "./filter";
 import Sort from "./sort";
 import Point from "./point";
 import AddEdit from "./add-edit";
-import Price from "./total-price";
+import Price from "./price";
 import DayNumber from "./day-number";
 
 export {
