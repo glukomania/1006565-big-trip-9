@@ -1,18 +1,18 @@
-const getDateFormat = new Intl.DateTimeFormat(`en-GB`, {
+const dateFormat = new Intl.DateTimeFormat(`en-GB`, {
   dateStyle: `medium`,
   month: `long`,
   day: `numeric`,
 });
 
 
-const getTimeFormat = new Intl.DateTimeFormat(`en-GB`, {
+const timeFormat = new Intl.DateTimeFormat(`en-GB`, {
   hour24: true,
   hour: `numeric`,
   minute: `numeric`,
 });
 
-const dateFormat = (date) => getDateFormat.format(date).toUpperCase();
-const timeFormat = (date) => getTimeFormat.format(date);
+const formatDate = (date) => dateFormat.format(date).toUpperCase();
+const formatTime = (date) => timeFormat.format(date);
 
 const getDuration = (timeStart, timeFinish) => {
   let hours = timeFinish.getHours() - timeStart.getHours();
@@ -45,7 +45,7 @@ const getDuration = (timeStart, timeFinish) => {
 };
 
 export {
-  dateFormat,
-  timeFormat,
+  formatDate,
+  formatTime,
   getDuration,
 };

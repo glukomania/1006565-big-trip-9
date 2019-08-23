@@ -5,7 +5,7 @@ import {
 import AddEdit from "./add-edit";
 import Point from "./point";
 import {isEscapeKey} from "../utils/predicators";
-import {dateFormat} from "./point-date";
+import {formatDate} from "./point-date";
 
 class DayNumber {
   constructor({number, dayDate}, selector, classes, points) {
@@ -32,7 +32,7 @@ class DayNumber {
     <li class="trip-days__item  day">
     <div class="day__info">
       <span class="day__counter">${this._number}</span>
-      <time class="day__date" datetime="${dateFormat(this._dayDate)}">${dateFormat(this._dayDate)}</time>
+      <time class="day__date" datetime="${formatDate(this._dayDate)}">${formatDate(this._dayDate)}</time>
     </div>
 
     <ul class="trip-events__list">
@@ -46,7 +46,7 @@ class DayNumber {
     const pointItem = new Point(point, `li`, [`trip-events__item`]);
     const pointAddEdit = new AddEdit(point, `li`, [`trip-events__item`]);
     const onEscKeyDown = (evt) => {
-      if (isEscapeKey(evt.key)) {
+      if (isEscapeKey(evt)) {
         container.replaceChild(pointItem.getElement(), pointAddEdit.getElement());
         document.removeEventListener(`keydown`, onEscKeyDown);
       }

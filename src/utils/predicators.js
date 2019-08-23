@@ -1,5 +1,3 @@
-export const isEscapeKey = (key) => {
-  return key === `Escape` || key === `Esc`;
-};
+export const isEscapeKey = ({key}) => key === `Escape` || key === `Esc`;
 
 

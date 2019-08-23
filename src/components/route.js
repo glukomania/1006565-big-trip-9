@@ -1,4 +1,4 @@
-import {dateFormat} from "./route-date";
+import {formatDate} from "./route-date";
 
 class Route {
   constructor({cityStart, cityFinish, dateStart, dateEnd}) {
@@ -17,7 +17,7 @@ class Route {
   </h1>
 
   <p class="trip-info__dates">
-    ${dateFormat(this._dateStart, this._dateEnd)}
+    ${formatDate(this._dateStart, this._dateEnd)}
   </p>
 </div>
     `;

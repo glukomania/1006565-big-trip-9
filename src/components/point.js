@@ -4,7 +4,7 @@ import {
 
 
 import {
-  timeFormat,
+  formatTime,
   getDuration
 } from "./point-date";
 
@@ -46,9 +46,9 @@ class Point {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${this._timeStart}">${timeFormat(this._timeStart)}</time>
+            <time class="event__start-time" datetime="${this._timeStart}">${formatTime(this._timeStart)}</time>
             &mdash;
-            <time class="event__end-time" datetime="${this._timeEnd}">${timeFormat(this._timeEnd)}</time>
+            <time class="event__end-time" datetime="${this._timeEnd}">${formatTime(this._timeEnd)}</time>
           </p>
           <p class="event__duration">${getDuration(this._timeStart, this._timeEnd)}</p>
         </div>

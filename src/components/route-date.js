@@ -1,28 +1,28 @@
-const year = new Intl.DateTimeFormat(`en-GB`, {
+const yearFormatter = new Intl.DateTimeFormat(`en-GB`, {
   year: `numeric`
 });
 
-const month = new Intl.DateTimeFormat(`en-GB`, {
+const monthFormatter = new Intl.DateTimeFormat(`en-GB`, {
   month: `short`,
 });
 
-const day = new Intl.DateTimeFormat(`en-GB`, {
+const dayFormatter = new Intl.DateTimeFormat(`en-GB`, {
   day: `2-digit`,
 });
 
-const dateFormat = (dateStart, dateEnd) => {
+const formatDate = (dateStart, dateEnd) => {
   let tripDate;
 
   if (dateStart.getMonth() !== dateEnd.getMonth()) {
-    tripDate = `${month.format(dateStart).toUpperCase()} ${day.format(dateStart).toUpperCase()} - ${month.format(dateEnd).toUpperCase()} ${day.format(dateEnd).toUpperCase()}`;
+    tripDate = `${monthFormatter.format(dateStart).toUpperCase()} ${dayFormatter.format(dateStart).toUpperCase()} - ${monthFormatter.format(dateEnd).toUpperCase()} ${dayFormatter.format(dateEnd).toUpperCase()}`;
 
     if (dateStart.getYear() !== dateEnd.getYear()) {
-      tripDate = `${year.format(dateStart).toUpperCase()} ${month.format(dateStart).toUpperCase()} ${day.format(dateStart).toUpperCase()} -  ${year.format(dateEnd).toUpperCase()} ${month.format(dateEnd).toUpperCase()} ${day.format(dateEnd).toUpperCase()}`;
+      tripDate = `${yearFormatter.format(dateStart).toUpperCase()} ${monthFormatter.format(dateStart).toUpperCase()} ${dayFormatter.format(dateStart).toUpperCase()} -  ${yearFormatter.format(dateEnd).toUpperCase()} ${monthFormatter.format(dateEnd).toUpperCase()} ${dayFormatter.format(dateEnd).toUpperCase()}`;
     }
   } else {
-    tripDate = `${month.format(dateStart).toUpperCase()} ${day.format(dateStart).toUpperCase()} -  ${day.format(dateEnd).toUpperCase()}`;
+    tripDate = `${monthFormatter.format(dateStart).toUpperCase()} ${dayFormatter.format(dateStart).toUpperCase()} -  ${dayFormatter.format(dateEnd).toUpperCase()}`;
     if (dateStart.getDate() === dateEnd.getDate()) {
-      tripDate = `${month.format(dateStart).toUpperCase()} ${day.format(dateStart).toUpperCase()}`;
+      tripDate = `${monthFormatter.format(dateStart).toUpperCase()} ${dayFormatter.format(dateStart).toUpperCase()}`;
     }
   }
 
@@ -30,6 +30,6 @@ const dateFormat = (dateStart, dateEnd) => {
 };
 
 export {
-  dateFormat,
+  formatDate,
 };
 

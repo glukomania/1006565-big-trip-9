@@ -1,5 +1,8 @@
 import {transports, activities, cities} from "../data";
-import {dateFormat, timeFormat} from "./add-edit-date";
+import {
+  formatDate,
+  formatTime
+} from "./add-edit-date";
 import {createElement} from "../utils/dom";
 
 class AddEdit {
@@ -98,7 +101,7 @@ class AddEdit {
             id="event-start-time-1"
             type="text"
             name="event-start-time"
-            value="${dateFormat(this._timeStart)} ${timeFormat(this._timeStart)}"
+            value="${formatDate(this._timeStart)} ${formatTime(this._timeStart)}"
           >
           &mdash;
           <label
@@ -112,7 +115,7 @@ class AddEdit {
             id="event-end-time-1"
             type="text"
             name="event-end-time"
-            value="${dateFormat(this._timeEnd)} ${timeFormat(this._timeEnd)}"
+            value="${formatDate(this._timeEnd)} ${formatTime(this._timeEnd)}"
           >
         </div>
 
