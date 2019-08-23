@@ -15,7 +15,7 @@ import {
 
 import {
   routePoints,
-  events,
+  points,
   dates
 } from "./data";
 
@@ -49,8 +49,8 @@ const renderSorting = () => {
   addSection(contentPlace, sorting.getTemplate(), `afterbegin`);
 };
 
-const renderDate = (dateMock, eventItems) => {
-  const date = new DayNumber(dateMock, `ul`, [`trip-days`], eventItems);
+const renderDate = (dateMock, pointItems) => {
+  const date = new DayNumber(dateMock, `ul`, [`trip-days`], pointItems);
   appendSection(contentPlace, date.getElement());
 };
 // Rendering
@@ -69,4 +69,4 @@ renderFilter();
 renderSorting();
 
 // const eventBlock =  ;
-dates.forEach((date) => renderDate(date, events));
+dates.forEach((date) => renderDate(date, points));

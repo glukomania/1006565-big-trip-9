@@ -63,7 +63,7 @@ const makeEvent = () => ({
   type: getRandomItem(transports),
   city: getRandomItem(cities),
   activity: getRandomItem(activities),
-  eventText: getRandomItem(descriptions),
+  pointText: getRandomItem(descriptions),
   timeStart: getRandomDateStart(),
   timeEnd: getRandomDateFinish(),
   price: getRandomNumber(10, 200),
@@ -74,19 +74,19 @@ const makeEvent = () => ({
 const getEvents = (num) =>
   new Array(num).fill(null).map(makeEvent);
 
-const events = getEvents(3);
+const points = getEvents(3);
 
 const dates = [
-  {number: `1`, datetime: events[0].timeStart},
-  {number: `2`, datetime: events[1].timeStart},
+  {number: `1`, datetime: points[0].timeStart},
+  {number: `2`, datetime: points[1].timeStart},
 ];
 
 const routePoints = [
   {
-    cityStart: events[0].city,
-    cityFinish: events[events.length - 1].city,
-    dateStart: events[0].timeStart,
-    dateEnd: events[events.length - 1].timeEnd
+    cityStart: points[0].city,
+    cityFinish: points[points.length - 1].city,
+    dateStart: points[0].timeStart,
+    dateEnd: points[points.length - 1].timeEnd
   }
 ];
 
@@ -98,6 +98,6 @@ export {
   activities,
   cities,
   dates,
-  events,
+  points,
   offersMock,
 };

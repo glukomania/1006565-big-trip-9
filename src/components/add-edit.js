@@ -3,11 +3,11 @@ import {formatDate, formatTime} from "./add-edit-date";
 import {createElement} from "../utils/dom";
 
 class AddEdit {
-  constructor({type, eventText, city, timeStart, timeEnd, price, offers}, selector, classes, isAdd = false) {
+  constructor({type, pointText, city, timeStart, timeEnd, price, offers}, selector, classes, isAdd = false) {
     this._element = null;
     this._city = city;
     this._type = type;
-    this._eventText = eventText;
+    this._pointText = pointText;
     this._timeStart = timeStart;
     this._timeEnd = timeEnd;
     this._price = price;
@@ -22,6 +22,130 @@ class AddEdit {
       this._element = createElement(this.getTemplate(), this._selector, this._classes);
     }
     return this._element;
+  }
+
+  getTemplate() {
+    return `
+    <form class="trip-events__item  event  event--edit" action="#" method="post">
+      <header class="event__header">
+        <div class="event__type-wrapper">
+          <label class="event__type  event__type-btn" for="event-type-toggle-1">
+            <span class="visually-hidden">
+              Choose event type
+            </span>
+            <img
+              class="event__type-icon"
+              width="17" height="17"
+              src="img/icons/${this._type.toLowerCase()}.png"
+              alt="Event type icon">
+          </label>
+          <input
+            class="event__type-toggle
+            visually-hidden"
+            id="event-type-toggle-1"
+            type="checkbox"
+          >
+
+          <div class="event__type-list">
+            <fieldset class="event__type-group">
+              <legend class="visually-hidden">
+                Transfer
+              </legend>
+
+              ${transports.map(this._getTransportTemplate).join(`\n`)}
+
+            </fieldset>
+
+            <fieldset class="event__type-group">
+              <legend class="visually-hidden">
+                Activity
+              </legend>
+
+              ${activities.map(this._getActivityTemplate).join(`\n`)}
+
+            </fieldset>
+          </div>
+        </div>
+
+        <div class="event__field-group  event__field-group--destination">
+          <label
+            class="event__label
+            event__type-output"
+            for="event-destination-1">
+              ${this._pointText}
+          </label>
+          <input
+            class="event__input
+            event__input--destination"
+            id="event-destination-1"
+            type="text"
+            name="event-destination"
+            value="${this._city}"
+            list="destination-list-1"
+          >
+          <datalist id="destination-list-1">
+            ${cities.map(this._getCityListTemplate).join(`\n`)}
+          </datalist>
+        </div>
+
+        <div class="event__field-group  event__field-group--time">
+          <label class="visually-hidden" for="event-start-time-1">
+            From
+          </label>
+          <input
+            class="event__input
+            event__input--time"
+            id="event-start-time-1"
+            type="text"
+            name="event-start-time"
+            value="${formatDate(this._timeStart)} ${formatTime(this._timeStart)}"
+          >
+          &mdash;
+          <label
+            class="visually-hidden"
+            for="event-end-time-1">
+              To
+          </label>
+          <input
+            class="event__input
+            event__input--time"
+            id="event-end-time-1"
+            type="text"
+            name="event-end-time"
+            value="${formatDate(this._timeEnd)} ${formatTime(this._timeEnd)}"
+          >
+        </div>
+
+        <div class="event__field-group  event__field-group--price">
+          <label class="event__label" for="event-price-1">
+            <span class="visually-hidden">Price</span>
+            &euro;&nbsp;
+          </label>
+          <input
+            class="event__input
+            event__input--price"
+            id="event-price-1"
+            type="text"
+            name="event-price"
+            value="${this._price}"
+          >
+        </div>
+
+        <button class="event__save-btn  btn  btn--blue" type="submit">
+          Save
+        </button>
+        <button class="event__reset-btn" type="reset">
+          ${this._isAdd ? `Cancel` : `Delete`}
+        </button>
+        ${this._isAdd ? `` : this._getOptionBlock()}
+      </header>
+      ${this._isAdd ? `` : this._getEventDetailsTemplate(this._pointText)}
+    </form>
+    `;
+  }
+
+  removeElement() {
+    this._element = null;
   }
 
   _getTransportTemplate(transport) {
@@ -111,7 +235,7 @@ class AddEdit {
 
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${this._eventText}</p>
+      <p class="event__destination-description">${this._pointText}</p>
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
@@ -127,129 +251,6 @@ class AddEdit {
   `;
   }
 
-  getTemplate() {
-    return `
-    <form class="trip-events__item  event  event--edit" action="#" method="post">
-      <header class="event__header">
-        <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-1">
-            <span class="visually-hidden">
-              Choose event type
-            </span>
-            <img
-              class="event__type-icon"
-              width="17" height="17"
-              src="img/icons/${this._type.toLowerCase()}.png"
-              alt="Event type icon">
-          </label>
-          <input
-            class="event__type-toggle
-            visually-hidden"
-            id="event-type-toggle-1"
-            type="checkbox"
-          >
-
-          <div class="event__type-list">
-            <fieldset class="event__type-group">
-              <legend class="visually-hidden">
-                Transfer
-              </legend>
-
-              ${transports.map(this._getTransportTemplate).join(`\n`)}
-
-            </fieldset>
-
-            <fieldset class="event__type-group">
-              <legend class="visually-hidden">
-                Activity
-              </legend>
-
-              ${activities.map(this._getActivityTemplate).join(`\n`)}
-
-            </fieldset>
-          </div>
-        </div>
-
-        <div class="event__field-group  event__field-group--destination">
-          <label
-            class="event__label
-            event__type-output"
-            for="event-destination-1">
-              ${this._eventText}
-          </label>
-          <input
-            class="event__input
-            event__input--destination"
-            id="event-destination-1"
-            type="text"
-            name="event-destination"
-            value="${this._city}"
-            list="destination-list-1"
-          >
-          <datalist id="destination-list-1">
-            ${cities.map(this._getCityListTemplate).join(`\n`)}
-          </datalist>
-        </div>
-
-        <div class="event__field-group  event__field-group--time">
-          <label class="visually-hidden" for="event-start-time-1">
-            From
-          </label>
-          <input
-            class="event__input
-            event__input--time"
-            id="event-start-time-1"
-            type="text"
-            name="event-start-time"
-            value="${formatDate(this._timeStart)} ${formatTime(this._timeStart)}"
-          >
-          &mdash;
-          <label
-            class="visually-hidden"
-            for="event-end-time-1">
-              To
-          </label>
-          <input
-            class="event__input
-            event__input--time"
-            id="event-end-time-1"
-            type="text"
-            name="event-end-time"
-            value="${formatDate(this._timeEnd)} ${formatTime(this._timeEnd)}"
-          >
-        </div>
-
-        <div class="event__field-group  event__field-group--price">
-          <label class="event__label" for="event-price-1">
-            <span class="visually-hidden">Price</span>
-            &euro;&nbsp;
-          </label>
-          <input
-            class="event__input
-            event__input--price"
-            id="event-price-1"
-            type="text"
-            name="event-price"
-            value="${this._price}"
-          >
-        </div>
-
-        <button class="event__save-btn  btn  btn--blue" type="submit">
-          Save
-        </button>
-        <button class="event__reset-btn" type="reset">
-          ${this._isAdd ? `Cancel` : `Delete`}
-        </button>
-        ${this._isAdd ? `` : this._getOptionBlock()}
-      </header>
-      ${this._isAdd ? `` : this._getEventDetailsTemplate(this._eventText)}
-    </form>
-    `;
-  }
-
-  removeElement() {
-    this._element = null;
-  }
 }
 
 export default AddEdit;

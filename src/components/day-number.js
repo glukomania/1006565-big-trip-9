@@ -3,51 +3,51 @@ import {
   createElement
 } from "../utils/dom";
 import AddEdit from "./add-edit";
-import Event from "./event";
+import Point from "./point";
 import {isEscapeKey} from "../utils/predicators";
-import {formatDate} from "./event-date";
+import {formatDate} from "./point-date";
 
 class DayNumber {
-  constructor({number, dayDate}, selector, classes, events) {
+  constructor({number, dayDate}, selector, classes, points) {
     this._number = number;
     this._dayDate = dayDate;
     this._selector = selector;
     this._classes = classes;
-    this._events = events;
+    this._points = points;
     this._element = null;
   }
 
-  _addListeners(event, container) {
-    const eventItem = new Event(event, `li`, [`trip-events__item`]);
-    const eventAddEdit = new AddEdit(event, `li`, [`trip-events__item`]);
+  _addListeners(point, container) {
+    const pointItem = new Point(point, `li`, [`trip-events__item`]);
+    const pointAddEdit = new AddEdit(point, `li`, [`trip-events__item`]);
     const onEscKeyDown = (evt) => {
       if (isEscapeKey(evt.key)) {
-        container.replaceChild(eventItem.getElement(), eventAddEdit.getElement());
+        container.replaceChild(pointItem.getElement(), pointAddEdit.getElement());
         document.removeEventListener(`keydown`, onEscKeyDown);
       }
     };
 
-    eventItem.getElement()
+    pointItem.getElement()
       .querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, () => {
-        container.replaceChild(eventAddEdit.getElement(), eventItem.getElement());
+        container.replaceChild(pointAddEdit.getElement(), pointItem.getElement());
         document.addEventListener(`keydown`, onEscKeyDown);
       });
 
-    eventAddEdit.getElement()
+    pointAddEdit.getElement()
       .querySelector(`.event__save-btn`)
       .addEventListener(`click`, () => {
-        container.replaceChild(eventItem.getElement(), eventAddEdit.getElement());
+        container.replaceChild(pointItem.getElement(), pointAddEdit.getElement());
         document.removeEventListener(`keydown`, onEscKeyDown);
       });
-    appendSection(container, eventItem.getElement());
+    appendSection(container, pointItem.getElement());
   }
 
   getElement() {
     if (!this._element) {
       this._element = createElement(this.getTemplate(), this._selector, this._classes);
       const container = this._element.querySelector(`.trip-events__list`);
-      this._events.forEach((event) => this._addListeners(event, container));
+      this._points.forEach((point) => this._addListeners(point, container));
     }
 
     return this._element;

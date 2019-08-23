@@ -2,9 +2,9 @@ import Route from "./route";
 import Menu from "./menu";
 import Filter from "./filters";
 import Sort from "./sort";
-import Event from "./event";
+import Point from "./point";
 import AddEdit from "./add-edit";
-import Price from "./totalPrice";
+import Price from "./total-price";
 import DayNumber from "./day-number";
 
 export {
@@ -12,7 +12,7 @@ export {
   Menu,
   Filter,
   Sort,
-  Event,
+  Point,
   AddEdit,
   Price,
   DayNumber

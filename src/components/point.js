@@ -6,14 +6,14 @@ import {
 import {
   formatTime,
   getDuration
-} from "./event-date";
+} from "./point-date";
 
 
-class Event {
-  constructor({type, eventText, timeStart, timeEnd, price, offers}, selector, classes) {
+class Point {
+  constructor({type, pointText, timeStart, timeEnd, price, offers}, selector, classes) {
     this._element = null;
     this._type = type;
-    this._eventText = eventText;
+    this._pointText = pointText;
     this._timeStart = timeStart;
     this._timeEnd = timeEnd;
     this._price = price;
@@ -29,23 +29,6 @@ class Event {
     return this._element;
   }
 
-  _getOfferBlok({text, price}) {
-    return `
-    <li class="event__offer">
-    <span class="event__offer-title">${text}</span>
-    &plus;
-    &euro;&nbsp;<span class="event__offer-price">${price}</span>
-    </li>`;
-  }
-
-  _getOffersTemplate() {
-    return `
-    <h4 class="visually-hidden">Offers:</h4>
-    <ul class="event__selected-offers">
-      ${this._offers.map(this._getOfferBlok).join(`\n`)}
-    </ul>`;
-  }
-
   getTemplate() {
     return `
     <li class="trip-events__item">
@@ -58,7 +41,7 @@ class Event {
             alt="Event type icon">
         </div>
         <h3 class="event__title">
-          ${this._eventText}
+          ${this._pointText }
         </h3>
 
         <div class="event__schedule">
@@ -74,7 +57,10 @@ class Event {
           &euro;&nbsp;<span class="event__price-value">${this._price}</span>
         </p>
 
-        ${this._getOffersTemplate(this._offers)}
+        <h4 class="visually-hidden">Offers:</h4>
+        <ul class="event__selected-offers">
+          ${this._offers.map(this._getOfferBlok).join(`\n`)}
+        </ul>
 
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
@@ -88,6 +74,14 @@ class Event {
     this._element = null;
   }
 
+  _getOfferBlok({text, price}) {
+    return `
+    <li class="event__offer">
+    <span class="event__offer-title">${text}</span>
+    &plus;
+    &euro;&nbsp;<span class="event__offer-price">${price}</span>
+    </li>`;
+  }
 }
 
-export default Event;
+export default Point;
