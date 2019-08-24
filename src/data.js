@@ -74,14 +74,14 @@ const makeEvent = () => ({
 const getEvents = (num) =>
   new Array(num).fill(null).map(makeEvent);
 
-const points = getEvents(3);
+const points = getEvents(5);
 
 const dates = [
   {number: `1`, datetime: points[0].timeStart},
   {number: `2`, datetime: points[1].timeStart},
 ];
 
-const routePoints = [
+const getRoutePoints = () => [
   {
     cityStart: points[0].city,
     cityFinish: points[points.length - 1].city,
@@ -89,6 +89,11 @@ const routePoints = [
     dateEnd: points[points.length - 1].timeEnd
   }
 ];
+
+let routePoints = [];
+if (points.length > 0) {
+  routePoints = getRoutePoints();
+}
 
 export {
   routePoints,
