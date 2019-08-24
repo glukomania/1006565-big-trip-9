@@ -65,6 +65,14 @@ class DayNumber {
         container.replaceChild(pointItem.getElement(), pointAddEdit.getElement());
         document.removeEventListener(`keydown`, onEscKeyDown);
       });
+
+    pointAddEdit.getElement()
+      .querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, () => {
+        container.replaceChild(pointItem.getElement(), pointAddEdit.getElement());
+        document.removeEventListener(`keydown`, onEscKeyDown);
+      });
+
     appendSection(container, pointItem.getElement());
   }
 

@@ -54,10 +54,18 @@ const renderDate = (dateMock, pointItems) => {
   appendSection(contentPlace, date.getElement());
 };
 // Rendering
-
-const route = routePoints.map(renderRoute).join(`\n`);
-const routeBlock = createElement(route, `div`, [`trip-info__main`]);
-appendSection(routePlace, routeBlock);
+if (points.length > 0) {
+  const route = routePoints.map(renderRoute).join(`\n`);
+  const routeBlock = createElement(route, `div`, [`trip-info__main`]);
+  appendSection(routePlace, routeBlock);
+  renderSorting();
+  dates.forEach((date) => renderDate(date, points));
+} else {
+  const stubText = document.createElement(`p`);
+  stubText.classList.add(`trip-events__msg`);
+  stubText.textContent = `Click New Event to create your first point`;
+  contentPlace.appendChild(stubText);
+}
 
 renderPrice();
 
@@ -65,8 +73,5 @@ renderMenu();
 
 renderFilter();
 
-// Sorting
-renderSorting();
 
-// const eventBlock =  ;
-dates.forEach((date) => renderDate(date, points));
+
