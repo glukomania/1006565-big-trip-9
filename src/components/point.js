@@ -1,6 +1,3 @@
-import {
-  createElement
-} from "../utils/dom";
 import AbstractComponent from "./abstract-component";
 
 import {
