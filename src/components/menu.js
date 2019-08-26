@@ -1,4 +1,6 @@
-class Menu {
+import AbstractComponent from "./abstract-component";
+
+class Menu extends AbstractComponent {
 
   getTemplate() {
     return `

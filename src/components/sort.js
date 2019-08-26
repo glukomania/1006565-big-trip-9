@@ -1,6 +1,7 @@
 import {sortTypes} from "../data";
+import AbstractComponent from "./abstract-component";
 
-class Sort {
+class Sort extends AbstractComponent {
   getTemplate() {
     return `
     <form class="trip-events__trip-sort  trip-sort" action="#" method="get">

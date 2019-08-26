@@ -1,6 +1,7 @@
 import {setPrice} from "../utils/price";
+import AbstractComponent from "./abstract-component";
 
-class Price {
+class Price extends AbstractComponent {
 
   getTemplate() {
     return `

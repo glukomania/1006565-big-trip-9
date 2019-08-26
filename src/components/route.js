@@ -1,12 +1,13 @@
 import {formatDate} from "./route-date";
+import AbstractComponent from "./abstract-component";
 
-class Route {
+class Route extends AbstractComponent {
   constructor({cityStart, cityFinish, dateStart, dateEnd}) {
+    super();
     this._cityStart = cityStart;
     this._cityFinish = cityFinish;
     this._dateStart = dateStart;
     this._dateEnd = dateEnd;
-    this._element = null;
   }
 
   getTemplate() {

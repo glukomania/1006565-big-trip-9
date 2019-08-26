@@ -72,6 +72,3 @@ renderPrice();
 renderMenu();
 
 renderFilter();
-
-
-
