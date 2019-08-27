@@ -22,7 +22,6 @@ class TripController {
     this._routePlace = null;
     this._menuPlace = null;
     this._filtersPlace = null;
-
   }
 
   init() {
@@ -45,9 +44,7 @@ class TripController {
     }
 
     this._renderPrice();
-
     this._renderMenu();
-
     this._renderFilter();
 
   }
