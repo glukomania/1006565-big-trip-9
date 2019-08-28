@@ -1,7 +1,4 @@
-import {
-  createElement
-} from "../utils/dom";
-
+import AbstractComponent from "./abstract-component";
 
 import {
   formatTime,
@@ -9,9 +6,9 @@ import {
 } from "./point-date";
 
 
-class Point {
+class Point extends AbstractComponent {
   constructor({type, pointText, timeStart, timeEnd, price, offers}, selector, classes) {
-    this._element = null;
+    super();
     this._type = type;
     this._pointText = pointText;
     this._timeStart = timeStart;
@@ -20,13 +17,6 @@ class Point {
     this._offers = offers;
     this._selector = selector;
     this._classes = classes;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate(), this._selector, this._classes);
-    }
-    return this._element;
   }
 
   getTemplate() {
@@ -68,10 +58,6 @@ class Point {
       </div>
     </li>
     `;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 
   _getOfferBlock({text, price}) {

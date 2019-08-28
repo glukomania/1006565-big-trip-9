@@ -6,15 +6,16 @@ import AddEdit from "./add-edit";
 import Point from "./point";
 import {isEscapeKey} from "../utils/predicators";
 import {formatDate} from "./point-date";
+import AbstractComponent from "./abstract-component";
 
-class DayNumber {
+class DayNumber extends AbstractComponent {
   constructor({number, dayDate}, selector, classes, points) {
+    super();
     this._number = number;
     this._dayDate = dayDate;
     this._selector = selector;
     this._classes = classes;
     this._points = points;
-    this._element = null;
   }
 
   getElement() {
@@ -23,7 +24,6 @@ class DayNumber {
       const container = this._element.querySelector(`.trip-events__list`);
       this._points.forEach((point) => this._addListeners(point, container));
     }
-
     return this._element;
   }
 

@@ -3,11 +3,11 @@ import {
   formatDate,
   formatTime
 } from "./add-edit-date";
-import {createElement} from "../utils/dom";
+import AbstractComponent from "./abstract-component";
 
-class AddEdit {
+class AddEdit extends AbstractComponent {
   constructor({type, pointText, city, timeStart, timeEnd, price, offers}, selector, classes, isAdd = false) {
-    this._element = null;
+    super();
     this._city = city;
     this._type = type;
     this._pointText = pointText;
@@ -18,13 +18,6 @@ class AddEdit {
     this._isAdd = isAdd;
     this._selector = selector;
     this._classes = classes;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate(), this._selector, this._classes);
-    }
-    return this._element;
   }
 
   getTemplate() {
@@ -147,10 +140,6 @@ class AddEdit {
     `;
   }
 
-  removeElement() {
-    this._element = null;
-  }
-
   _getTransportTemplate(transport) {
     const transportLowCase = transport.toLowerCase();
     return `
@@ -253,7 +242,6 @@ class AddEdit {
   </section>
   `;
   }
-
 }
 
 export default AddEdit;

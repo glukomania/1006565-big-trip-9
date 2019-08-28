@@ -1,6 +1,7 @@
 import {filterTypes} from "../data";
+import AbstractComponent from "./abstract-component";
 
-class Filter {
+class Filter extends AbstractComponent {
 
   getTemplate() {
     return `
