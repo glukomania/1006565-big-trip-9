@@ -11,41 +11,54 @@ const timeFormat = new Intl.DateTimeFormat(`en-GB`, {
   minute: `numeric`,
 });
 
-const formatDate = (date) => dateFormat.format(date).toUpperCase();
+const formatDate = (date) => {
+  if (date > 0) {
+    return dateFormat.format(date).toUpperCase();
+  } else {
+    return ``;
+  }
+};
+
 const formatTime = (date) => timeFormat.format(date);
 
-const getDuration = (timeStart, timeFinish) => {
-  let hours = timeFinish.getHours() - timeStart.getHours();
-  let minutes;
+const duration = {
 
-  // minutes
+  getNormalDuration(timeStart, timeFinish) {
+    let hours = timeFinish.getHours() - timeStart.getHours();
+    let minutes;
 
-  if (timeFinish.getMinutes() < timeStart.getMinutes()) {
-    hours = hours - 1;
-    minutes = 60 - timeStart.getMinutes() + timeFinish.getMinutes();
-  } else {
-    minutes = timeFinish.getMinutes() - timeStart.getMinutes();
-  }
+    // minutes
 
-  // over the midnight
-  if (timeFinish.getHours() < timeStart.getHours()) {
-    hours = 24 - timeStart.getHours() + timeFinish.getHours();
-  }
-  if (timeStart.getDate() < timeFinish.getDate()) {
-    const days = timeFinish.getDate() - timeStart.getDate();
-    if (days > 1) {
-      return days + `D ` + hours + `H ` + minutes + `M`;
+    if (timeFinish.getMinutes() < timeStart.getMinutes()) {
+      hours = hours - 1;
+      minutes = 60 - timeStart.getMinutes() + timeFinish.getMinutes();
+    } else {
+      minutes = timeFinish.getMinutes() - timeStart.getMinutes();
     }
-  } else if (hours === 0) {
-    return minutes + `M`;
+
+    // over the midnight
+    if (timeFinish.getHours() < timeStart.getHours()) {
+      hours = 24 - timeStart.getHours() + timeFinish.getHours();
+    }
+    if (timeStart.getDate() < timeFinish.getDate()) {
+      const days = timeFinish.getDate() - timeStart.getDate();
+      if (days > 1) {
+        return days + `D ` + hours + `H ` + minutes + `M`;
+      }
+    } else if (hours === 0) {
+      return minutes + `M`;
+    }
+    return hours + `H ` + minutes + `M`;
+  },
+
+  getNumericDuration(timeStart, timeFinish) {
+    return timeFinish - timeStart;
   }
 
-
-  return hours + `H ` + minutes + `M`;
 };
 
 export {
   formatDate,
   formatTime,
-  getDuration,
+  duration,
 };

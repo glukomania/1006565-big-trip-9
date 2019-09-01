@@ -2,7 +2,7 @@ import AbstractComponent from "./abstract-component";
 
 import {
   formatTime,
-  getDuration
+  duration
 } from "./point-date";
 
 
@@ -40,7 +40,7 @@ class Point extends AbstractComponent {
             &mdash;
             <time class="event__end-time" datetime="${this._timeEnd}">${formatTime(this._timeEnd)}</time>
           </p>
-          <p class="event__duration">${getDuration(this._timeStart, this._timeEnd)}</p>
+          <p class="event__duration">${duration.getNormalDuration(this._timeStart, this._timeEnd)}</p>
         </div>
 
         <p class="event__price">

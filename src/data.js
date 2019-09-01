@@ -6,6 +6,7 @@ import {
   getRandomDateStart,
   getRandomDateFinish,
 } from "./utils/time";
+import {duration} from "./components/point-date";
 
 
 const descriptions = [
@@ -36,9 +37,6 @@ const sortTypes = [
     path: `<svg class="trip-sort__direction-icon" width="8" height="10" viewBox="0 0 8 10">
     <path d="M2.888 4.852V9.694H5.588V4.852L7.91 5.068L4.238 0.00999987L0.548 5.068L2.888 4.852Z"/>
   </svg>`
-  },
-  {
-    type: `offers`
   }];
 
 const transports = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`];
@@ -76,10 +74,28 @@ const getEvents = (num) =>
 
 const points = getEvents(5);
 
-const dates = [
-  {number: `1`, datetime: points[0].timeStart},
-  {number: `2`, datetime: points[1].timeStart},
-];
+const getDatesFiltering = (unfilteredPoints) => {
+  const sortedPoints = unfilteredPoints.sort((a, b) => a.timeStart > b.timeStart ? 1 : -1);
+  let number = 1;
+  sortedPoints[0].number = number;
+  for (let i = 1; i < sortedPoints.length; i++) {
+    if (sortedPoints[i].timeStart.getDate() !== sortedPoints[i - 1].timeStart.getDate()) {
+      number++;
+    }
+    sortedPoints[i].number = number;
+  }
+  return sortedPoints;
+};
+
+const getPointsWithDuration = (initialPoints) => {
+  initialPoints.forEach((item) => {
+    item.duration = duration.getNumericDuration(item.timeStart, item.timeEnd);
+  });
+};
+
+const dates = getDatesFiltering(points);
+
+getPointsWithDuration(dates);
 
 const getRoutePoints = () => [
   {
