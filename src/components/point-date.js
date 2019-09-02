@@ -24,31 +24,12 @@ const formatTime = (date) => timeFormat.format(date);
 const duration = {
 
   getNormalDuration(timeStart, timeFinish) {
-    let hours = timeFinish.getHours() - timeStart.getHours();
-    let minutes;
 
-    // minutes
-
-    if (timeFinish.getMinutes() < timeStart.getMinutes()) {
-      hours = hours - 1;
-      minutes = 60 - timeStart.getMinutes() + timeFinish.getMinutes();
-    } else {
-      minutes = timeFinish.getMinutes() - timeStart.getMinutes();
-    }
-
-    // over the midnight
-    if (timeFinish.getHours() < timeStart.getHours()) {
-      hours = 24 - timeStart.getHours() + timeFinish.getHours();
-    }
-    if (timeStart.getDate() < timeFinish.getDate()) {
-      const days = timeFinish.getDate() - timeStart.getDate();
-      if (days > 1) {
-        return days + `D ` + hours + `H ` + minutes + `M`;
-      }
-    } else if (hours === 0) {
-      return minutes + `M`;
-    }
-    return hours + `H ` + minutes + `M`;
+    const durationMilliseconds = timeFinish - timeStart;
+    const days = Math.trunc(durationMilliseconds / 86400000);
+    const hours = Math.trunc((durationMilliseconds - days * 86400000) / 3600000);
+    const minutes = Math.trunc((durationMilliseconds - days * 86400000 - hours * 3600000) / 60000);
+    return `${days ? days + `D` : ``}  ${hours ? hours : ``}H ${minutes ? minutes : ``}M`;
   },
 
   getNumericDuration(timeStart, timeFinish) {

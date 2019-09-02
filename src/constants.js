@@ -1,2 +1,1 @@
-export const TIME_HALF_DAY = 7 * 12 * 60 * 60 * 1000;
-
+export const TIME_WEEK = 7 * 24 * 60 * 60 * 1000;

@@ -15,9 +15,9 @@ import {
 } from "../utils/dom";
 
 import {
-  groupBy,
-  typeOfSort
-} from "../utils/predicators";
+  groupByDayNumber,
+  sortToChange
+} from "../utils/util";
 
 import {routePoints} from "../data";
 
@@ -43,13 +43,7 @@ class TripController {
       appendSection(this._routePlace, routeBlock);
       this._renderSorting();
 
-      const groupeByDayNumber = groupBy();
-      const groupedPoints = groupeByDayNumber(this._dates);
-      //
-
-      for (let [key, value] of Object.entries(groupedPoints)) {
-        this._renderDate(key, value);
-      }
+      this._renderDroupedPoints();
 
     } else {
       const stubText = document.createElement(`p`);
@@ -91,19 +85,23 @@ class TripController {
 
   onChangeSort(typeSort) {
     document.querySelectorAll(`.day`).forEach(unrender);
-    const sortedTasks = typeOfSort[typeSort]([...this._dates]);
-    if ((typeSort === `time`) || (typeSort === `price`)) {
-      sortedTasks.forEach((point) => {
+    const sortedPoints = sortToChange[typeSort]([...this._dates]);
+    if (typeSort === `time` || typeSort === `price`) {
+      sortedPoints.forEach((point) => {
         return this._renderDate(point.number, [point], false);
       });
     } else {
-      const groupeByDayNumber = groupBy();
-      const groupedPoints = groupeByDayNumber(this._dates);
-      //
+      this._renderDroupedPoints();
+    }
+  }
 
-      for (let [key, value] of Object.entries(groupedPoints)) {
-        this._renderDate(key, value);
-      }
+  _renderDroupedPoints() {
+    const groupeByDayNumber = groupByDayNumber();
+    const groupedPoints = groupeByDayNumber(this._dates);
+    //
+
+    for (const [key, value] of Object.entries(groupedPoints)) {
+      this._renderDate(key, value);
     }
   }
 
