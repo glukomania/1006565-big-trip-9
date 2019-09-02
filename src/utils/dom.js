@@ -25,9 +25,17 @@ const createElement = (template, selector = `div`, classNames) => {
   return newElement;
 };
 
+// removes the element from dom
+const unrender = (element) => {
+  if (element) {
+    element.remove();
+  }
+};
+
 export {
   addSection,
   getMarkup,
   appendSection,
-  createElement
+  createElement,
+  unrender
 };

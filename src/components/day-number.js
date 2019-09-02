@@ -9,10 +9,10 @@ import {formatDate} from "./point-date";
 import AbstractComponent from "./abstract-component";
 
 class DayNumber extends AbstractComponent {
-  constructor({number, dayDate}, selector, classes, points) {
+  constructor(number, timeStart, selector, classes, points) {
     super();
     this._number = number;
-    this._dayDate = dayDate;
+    this._timeStart = timeStart;
     this._selector = selector;
     this._classes = classes;
     this._points = points;
@@ -32,7 +32,7 @@ class DayNumber extends AbstractComponent {
     <li class="trip-days__item  day">
     <div class="day__info">
       <span class="day__counter">${this._number}</span>
-      <time class="day__date" datetime="${formatDate(this._dayDate)}">${formatDate(this._dayDate)}</time>
+      <time class="day__date" datetime="${formatDate(this._timeStart)}">${formatDate(this._timeStart)}</time>
     </div>
 
     <ul class="trip-events__list">

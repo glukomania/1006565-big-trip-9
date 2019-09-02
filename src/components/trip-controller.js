@@ -10,18 +10,25 @@ import {
 import {
   addSection,
   appendSection,
-  createElement
+  createElement,
+  unrender
 } from "../utils/dom";
 
-import {routePoints, dates} from "../data";
+import {
+  groupByDayNumber,
+  sortToChange
+} from "../utils/util";
+
+import {routePoints} from "../data";
 
 class TripController {
-  constructor(container, points) {
+  constructor(container, dates) {
     this._container = container;
-    this._points = points;
+    this._dates = dates;
     this._routePlace = null;
     this._menuPlace = null;
     this._filtersPlace = null;
+    this.onChangeSort = this.onChangeSort.bind(this);
   }
 
   init() {
@@ -30,12 +37,14 @@ class TripController {
     this._filtersPlace = document.querySelector(`.trip-controls h2:last-child`);
 
     // Rendering
-    if (this._points.length > 0) {
+    if (this._dates.length > 0) {
       const route = routePoints.map(this._renderRoute).join(`\n`);
       const routeBlock = createElement(route, `div`, [`trip-info__main`]);
       appendSection(this._routePlace, routeBlock);
       this._renderSorting();
-      dates.forEach((date) => this._renderDate(date, this._points));
+
+      this._renderDroupedPoints();
+
     } else {
       const stubText = document.createElement(`p`);
       stubText.classList.add(`trip-events__msg`);
@@ -70,12 +79,43 @@ class TripController {
   }
 
   _renderSorting() {
-    const sorting = new Sort();
-    addSection(this._container, sorting.getTemplate(), `afterbegin`);
+    const sorting = new Sort(this.onChangeSort);
+    appendSection(this._container, sorting.getElement());
   }
 
-  _renderDate(dateMock, pointItems) {
-    const date = new DayNumber(dateMock, `ul`, [`trip-days`], pointItems);
+  onChangeSort(typeSort) {
+    document.querySelectorAll(`.day`).forEach(unrender);
+    const sortedPoints = sortToChange[typeSort]([...this._dates]);
+    if (typeSort === `time` || typeSort === `price`) {
+      sortedPoints.forEach((point) => {
+        return this._renderDate(point.number, [point], false);
+      });
+    } else {
+      this._renderDroupedPoints();
+    }
+  }
+
+  _renderDroupedPoints() {
+    const groupeByDayNumber = groupByDayNumber();
+    const groupedPoints = groupeByDayNumber(this._dates);
+    //
+
+    for (const [key, value] of Object.entries(groupedPoints)) {
+      this._renderDate(key, value);
+    }
+  }
+
+  _sortByTime(points) {
+    return points.sort((a, b) => a.timeStart < b.timeStart ? 1 : -1);
+  }
+
+  _renderDate(dayNumber, points, displayDate = true) {
+    let date = null;
+    if (displayDate) {
+      date = new DayNumber(dayNumber, points[0].timeStart, `ul`, [`trip-days`], points);
+    } else {
+      date = new DayNumber(``, ``, `ul`, [`trip-days`], points);
+    }
     appendSection(this._container, date.getElement());
   }
 }
