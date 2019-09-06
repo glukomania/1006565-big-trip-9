@@ -5,12 +5,17 @@ import {
   duration
 } from "./point-date";
 
+import {
+  createElement
+} from "../utils/dom";
 
 class Point extends AbstractComponent {
-  constructor({type, pointText, timeStart, timeEnd, price, offers}, selector, classes) {
+  constructor({type, activity, city, pointText, timeStart, timeEnd, price, offers}, selector, classes) {
     super();
     this._type = type;
     this._pointText = pointText;
+    this._activity = activity;
+    this._city = city;
     this._timeStart = timeStart;
     this._timeEnd = timeEnd;
     this._price = price;
@@ -19,19 +24,27 @@ class Point extends AbstractComponent {
     this._classes = classes;
   }
 
+  getElement() {
+    if (this._element === null) {
+      this._element = document.createElement(`li`);
+      this._element.classList.add(`trip-events__item`);
+      this._element.innerHTML = this.getTemplate();
+    }
+    return this._element;
+  }
+
   getTemplate() {
     return `
-    <li class="trip-events__item">
       <div class="event">
         <div class="event__type">
           <img
             class="event__type-icon"
             width="42" height="42"
-            src="img/icons/${this._type}.png"
+            src="img/icons/${this._type.type}.png"
             alt="Event type icon">
         </div>
         <h3 class="event__title">
-          ${this._pointText}
+          ${this._type.label} ${this._city}
         </h3>
 
         <div class="event__schedule">
@@ -56,7 +69,6 @@ class Point extends AbstractComponent {
           <span class="visually-hidden">Open event</span>
         </button>
       </div>
-    </li>
     `;
   }
 

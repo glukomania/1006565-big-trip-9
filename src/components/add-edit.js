@@ -4,6 +4,7 @@ import {
   formatTime
 } from "./add-edit-date";
 import AbstractComponent from "./abstract-component";
+import {offersMock} from "../data";
 
 class AddEdit extends AbstractComponent {
   constructor({type, pointText, city, timeStart, timeEnd, price, offers}, selector, classes, isAdd = false) {
@@ -18,6 +19,9 @@ class AddEdit extends AbstractComponent {
     this._isAdd = isAdd;
     this._selector = selector;
     this._classes = classes;
+    this._getOfferTemplate = this._getOfferTemplate.bind(this);
+    this._getTransportTemplate = this._getTransportTemplate.bind(this);
+    this._getActivityTemplate = this._getActivityTemplate.bind(this);
   }
 
   getTemplate() {
@@ -25,34 +29,22 @@ class AddEdit extends AbstractComponent {
     <form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-1">
-            <span class="visually-hidden">
-              Choose event type
-            </span>
-            <img
-              class="event__type-icon"
-              width="17" height="17"
-              src="img/icons/${this._type.toLowerCase()}.png"
-              alt="Event type icon">
-          </label>
-          <input
-            class="event__type-toggle
-            visually-hidden"
-            id="event-type-toggle-1"
-            type="checkbox"
-          >
+        <label class="event__type  event__type-btn" for="event-type-toggle-1">
+          <span class="visually-hidden">Choose event type</span>
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type.type}.png" alt="Event type icon">
+        </label>
+        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
           <div class="event__type-list">
-            <fieldset class="event__type-group">
+          <fieldset class="event__type-group">
               <legend class="visually-hidden">
                 Transfer
               </legend>
 
               ${transports.map(this._getTransportTemplate).join(`\n`)}
 
-            </fieldset>
-
-            <fieldset class="event__type-group">
+          </fieldset>
+          <fieldset class="event__type-group">
               <legend class="visually-hidden">
                 Activity
               </legend>
@@ -68,7 +60,7 @@ class AddEdit extends AbstractComponent {
             class="event__label
             event__type-output"
             for="event-destination-1">
-              ${this._pointText}
+              ${this._type.label}
           </label>
           <input
             class="event__input
@@ -94,7 +86,7 @@ class AddEdit extends AbstractComponent {
             id="event-start-time-1"
             type="text"
             name="event-start-time"
-            value="${formatDate(this._timeStart)} ${formatTime(this._timeStart)}"
+            value="${this._timeStart}"
           >
           &mdash;
           <label
@@ -108,7 +100,7 @@ class AddEdit extends AbstractComponent {
             id="event-end-time-1"
             type="text"
             name="event-end-time"
-            value="${formatDate(this._timeEnd)} ${formatTime(this._timeEnd)}"
+            value="${this._timeEnd}"
           >
         </div>
 
@@ -140,8 +132,8 @@ class AddEdit extends AbstractComponent {
     `;
   }
 
-  _getTransportTemplate(transport) {
-    const transportLowCase = transport.toLowerCase();
+  _getTransportTemplate({type}) {
+    const transportLowCase = type.toLowerCase();
     return `
     <div class="event__type-item">
       <input
@@ -150,39 +142,42 @@ class AddEdit extends AbstractComponent {
         visually-hidden"
         type="radio"
         name="event-type"
-        value="${transportLowCase}"
+        value="${type}"
+        ${this._type.type === type ? `checked` : ``}
       >
       <label
         class="event__type-label
         event__type-label--${transportLowCase}"
         for="event-type-${transportLowCase}-1">
-          ${transport}
+          ${type}
       </label>
     </div>`;
   }
 
-  _getActivityTemplate(activity) {
-    const activityLow = activity.toLowerCase();
+  _getActivityTemplate({type}) {
+    const activityLowCase = type.toLowerCase();
     return `
     <div class="event__type-item">
       <input
-        id="event-type-${activityLow}-1"
+        id="event-type-${activityLowCase}-1"
         class="event__type-input
-        visually-hidden" type="radio"
+        visually-hidden"
+        type="radio"
         name="event-type"
-        value="${activityLow}"
+        value="${type}"
+        ${this._type.type === type ? `checked` : ``}
       >
       <label
         class="event__type-label
-        event__type-label--${activityLow}"
-        for="event-type-${activityLow}-1">
-          ${activity}
+        event__type-label--${activityLowCase}"
+        for="event-type-${activityLowCase}-1">
+          ${type}
       </label>
     </div>`;
   }
 
-  _getCityListTemplate(city) {
-    return `<option value="${city}"></option>`;
+  _getCityListTemplate({city}) {
+    return `<option value="${city}" name="city"></option>`;
   }
 
   _getOptionBlock() {
@@ -203,8 +198,8 @@ class AddEdit extends AbstractComponent {
   _getOfferTemplate({id, text, price}) {
     return `
   <div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" checked>
-  <label class="event__offer-label" for="event-offer-${id}-1">
+  <input class="event__offer-checkbox  visually-hidden" id="${id}-1" type="checkbox" name="event-offer" value="${id}" ${this._offers.find((x) => x.id === id) ? `checked` : ``}>
+  <label class="event__offer-label" for="${id}-1">
     <span class="event__offer-title">${text}</span>
     &plus;
     &euro;&nbsp;<span class="event__offer-price">${price}</span>
@@ -220,7 +215,7 @@ class AddEdit extends AbstractComponent {
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
       <div class="event__available-offers">
-       ${this._offers.map(this._getOfferTemplate).join(`\n`)}
+       ${offersMock.map(this._getOfferTemplate).join(`\n`)}
 
       </div>
     </section>
