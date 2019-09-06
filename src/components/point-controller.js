@@ -12,6 +12,7 @@ class PointController {
     this._onChangeView = onChangeView;
     this._pointItem = new Point(this._point);
     this._pointAddEdit = new AddEdit(this._point);
+    this._changeCityDescription = this._changeCityDescription.bind(this);
   }
 
   init() {
@@ -51,6 +52,8 @@ class PointController {
         this._pointAddEdit.removeElement();
 
         document.addEventListener(`keydown`, onEscKeyDown);
+
+
       });
 
     this._pointItem.getElement()
@@ -73,6 +76,11 @@ class PointController {
         this._container.replaceChild(this._pointItem.getElement(), this._pointAddEdit.getElement());
         document.removeEventListener(`keydown`, onEscKeyDown);
       });
+
+    const city = this._pointAddEdit.getElement().querySelector(`.event__input--destination`);
+
+    city.addEventListener(`change`, this._changeCityDescription);
+
     appendSection(this._container, this._pointItem.getElement());
   }
 
@@ -80,6 +88,13 @@ class PointController {
     if (this._container.contains(this._pointAddEdit.getElement())) {
       this._container.replaceChild(this._pointItem.getElement(), this._pointAddEdit.getElement());
     }
+  }
+
+
+  _changeCityDescription(evtCity) {
+    const target = evtCity.target;
+    const description = this._pointAddEdit.getElement().querySelector(`.event__destination-description`);
+    description.textContent = cities.find((x) => x.city === target.value).description;
   }
 
 }
