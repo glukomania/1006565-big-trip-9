@@ -3,7 +3,6 @@ import {
 } from "../utils/dom";
 import {formatDate} from "./point-date";
 import AbstractComponent from "./abstract-component";
-import PointControler from "./point-controller";
 
 class Day extends AbstractComponent {
   constructor(number, timeStart, selector, classes, points) {
@@ -19,8 +18,6 @@ class Day extends AbstractComponent {
     if (!this._element) {
       this._element = createElement(this.getTemplate(), this._selector, this._classes);
     }
-    // const pointController = new PointControler(this._element, this._points);
-    // pointController.init();
 
     return this._element;
   }

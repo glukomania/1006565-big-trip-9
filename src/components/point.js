@@ -5,10 +5,6 @@ import {
   duration
 } from "./point-date";
 
-import {
-  createElement
-} from "../utils/dom";
-
 class Point extends AbstractComponent {
   constructor({type, activity, city, pointText, timeStart, timeEnd, price, offers}, selector, classes) {
     super();

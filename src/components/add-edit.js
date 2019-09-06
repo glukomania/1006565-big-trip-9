@@ -1,8 +1,4 @@
 import {transports, activities, cities} from "../data";
-import {
-  formatDate,
-  formatTime
-} from "./add-edit-date";
 import AbstractComponent from "./abstract-component";
 import {offersMock} from "../data";
 
