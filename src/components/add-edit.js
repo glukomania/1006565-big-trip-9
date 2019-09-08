@@ -1,6 +1,5 @@
 import {transports, activities, cities} from "../data";
 import AbstractComponent from "./abstract-component";
-import {offersMock} from "../data";
 
 class AddEdit extends AbstractComponent {
   constructor({type, pointText, city, timeStart, timeEnd, price, offers}, selector, classes, isAdd = false) {
@@ -21,7 +20,6 @@ class AddEdit extends AbstractComponent {
   }
 
   getTemplate() {
-    console.log(this._offers);
     return `
     <form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
