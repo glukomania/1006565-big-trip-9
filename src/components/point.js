@@ -58,7 +58,7 @@ class Point extends AbstractComponent {
 
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${this._offers.map(this._getOfferBlock).join(`\n`)}
+          ${this._offers.filter((it) => it.checked === true).map(this._getOfferBlock).join(`\n`)}
         </ul>
 
         <button class="event__rollup-btn" type="button">

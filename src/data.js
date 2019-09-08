@@ -44,63 +44,60 @@ const activities = [
 ];
 
 const cities = [
-  {city: `Amsterdam`, description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`},
-  {city: `Moscow`, description: `Cras aliquet varius magna, non porta ligula feugiat eget.`},
-  {city: `Chamonix`, description: `Fusce tristique felis at fermentum pharetra.`},
-  {city: `Geneva`, description: `Aliquam id orci ut lectus varius viverra.`},
-  {city: `Praha`, description: `Nunc fermentum tortor ac porta dapibus.`},
-  {city: `Berlin`, description: `In rutrum ac purus sit amet tempus.`},
+  {name: `Amsterdam`, description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`, photos: []},
+  {name: `Moscow`, description: `Cras aliquet varius magna, non porta ligula feugiat eget.`, photos: []},
+  {name: `Chamonix`, description: `Fusce tristique felis at fermentum pharetra.`, photos: []},
+  {name: `Geneva`, description: `Aliquam id orci ut lectus varius viverra.`, photos: []},
+  {name: `Praha`, description: `Nunc fermentum tortor ac porta dapibus.`, photos: []},
+  {name: `Berlin`, description: `In rutrum ac purus sit amet tempus.`, photos: []},
 ];
 
 
-const offersMock =
-[{
-  id: `event-offer-luggage`,
-  text: `Add luggage`,
-  price: 30,
-  check: Boolean(Math.round(Math.random()))
-},
-{
-  id: `event-offer-comfort`,
-  text: `Switch to comfort class`,
-  price: 100,
-  check: Boolean(Math.round(Math.random()))
-},
-{
-  id: `event-offer-meal`,
-  text: `Add meal`,
-  price: 15,
-  check: Boolean(Math.round(Math.random()))
-},
-{
-  id: `event-offer-seats`,
-  text: `Choose seats`,
-  price: 5,
-  check: Boolean(Math.round(Math.random()))
-},
-{
-  id: `event-offer-train`,
-  text: `Travel by train`,
-  price: 40,
-  check: Boolean(Math.round(Math.random()))
-}
-];
+const getOffersMock = () => (
+  [{
+    id: `event-offer-luggage`,
+    text: `Add luggage`,
+    price: 30,
+    checked: Boolean(Math.round(Math.random()))
+  },
+  {
+    id: `event-offer-comfort`,
+    text: `Switch to comfort class`,
+    price: 100,
+    checked: Boolean(Math.round(Math.random()))
+  },
+  {
+    id: `event-offer-meal`,
+    text: `Add meal`,
+    price: 15,
+    checked: Boolean(Math.round(Math.random()))
+  },
+  {
+    id: `event-offer-seats`,
+    text: `Choose seats`,
+    price: 5,
+    checked: Boolean(Math.round(Math.random()))
+  },
+  {
+    id: `event-offer-train`,
+    text: `Travel by train`,
+    price: 40,
+    checked: Boolean(Math.round(Math.random()))
+  }
+  ]
+);
 
-const getRandomOffers = () => {
-  const randomOffers = new Set(getRandomValues(offersMock, getRandomNumber(0, 3)));
-  return randomOffers;
-};
-
+const offersMock = getOffersMock();
 
 const makeEvent = () => {
   const point = {
     type: getRandomItem(transports.concat(activities)),
-    city: getRandomItem(cities).city,
+    city: getRandomItem(cities).name,
     pointText: getRandomItem(cities).description,
     timeStart: getRandomDateStart(),
     timeEnd: getRandomDateFinish(),
     price: getRandomNumber(10, 200),
-    offers: Array.from(getRandomOffers()),
+    offers: getOffersMock(),
   };
   return point;
 };

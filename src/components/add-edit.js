@@ -21,6 +21,7 @@ class AddEdit extends AbstractComponent {
   }
 
   getTemplate() {
+    console.log(this._offers);
     return `
     <form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
@@ -172,8 +173,8 @@ class AddEdit extends AbstractComponent {
     </div>`;
   }
 
-  _getCityListTemplate({city}) {
-    return `<option value="${city}" name="city"></option>`;
+  _getCityListTemplate({name}) {
+    return `<option value="${name}" name="city"></option>`;
   }
 
   _getOptionBlock() {
@@ -191,10 +192,10 @@ class AddEdit extends AbstractComponent {
   </button>`;
   }
 
-  _getOfferTemplate({id, text, price}) {
+  _getOfferTemplate({id, text, price, checked}) {
     return `
   <div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden" id="${id}-1" type="checkbox" name="event-offer" value="${id}" ${this._offers.find((x) => x.id === id) ? `checked` : ``}>
+  <input class="event__offer-checkbox  visually-hidden" id="${id}-1" type="checkbox" name="event-offer" value="${id}" ${checked === true ? `checked` : ``}>
   <label class="event__offer-label" for="${id}-1">
     <span class="event__offer-title">${text}</span>
     &plus;
@@ -211,7 +212,7 @@ class AddEdit extends AbstractComponent {
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
       <div class="event__available-offers">
-       ${offersMock.map(this._getOfferTemplate).join(`\n`)}
+       ${this._offers.map(this._getOfferTemplate).join(`\n`)}
 
       </div>
     </section>

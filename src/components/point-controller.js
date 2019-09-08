@@ -34,22 +34,22 @@ class PointController {
           number: this._point.number,
           type: {type: formData.get(`event-type`), label: transports.concat(activities).find((x) => x.type === formData.get(`event-type`)).label},
           city: formData.get(`event-destination`),
-          pointText: cities.find((x) => x.city === formData.get(`event-destination`)).description,
+          pointText: this._getCityDesc(formData.get(`event-destination`)),
           timeStart: new Date(formData.get(`event-start-time`)),
           timeEnd: new Date(formData.get(`event-end-time`)),
-          price: formData.get(`event-price`),
-          offers: offers.filter((it) => it.querySelector(`.event__offer-checkbox`).checked === true)
+          price: +formData.get(`event-price`),
+          offers: offers
           .map((it) => ({
-            id: it.querySelector(`.event__offer-checkbox`).name,
+            id: it.querySelector(`.event__offer-checkbox`).id,
             text: it.querySelector(`.event__offer-title`).textContent,
-            price: it.querySelector(`.event__offer-price`).textContent,
-            check: it.querySelector(`.event__offer-checkbox`).checked
+            price: +it.querySelector(`.event__offer-price`).textContent,
+            checked: it.querySelector(`.event__offer-checkbox`).checked
           }))
         };
 
         this._onDataChange(this._point, entry);
-        unrender(this._pointAddEdit.getElement());
-        this._pointAddEdit.removeElement();
+        unrender(this._element);
+        this._element = null;
 
         document.addEventListener(`keydown`, onEscKeyDown);
 
@@ -84,6 +84,10 @@ class PointController {
     appendSection(this._container, this._pointItem.getElement());
   }
 
+  _getCityDesc(destination) {
+    return cities.find((item) => item.name === destination).description;
+  }
+
   setDefaultView() {
     if (this._container.contains(this._pointAddEdit.getElement())) {
       this._container.replaceChild(this._pointItem.getElement(), this._pointAddEdit.getElement());
@@ -94,7 +98,7 @@ class PointController {
   _changeCityDescription(evtCity) {
     const target = evtCity.target;
     const description = this._pointAddEdit.getElement().querySelector(`.event__destination-description`);
-    description.textContent = cities.find((x) => x.city === target.value).description;
+    description.textContent = this._getCityDesc(target.value);
   }
 
 }
