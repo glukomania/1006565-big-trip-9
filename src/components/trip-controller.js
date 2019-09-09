@@ -4,7 +4,7 @@ import {
   Filter,
   Sort,
   Price,
-  DayNumber
+  Day
 } from "./index";
 
 import {
@@ -20,6 +20,7 @@ import {
 } from "../utils/util";
 
 import {routePoints} from "../data";
+import PointController from "./point-controller";
 
 class TripController {
   constructor(container, dates) {
@@ -29,6 +30,10 @@ class TripController {
     this._menuPlace = null;
     this._filtersPlace = null;
     this.onChangeSort = this.onChangeSort.bind(this);
+    this._onDataChange = this._onDataChange.bind(this);
+    this._daysContainer = null;
+    this._subscriptions = [];
+    this._onChangeView = this._onChangeView.bind(this);
   }
 
   init() {
@@ -41,9 +46,11 @@ class TripController {
       const route = routePoints.map(this._renderRoute).join(`\n`);
       const routeBlock = createElement(route, `div`, [`trip-info__main`]);
       appendSection(this._routePlace, routeBlock);
-      this._renderSorting();
 
-      this._renderDroupedPoints();
+      this._renderSorting();
+      this._daysContainer = createElement(null, `ul`, [`trip-days`]);
+      appendSection(this._container, this._daysContainer);
+      this._renderGroupedPoints();
 
     } else {
       const stubText = document.createElement(`p`);
@@ -56,6 +63,18 @@ class TripController {
     this._renderMenu();
     this._renderFilter();
 
+  }
+
+  onChangeSort(typeSort) {
+    document.querySelectorAll(`.day`).forEach(unrender);
+    const sortedPoints = sortToChange[typeSort]([...this._dates]);
+    if (typeSort === `time` || typeSort === `price`) {
+      sortedPoints.forEach((point) => {
+        return this._renderDate(point.number, [point], false);
+      });
+    } else {
+      this._renderGroupedPoints();
+    }
   }
 
   _renderRoute(routeMock) {
@@ -83,19 +102,7 @@ class TripController {
     appendSection(this._container, sorting.getElement());
   }
 
-  onChangeSort(typeSort) {
-    document.querySelectorAll(`.day`).forEach(unrender);
-    const sortedPoints = sortToChange[typeSort]([...this._dates]);
-    if (typeSort === `time` || typeSort === `price`) {
-      sortedPoints.forEach((point) => {
-        return this._renderDate(point.number, [point], false);
-      });
-    } else {
-      this._renderDroupedPoints();
-    }
-  }
-
-  _renderDroupedPoints() {
+  _renderGroupedPoints() {
     const groupeByDayNumber = groupByDayNumber();
     const groupedPoints = groupeByDayNumber(this._dates);
     //
@@ -112,12 +119,33 @@ class TripController {
   _renderDate(dayNumber, points, displayDate = true) {
     let date = null;
     if (displayDate) {
-      date = new DayNumber(dayNumber, points[0].timeStart, `ul`, [`trip-days`], points);
+      date = new Day(dayNumber, points[0].timeStart, `li`, [`trip-days__item`, `day`], points);
     } else {
-      date = new DayNumber(``, ``, `ul`, [`trip-days`], points);
+      date = new Day(``, ``, `li`, [`trip-days__item`, `day`], points);
     }
-    appendSection(this._container, date.getElement());
+    points.forEach((point) => {
+      const pointController = new PointController(date.getElement(), point, this._onDataChange, this._onChangeView);
+      pointController.init();
+      this._subscriptions.push(pointController.setDefaultView.bind(pointController));
+    });
+    appendSection(this._daysContainer, date.getElement());
   }
+
+  _onDataChange(oldPoint, newPoint) {
+    const indexOfEditedPoint = this._dates.findIndex((it) => {
+      return it === oldPoint;
+    });
+
+    this._dates[indexOfEditedPoint] = newPoint;
+    this._daysContainer.innerHTML = ``;
+
+    this._renderGroupedPoints();
+  }
+
+  _onChangeView() {
+    this._subscriptions.forEach((it) => it());
+  }
+
 }
 
 export default TripController;

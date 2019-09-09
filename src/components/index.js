@@ -5,7 +5,7 @@ import Sort from "./sort";
 import Point from "./point";
 import AddEdit from "./add-edit";
 import Price from "./price";
-import DayNumber from "./day-number";
+import Day from "./day";
 
 export {
   Route,
@@ -15,5 +15,5 @@ export {
   Point,
   AddEdit,
   Price,
-  DayNumber
+  Day
 };

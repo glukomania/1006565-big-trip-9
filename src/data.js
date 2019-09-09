@@ -8,18 +8,6 @@ import {
 } from "./utils/time";
 import {duration} from "./components/point-date";
 
-
-const descriptions = [
-  `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
-  `Cras aliquet varius magna, non porta ligula feugiat eget.`,
-  `Fusce tristique felis at fermentum pharetra.`,
-  `Aliquam id orci ut lectus varius viverra.`,
-  `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`,
-  `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`,
-  `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.`,
-  `Sed sed nisi sed augue convallis suscipit in sed felis.`,
-  `Aliquam erat volutpat.`, `Nunc fermentum tortor ac porta dapibus.`,
-  `In rutrum ac purus sit amet tempus.`];
 const filterTypes = [`Everything`, `Future`, `Past`];
 
 const sortTypes = [
@@ -39,35 +27,80 @@ const sortTypes = [
   </svg>`
   }];
 
-const transports = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`];
-const activities = [`Check-in`, `Sightseeing`, `Restaurant`];
-const cities = [`Amsterdam`, `Saint-Petersburg`, `Chamonix`, `Geneva`, `Praha`, `Berlin`];
-
-const offersMock = [
-  {id: `luggage`, text: `add luggage`, price: 10},
-  {id: `comfort`, text: `Switch to comfort class`, price: 150},
-  {id: `meal`, text: `Add meal`, price: 2},
-  {id: `seats`, text: `Choose seats`, price: 9},
-  {id: `train`, text: `Choose seats`, price: 9}
+const transports = [
+  {type: `Taxi`, label: `Taxi to airport`},
+  {type: `Bus`, label: `Going by bus to`},
+  {type: `Train`, label: `Going by train to`},
+  {type: `Ship`, label: `Ship to`},
+  {type: `Transport`, label: `Time in transport of`},
+  {type: `Drive`, label: `Drive to`},
+  {type: `Flight`, label: `Flight to`},
 ];
 
-const getRandomOffers = () => {
-  const randomOffers = new Set(getRandomValues(offersMock, getRandomNumber(0, 3)));
-  return randomOffers;
-};
+const activities = [
+  {type: `Check-in`, label: `Check in the hotel of`},
+  {type: `Sightseeing`, label: `Sightseeing in`},
+  {type: `Restaurant`, label: `Restaurant in`},
+];
+
+const cities = [
+  {name: `Amsterdam`, description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`, photos: []},
+  {name: `Moscow`, description: `Cras aliquet varius magna, non porta ligula feugiat eget.`, photos: []},
+  {name: `Chamonix`, description: `Fusce tristique felis at fermentum pharetra.`, photos: []},
+  {name: `Geneva`, description: `Aliquam id orci ut lectus varius viverra.`, photos: []},
+  {name: `Praha`, description: `Nunc fermentum tortor ac porta dapibus.`, photos: []},
+  {name: `Berlin`, description: `In rutrum ac purus sit amet tempus.`, photos: []},
+];
 
 
-const makeEvent = () => ({
-  type: getRandomItem(transports),
-  city: getRandomItem(cities),
-  activity: getRandomItem(activities),
-  pointText: getRandomItem(descriptions),
-  timeStart: getRandomDateStart(),
-  timeEnd: getRandomDateFinish(),
-  price: getRandomNumber(10, 200),
-  offers: Array.from(getRandomOffers()),
-}
+const getOffersMock = () => (
+  [{
+    id: `event-offer-luggage`,
+    text: `Add luggage`,
+    price: 30,
+    checked: Boolean(Math.round(Math.random()))
+  },
+  {
+    id: `event-offer-comfort`,
+    text: `Switch to comfort class`,
+    price: 100,
+    checked: Boolean(Math.round(Math.random()))
+  },
+  {
+    id: `event-offer-meal`,
+    text: `Add meal`,
+    price: 15,
+    checked: Boolean(Math.round(Math.random()))
+  },
+  {
+    id: `event-offer-seats`,
+    text: `Choose seats`,
+    price: 5,
+    checked: Boolean(Math.round(Math.random()))
+  },
+  {
+    id: `event-offer-train`,
+    text: `Travel by train`,
+    price: 40,
+    checked: Boolean(Math.round(Math.random()))
+  }
+  ]
 );
+
+const offersMock = getOffersMock();
+
+const makeEvent = () => {
+  const point = {
+    type: getRandomItem(transports.concat(activities)),
+    city: getRandomItem(cities).name,
+    pointText: getRandomItem(cities).description,
+    timeStart: getRandomDateStart(),
+    timeEnd: getRandomDateFinish(),
+    price: getRandomNumber(10, 200),
+    offers: getOffersMock(),
+  };
+  return point;
+};
 
 const getEvents = (num) =>
   new Array(num).fill(null).map(makeEvent);
