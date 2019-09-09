@@ -3,6 +3,9 @@ import Point from "./point";
 import {isEscapeKey} from "../utils/predicators";
 import {appendSection, unrender} from "../utils/dom";
 import {transports, activities, cities} from "../data";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
+import "flatpickr/dist/themes/light.css";
 
 class PointController {
   constructor(container, point, onDataChange, onChangeView) {
@@ -16,6 +19,18 @@ class PointController {
   }
 
   init() {
+    flatpickr(this._pointAddEdit.getElement().querySelector(`#event-start-time-1`), {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._point.timeStart,
+    });
+
+    flatpickr(this._pointAddEdit.getElement().querySelector(`#event-end-time-1`), {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._point.timeEnd,
+    });
+
     const onEscKeyDown = (evt) => {
       if (isEscapeKey(evt)) {
         this._container.replaceChild(this._pointItem.getElement(), this._pointAddEdit.getElement());

@@ -1,6 +1,7 @@
 import {transports, activities, cities} from "../data";
 import AbstractComponent from "./abstract-component";
 
+
 class AddEdit extends AbstractComponent {
   constructor({type, pointText, city, timeStart, timeEnd, price, offers}, selector, classes, isAdd = false) {
     super();
