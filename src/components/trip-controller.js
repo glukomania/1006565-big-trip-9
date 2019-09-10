@@ -1,14 +1,9 @@
 import {
-  Route,
-  Menu,
-  Filter,
   Sort,
-  Price,
   Day
 } from "./index";
 
 import {
-  addSection,
   appendSection,
   createElement,
   unrender
@@ -19,16 +14,12 @@ import {
   sortToChange
 } from "../utils/util";
 
-import {routePoints} from "../data";
 import PointController from "./point-controller";
 
 class TripController {
   constructor(container, dates) {
     this._container = container;
     this._dates = dates;
-    this._routePlace = null;
-    this._menuPlace = null;
-    this._filtersPlace = null;
     this.onChangeSort = this.onChangeSort.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._daysContainer = null;
@@ -37,15 +28,9 @@ class TripController {
   }
 
   init() {
-    this._routePlace = document.querySelector(`.trip-main__trip-info`);
-    this._menuPlace = document.querySelector(`.trip-controls h2:first-child`);
-    this._filtersPlace = document.querySelector(`.trip-controls h2:last-child`);
 
     // Rendering
     if (this._dates.length > 0) {
-      const route = routePoints.map(this._renderRoute).join(`\n`);
-      const routeBlock = createElement(route, `div`, [`trip-info__main`]);
-      appendSection(this._routePlace, routeBlock);
 
       this._renderSorting();
       this._daysContainer = createElement(null, `ul`, [`trip-days`]);
@@ -58,11 +43,6 @@ class TripController {
       stubText.textContent = `Click New Event to create your first point`;
       this._contentPlace.appendChild(stubText);
     }
-
-    this._renderPrice();
-    this._renderMenu();
-    this._renderFilter();
-
   }
 
   onChangeSort(typeSort) {
@@ -75,26 +55,6 @@ class TripController {
     } else {
       this._renderGroupedPoints();
     }
-  }
-
-  _renderRoute(routeMock) {
-    const route = new Route(routeMock, `section`, [`board`, `container`]);
-    return route.getTemplate();
-  }
-
-  _renderPrice() {
-    const totalPrice = new Price();
-    addSection(this._routePlace, totalPrice.getTemplate(), `beforeend`);
-  }
-
-  _renderMenu() {
-    const menu = new Menu();
-    addSection(this._menuPlace, menu.getTemplate(), `afterend`);
-  }
-
-  _renderFilter() {
-    const filter = new Filter();
-    addSection(this._filtersPlace, filter.getTemplate(), `afterend`);
   }
 
   _renderSorting() {
