@@ -1,12 +1,14 @@
 import {
   Sort,
-  Day
+  Day,
+  AddEdit
 } from "./index";
 
 import {
   appendSection,
   createElement,
-  unrender
+  unrender,
+  addSection
 } from "../utils/dom";
 
 import {
@@ -25,6 +27,7 @@ class TripController {
     this._daysContainer = null;
     this._subscriptions = [];
     this._onChangeView = this._onChangeView.bind(this);
+    this._pointAdd = null;
   }
 
   init() {
@@ -58,6 +61,24 @@ class TripController {
 
   show() {
     this._container.classList.remove(`visually-hidden`);
+  }
+  createPoint() {
+    if (this._pointAdd) {
+      return;
+    }
+
+    const defaultPoint = {
+      number: 1,
+      type: {type: `Taxi`, label: `Taxi to airport`},
+      city: ``,
+      pointText: ``,
+      timeStart: new Date(),
+      timeEnd: new Date(),
+      price: 0,
+      offers: []
+    };
+    this._pointAdd = new AddEdit(defaultPoint, true);
+    addSection(this._container, this._pointAdd.getTemplate(), `afterbegin`);
   }
 
   _showStubMessage() {

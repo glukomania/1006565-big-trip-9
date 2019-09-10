@@ -19,6 +19,7 @@ const routePlace = document.querySelector(`.trip-main__trip-info`);
 const menuPlace = document.querySelector(`.trip-controls h2:first-child`);
 const filtersPlace = document.querySelector(`.trip-controls h2:last-child`);
 const tripControls = document.querySelector(`.trip-controls`);
+const eventAddBtn = document.querySelector(`.trip-main__event-add-btn`);
 const totalPrice = new Price();
 const menu = new Menu();
 const filter = new Filter();
@@ -41,7 +42,7 @@ const contentPlace = document.querySelector(`.trip-events`);
 const tripController = new TripController(contentPlace, dates);
 tripController.init();
 
-// //////////////////
+// statistics
 
 const statistics = new Statistics();
 statistics.getElement().classList.add(`visually-hidden`);
@@ -67,3 +68,11 @@ const onMenuClick = (evt) => {
 };
 
 menuEl.addEventListener(`click`, onMenuClick);
+
+
+// add a new event
+const onAddNewClick = () => tripController.createPoint();
+//
+eventAddBtn.addEventListener(`click`, onAddNewClick);
+
+
