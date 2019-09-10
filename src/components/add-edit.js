@@ -3,7 +3,7 @@ import AbstractComponent from "./abstract-component";
 
 
 class AddEdit extends AbstractComponent {
-  constructor({type, pointText, city, timeStart, timeEnd, price, offers}, selector, classes, isAdd = false) {
+  constructor({type, pointText, city, timeStart, timeEnd, price, offers}, isAdd = false) {
     super();
     this._city = city;
     this._type = type;
@@ -13,8 +13,6 @@ class AddEdit extends AbstractComponent {
     this._price = price;
     this._offers = offers;
     this._isAdd = isAdd;
-    this._selector = selector;
-    this._classes = classes;
     this._getOfferTemplate = this._getOfferTemplate.bind(this);
     this._getTransportTemplate = this._getTransportTemplate.bind(this);
     this._getActivityTemplate = this._getActivityTemplate.bind(this);

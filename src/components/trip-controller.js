@@ -1,17 +1,14 @@
 import {
-  Route,
-  Menu,
-  Filter,
   Sort,
-  Price,
-  Day
+  Day,
+  AddEdit
 } from "./index";
 
 import {
-  addSection,
   appendSection,
   createElement,
-  unrender
+  unrender,
+  addSection
 } from "../utils/dom";
 
 import {
@@ -19,50 +16,31 @@ import {
   sortToChange
 } from "../utils/util";
 
-import {routePoints} from "../data";
 import PointController from "./point-controller";
 
 class TripController {
   constructor(container, dates) {
     this._container = container;
     this._dates = dates;
-    this._routePlace = null;
-    this._menuPlace = null;
-    this._filtersPlace = null;
     this.onChangeSort = this.onChangeSort.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._daysContainer = null;
     this._subscriptions = [];
     this._onChangeView = this._onChangeView.bind(this);
+    this._pointAdd = null;
   }
 
   init() {
-    this._routePlace = document.querySelector(`.trip-main__trip-info`);
-    this._menuPlace = document.querySelector(`.trip-controls h2:first-child`);
-    this._filtersPlace = document.querySelector(`.trip-controls h2:last-child`);
-
     // Rendering
     if (this._dates.length > 0) {
-      const route = routePoints.map(this._renderRoute).join(`\n`);
-      const routeBlock = createElement(route, `div`, [`trip-info__main`]);
-      appendSection(this._routePlace, routeBlock);
-
       this._renderSorting();
       this._daysContainer = createElement(null, `ul`, [`trip-days`]);
       appendSection(this._container, this._daysContainer);
       this._renderGroupedPoints();
 
     } else {
-      const stubText = document.createElement(`p`);
-      stubText.classList.add(`trip-events__msg`);
-      stubText.textContent = `Click New Event to create your first point`;
-      this._contentPlace.appendChild(stubText);
+      this._showStubMessage();
     }
-
-    this._renderPrice();
-    this._renderMenu();
-    this._renderFilter();
-
   }
 
   onChangeSort(typeSort) {
@@ -77,24 +55,37 @@ class TripController {
     }
   }
 
-  _renderRoute(routeMock) {
-    const route = new Route(routeMock, `section`, [`board`, `container`]);
-    return route.getTemplate();
+  hide() {
+    this._container.classList.add(`visually-hidden`);
   }
 
-  _renderPrice() {
-    const totalPrice = new Price();
-    addSection(this._routePlace, totalPrice.getTemplate(), `beforeend`);
+  show() {
+    this._container.classList.remove(`visually-hidden`);
+  }
+  createPoint() {
+    if (this._pointAdd) {
+      return;
+    }
+
+    const defaultPoint = {
+      number: 1,
+      type: {type: `Taxi`, label: `Taxi to airport`},
+      city: ``,
+      pointText: ``,
+      timeStart: new Date(),
+      timeEnd: new Date(),
+      price: 0,
+      offers: []
+    };
+    this._pointAdd = new AddEdit(defaultPoint, true);
+    addSection(this._container, this._pointAdd.getTemplate(), `afterbegin`);
   }
 
-  _renderMenu() {
-    const menu = new Menu();
-    addSection(this._menuPlace, menu.getTemplate(), `afterend`);
-  }
-
-  _renderFilter() {
-    const filter = new Filter();
-    addSection(this._filtersPlace, filter.getTemplate(), `afterend`);
+  _showStubMessage() {
+    const stubText = document.createElement(`p`);
+    stubText.classList.add(`trip-events__msg`);
+    stubText.textContent = `Click New Event to create your first point`;
+    this._container.appendChild(stubText);
   }
 
   _renderSorting() {
@@ -139,13 +130,16 @@ class TripController {
     this._dates[indexOfEditedPoint] = newPoint;
     this._daysContainer.innerHTML = ``;
 
-    this._renderGroupedPoints();
+    if (this._dates.every((element) => element === null)) {
+      this._showStubMessage();
+    } else {
+      this._renderGroupedPoints();
+    }
   }
 
   _onChangeView() {
     this._subscriptions.forEach((it) => it());
   }
-
 }
 
 export default TripController;

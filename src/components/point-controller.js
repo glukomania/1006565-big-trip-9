@@ -1,7 +1,7 @@
 import AddEdit from "./add-edit";
 import Point from "./point";
 import {isEscapeKey} from "../utils/predicators";
-import {appendSection, unrender} from "../utils/dom";
+import {appendSection, unrender, addSection} from "../utils/dom";
 import {transports, activities, cities} from "../data";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
@@ -92,15 +92,17 @@ class PointController {
         document.removeEventListener(`keydown`, onEscKeyDown);
       });
 
+    this._pointAddEdit.getElement()
+      .querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, () => {
+        this._onDataChange(this._point, null);
+      });
+
     const city = this._pointAddEdit.getElement().querySelector(`.event__input--destination`);
 
     city.addEventListener(`change`, this._changeCityDescription);
 
     appendSection(this._container, this._pointItem.getElement());
-  }
-
-  _getCityDesc(destination) {
-    return cities.find((item) => item.name === destination).description;
   }
 
   setDefaultView() {
@@ -114,6 +116,10 @@ class PointController {
     const target = evtCity.target;
     const description = this._pointAddEdit.getElement().querySelector(`.event__destination-description`);
     description.textContent = this._getCityDesc(target.value);
+  }
+
+  _getCityDesc(destination) {
+    return cities.find((item) => item.name === destination).description;
   }
 
 }

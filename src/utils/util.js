@@ -1,8 +1,10 @@
 export const groupByDayNumber = () => {
   return (array) =>
     array.reduce((objectsByKeyValue, obj) => {
-      const value = obj[`number`];
-      objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+      if (obj !== null && objectsByKeyValue !== null) {
+        const value = obj[`number`];
+        objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+      }
       return objectsByKeyValue;
     }, {});
 };
