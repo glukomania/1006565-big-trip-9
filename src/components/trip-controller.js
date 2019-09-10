@@ -28,20 +28,15 @@ class TripController {
   }
 
   init() {
-
     // Rendering
     if (this._dates.length > 0) {
-
       this._renderSorting();
       this._daysContainer = createElement(null, `ul`, [`trip-days`]);
       appendSection(this._container, this._daysContainer);
       this._renderGroupedPoints();
 
     } else {
-      const stubText = document.createElement(`p`);
-      stubText.classList.add(`trip-events__msg`);
-      stubText.textContent = `Click New Event to create your first point`;
-      this._contentPlace.appendChild(stubText);
+      this._showStubMessage();
     }
   }
 
@@ -55,6 +50,21 @@ class TripController {
     } else {
       this._renderGroupedPoints();
     }
+  }
+
+  hide() {
+    this._container.classList.add(`visually-hidden`);
+  }
+
+  show() {
+    this._container.classList.remove(`visually-hidden`);
+  }
+
+  _showStubMessage() {
+    const stubText = document.createElement(`p`);
+    stubText.classList.add(`trip-events__msg`);
+    stubText.textContent = `Click New Event to create your first point`;
+    this._container.appendChild(stubText);
   }
 
   _renderSorting() {
@@ -99,13 +109,16 @@ class TripController {
     this._dates[indexOfEditedPoint] = newPoint;
     this._daysContainer.innerHTML = ``;
 
-    this._renderGroupedPoints();
+    if (this._dates.every((element) => element === null)) {
+      this._showStubMessage();
+    } else {
+      this._renderGroupedPoints();
+    }
   }
 
   _onChangeView() {
     this._subscriptions.forEach((it) => it());
   }
-
 }
 
 export default TripController;

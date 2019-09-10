@@ -92,6 +92,12 @@ class PointController {
         document.removeEventListener(`keydown`, onEscKeyDown);
       });
 
+    this._pointAddEdit.getElement()
+      .querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, () => {
+        this._onDataChange(this._point, null);
+      });
+
     const city = this._pointAddEdit.getElement().querySelector(`.event__input--destination`);
 
     city.addEventListener(`change`, this._changeCityDescription);
