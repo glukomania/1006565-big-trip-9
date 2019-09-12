@@ -12,11 +12,15 @@ import {
 } from "../utils/dom";
 
 import {
-  groupByDayNumber,
+  groupByKey,
   sortToChange
 } from "../utils/util";
 
 import PointController from "./point-controller";
+
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
+import "flatpickr/dist/themes/light.css";
 
 class TripController {
   constructor(container, dates) {
@@ -79,6 +83,18 @@ class TripController {
     };
     this._pointAdd = new AddEdit(defaultPoint, true);
     addSection(this._container, this._pointAdd.getTemplate(), `afterbegin`);
+
+    flatpickr(this._pointAdd.getElement().querySelector(`#event-start-time-1`), {
+      altInput: true,
+      allowInput: true,
+      defaultDate: new Date(),
+    });
+
+    flatpickr(this._pointAdd.getElement().querySelector(`#event-end-time-1`), {
+      altInput: true,
+      allowInput: true,
+      defaultDate: new Date(),
+    });
   }
 
   _showStubMessage() {
@@ -94,7 +110,7 @@ class TripController {
   }
 
   _renderGroupedPoints() {
-    const groupeByDayNumber = groupByDayNumber();
+    const groupeByDayNumber = groupByKey(`number`);
     const groupedPoints = groupeByDayNumber(this._dates);
     //
 

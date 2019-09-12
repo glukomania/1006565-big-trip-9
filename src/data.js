@@ -7,6 +7,10 @@ import {
   getRandomDateFinish,
 } from "./utils/time";
 import {duration} from "./components/point-date";
+import {
+  groupByKey,
+  groupeByType
+} from "./utils/util";
 
 const filterTypes = [`Everything`, `Future`, `Past`];
 
@@ -144,6 +148,10 @@ if (points.length > 0) {
   routePoints = getRoutePoints();
 }
 
+// get data for stats
+
+const groupedPointsByType = groupeByType(dates);
+
 export {
   routePoints,
   filterTypes,
@@ -154,4 +162,5 @@ export {
   dates,
   points,
   offersMock,
+  groupedPointsByType
 };
