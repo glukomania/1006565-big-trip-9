@@ -76,7 +76,7 @@ const onMenuClick = (evt) => {
 menuContainer.addEventListener(`click`, onMenuClick);
 
 // filters
-const getFiltered = (filterType) => {
+const getFilteredPoints = (filterType) => {
   const dateNow = new Date();
   if (filterType === `Future`) {
     return dates.filter((item) => item.timeStart > dateNow);
@@ -86,36 +86,23 @@ const getFiltered = (filterType) => {
   return dates;
 };
 
+const renderFilteredPoints = (filterType) => {
+  document.querySelectorAll(`.day`).forEach(unrender);
+  unrender(document.querySelector(`.trip-sort`));
+  const filteredDates = getFilteredPoints(filterType);
+  tripController = new TripController(contentPlace, filteredDates);
+  tripController.init();
+};
+
 const filterContainer = document.querySelector(`.trip-filters`);
+
 const onFilterClick = (evt) => {
   const target = evt.target;
-  let filteredDates = [];
+
   if (document.querySelector(`.trip-events__msg`)) {
     unrender(document.querySelector(`.trip-events__msg`));
   }
-  switch (target.dataset.filter) {
-    case `Everything`:
-      document.querySelectorAll(`.day`).forEach(unrender);
-      unrender(document.querySelector(`.trip-sort`));
-      filteredDates = getFiltered(target.dataset.filter);
-      tripController = new TripController(contentPlace, filteredDates);
-      tripController.init();
-      break;
-    case `Future`:
-      document.querySelectorAll(`.day`).forEach(unrender);
-      unrender(document.querySelector(`.trip-sort`));
-      filteredDates = getFiltered(target.dataset.filter);
-      tripController = new TripController(contentPlace, filteredDates);
-      tripController.init();
-      break;
-    case `Past`:
-      document.querySelectorAll(`.day`).forEach(unrender);
-      unrender(document.querySelector(`.trip-sort`));
-      filteredDates = getFiltered(target.dataset.filter);
-      tripController = new TripController(contentPlace, filteredDates);
-      tripController.init();
-      break;
-  }
+  renderFilteredPoints(target.dataset.filter);
 };
 
 filterContainer.addEventListener(`click`, onFilterClick);
