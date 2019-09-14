@@ -1,7 +1,9 @@
 import {createElement} from "../utils/dom";
 
 class AbstractComponent {
-  constructor() {
+  constructor(selector, classes) {
+    this._selector = selector;
+    this._classes = classes;
     this._element = null;
     if (new.target === AbstractComponent) {
       throw new Error(`Can't instantiate AbstractComponent, only concrete one.`);

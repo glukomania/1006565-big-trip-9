@@ -15,11 +15,14 @@ import {
 } from "./utils/dom";
 
 
-const routePlace = document.querySelector(`.trip-main__trip-info`);
-const menuPlace = document.querySelector(`.trip-controls h2:first-child`);
-const filtersPlace = document.querySelector(`.trip-controls h2:last-child`);
-const tripControls = document.querySelector(`.trip-controls`);
-const eventAddBtn = document.querySelector(`.trip-main__event-add-btn`);
+const pageMain = document.querySelector(`.main-container`);
+const pageBody = document.querySelector(`.page-body__container`);
+const routePlace = pageBody.querySelector(`.trip-main__trip-info`);
+const menuPlace = pageBody.querySelector(`.trip-controls h2:first-child`);
+const filtersPlace = pageBody.querySelector(`.trip-controls h2:last-child`);
+const tripControls = pageBody.querySelector(`.trip-controls`);
+const eventAddBtn = pageBody.querySelector(`.trip-main__event-add-btn`);
+
 const totalPrice = new Price();
 const menu = new Menu();
 const filter = new Filter();
@@ -44,8 +47,10 @@ tripController.init();
 
 // statistics
 
-const statistics = new Statistics();
+const statistics = new Statistics(`section`, [`statistics`]);
+appendSection(pageMain, statistics.getElement());
 statistics.getElement().classList.add(`visually-hidden`);
+
 
 const menuEl = tripControls.querySelector(`.trip-tabs`);
 
@@ -63,6 +68,7 @@ const onMenuClick = (evt) => {
       tripController.hide();
       statistics.getElement().classList.remove(`visually-hidden`);
       evt.target.classList.add(`trip-tabs__btn--active`);
+      statistics.getCharts();
       break;
   }
 };
