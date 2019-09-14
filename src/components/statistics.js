@@ -5,6 +5,12 @@ import {groupedPointsByType} from "../data";
 import {duration} from "./point-date";
 
 class Statistics extends AbstractComponent {
+  constructor() {
+    super();
+    this._moneyGraph = null;
+    this._transportGraph = null;
+    this._timeGraph = null;
+  }
 
   getTemplate() {
     return `
@@ -103,9 +109,9 @@ class Statistics extends AbstractComponent {
       }
     });
 
-    const moneyGraph = new Chart(statMoney, getOptions(groupedPointsByType.map((item) => item.type), groupedPointsByType.map((item) => item.price), `MONEY`, moneyFormatter));
-    const TransportGraph = new Chart(statTransport, getOptions(groupedPointsByType.map((item) => item.type), groupedPointsByType.map((item) => item.number), `TRANSPORT`, transportFormatter));
-    const timeGraph = new Chart(statTime, getOptions(groupedPointsByType.map((item) => item.type), groupedPointsByType.map((item) => item.duration), `TIME SPENT`, timeSpentFormatter));
+    this._moneyGraph = new Chart(statMoney, getOptions(groupedPointsByType.map((item) => item.type), groupedPointsByType.map((item) => item.price), `MONEY`, moneyFormatter));
+    this._transportGraph = new Chart(statTransport, getOptions(groupedPointsByType.map((item) => item.type), groupedPointsByType.map((item) => item.number), `TRANSPORT`, transportFormatter));
+    this._timeGraph = new Chart(statTime, getOptions(groupedPointsByType.map((item) => item.type), groupedPointsByType.map((item) => item.duration), `TIME SPENT`, timeSpentFormatter));
 
   }
 }

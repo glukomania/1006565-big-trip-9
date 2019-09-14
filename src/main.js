@@ -11,7 +11,8 @@ import {
 import {
   createElement,
   appendSection,
-  addSection
+  addSection,
+  unrender
 } from "./utils/dom";
 
 
@@ -42,7 +43,7 @@ addSection(filtersPlace, filter.getTemplate(), `afterend`);
 
 const contentPlace = document.querySelector(`.trip-events`);
 
-const tripController = new TripController(contentPlace, dates);
+let tripController = new TripController(contentPlace, dates);
 tripController.init();
 
 // statistics
@@ -51,8 +52,7 @@ const statistics = new Statistics(`section`, [`statistics`]);
 appendSection(pageMain, statistics.getElement());
 statistics.getElement().classList.add(`visually-hidden`);
 
-
-const menuEl = tripControls.querySelector(`.trip-tabs`);
+const menuContainer = tripControls.querySelector(`.trip-tabs`);
 
 const onMenuClick = (evt) => {
   const allTabs = tripControls.querySelectorAll(`.trip-tabs__btn`);
@@ -73,8 +73,52 @@ const onMenuClick = (evt) => {
   }
 };
 
-menuEl.addEventListener(`click`, onMenuClick);
+menuContainer.addEventListener(`click`, onMenuClick);
 
+// filters
+const getFiltered = (filterType) => {
+  const dateNow = new Date();
+  if (filterType === `Future`) {
+    return dates.filter((item) => item.timeStart > dateNow);
+  } else if (filterType === `Past`) {
+    return dates.filter((item) => item.timeStart < dateNow);
+  }
+  return dates;
+};
+
+const filterContainer = document.querySelector(`.trip-filters`);
+const onFilterClick = (evt) => {
+  const target = evt.target;
+  let filteredDates = [];
+  if (document.querySelector(`.trip-events__msg`)) {
+    unrender(document.querySelector(`.trip-events__msg`));
+  }
+  switch (target.dataset.filter) {
+    case `Everything`:
+      document.querySelectorAll(`.day`).forEach(unrender);
+      unrender(document.querySelector(`.trip-sort`));
+      filteredDates = getFiltered(target.dataset.filter);
+      tripController = new TripController(contentPlace, filteredDates);
+      tripController.init();
+      break;
+    case `Future`:
+      document.querySelectorAll(`.day`).forEach(unrender);
+      unrender(document.querySelector(`.trip-sort`));
+      filteredDates = getFiltered(target.dataset.filter);
+      tripController = new TripController(contentPlace, filteredDates);
+      tripController.init();
+      break;
+    case `Past`:
+      document.querySelectorAll(`.day`).forEach(unrender);
+      unrender(document.querySelector(`.trip-sort`));
+      filteredDates = getFiltered(target.dataset.filter);
+      tripController = new TripController(contentPlace, filteredDates);
+      tripController.init();
+      break;
+  }
+};
+
+filterContainer.addEventListener(`click`, onFilterClick);
 
 // add a new event
 const onAddNewClick = () => tripController.createPoint();
