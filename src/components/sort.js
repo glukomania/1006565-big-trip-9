@@ -16,7 +16,6 @@ class Sort extends AbstractComponent {
       const sortContainer = this._element.querySelector(`.trip-sort`);
       sortContainer.addEventListener(`click`, this._onSortClick);
     }
-
     return this._element;
   }
 

@@ -1,7 +1,7 @@
 import AddEdit from "./add-edit";
 import Point from "./point";
 import {isEscapeKey} from "../utils/predicators";
-import {appendSection, unrender, addSection} from "../utils/dom";
+import {appendSection, unrender} from "../utils/dom";
 import {transports, activities, cities} from "../data";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";

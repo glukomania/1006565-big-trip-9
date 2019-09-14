@@ -11,15 +11,19 @@ import {
 import {
   createElement,
   appendSection,
-  addSection
+  addSection,
+  unrender
 } from "./utils/dom";
 
 
-const routePlace = document.querySelector(`.trip-main__trip-info`);
-const menuPlace = document.querySelector(`.trip-controls h2:first-child`);
-const filtersPlace = document.querySelector(`.trip-controls h2:last-child`);
-const tripControls = document.querySelector(`.trip-controls`);
-const eventAddBtn = document.querySelector(`.trip-main__event-add-btn`);
+const pageMain = document.querySelector(`.main-container`);
+const pageBody = document.querySelector(`.page-body__container`);
+const routePlace = pageBody.querySelector(`.trip-main__trip-info`);
+const menuPlace = pageBody.querySelector(`.trip-controls h2:first-child`);
+const filtersPlace = pageBody.querySelector(`.trip-controls h2:last-child`);
+const tripControls = pageBody.querySelector(`.trip-controls`);
+const eventAddBtn = pageBody.querySelector(`.trip-main__event-add-btn`);
+
 const totalPrice = new Price();
 const menu = new Menu();
 const filter = new Filter();
@@ -39,15 +43,16 @@ addSection(filtersPlace, filter.getTemplate(), `afterend`);
 
 const contentPlace = document.querySelector(`.trip-events`);
 
-const tripController = new TripController(contentPlace, dates);
+let tripController = new TripController(contentPlace, dates);
 tripController.init();
 
 // statistics
 
-const statistics = new Statistics();
+const statistics = new Statistics(`section`, [`statistics`]);
+appendSection(pageMain, statistics.getElement());
 statistics.getElement().classList.add(`visually-hidden`);
 
-const menuEl = tripControls.querySelector(`.trip-tabs`);
+const menuContainer = tripControls.querySelector(`.trip-tabs`);
 
 const onMenuClick = (evt) => {
   const allTabs = tripControls.querySelectorAll(`.trip-tabs__btn`);
@@ -63,12 +68,44 @@ const onMenuClick = (evt) => {
       tripController.hide();
       statistics.getElement().classList.remove(`visually-hidden`);
       evt.target.classList.add(`trip-tabs__btn--active`);
+      statistics.getCharts();
       break;
   }
 };
 
-menuEl.addEventListener(`click`, onMenuClick);
+menuContainer.addEventListener(`click`, onMenuClick);
 
+// filters
+const getFilteredPoints = (filterType) => {
+  const dateNow = new Date();
+  if (filterType === `Future`) {
+    return dates.filter((item) => item.timeStart > dateNow);
+  } else if (filterType === `Past`) {
+    return dates.filter((item) => item.timeStart < dateNow);
+  }
+  return dates;
+};
+
+const renderFilteredPoints = (filterType) => {
+  document.querySelectorAll(`.day`).forEach(unrender);
+  unrender(document.querySelector(`.trip-sort`));
+  const filteredDates = getFilteredPoints(filterType);
+  tripController = new TripController(contentPlace, filteredDates);
+  tripController.init();
+};
+
+const filterContainer = document.querySelector(`.trip-filters`);
+
+const onFilterClick = (evt) => {
+  const target = evt.target;
+
+  if (document.querySelector(`.trip-events__msg`)) {
+    unrender(document.querySelector(`.trip-events__msg`));
+  }
+  renderFilteredPoints(target.dataset.filter);
+};
+
+filterContainer.addEventListener(`click`, onFilterClick);
 
 // add a new event
 const onAddNewClick = () => tripController.createPoint();
