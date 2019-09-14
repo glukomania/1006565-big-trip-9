@@ -40,7 +40,6 @@ export const groupeByType = (array) => {
     groupped[index].price = getPriceForKey(array, typeArray.type);
     groupped[index].number = getNumberOfTransports(array, typeArray.type);
     groupped[index].duration = item.duration;
-    console.log(groupped[index].duration);
   });
   return groupped.filter((item, index, initialarray) => {
     return initialarray.map((mapItem) => mapItem[`type`]).indexOf(item[`type`]) === index;

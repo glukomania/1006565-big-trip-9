@@ -102,7 +102,6 @@ class Statistics extends AbstractComponent {
         },
       }
     });
-    const labelsDuration = groupedPointsByType.map((item) => duration.getDuration(item.duration));
 
     const moneyGraph = new Chart(statMoney, getOptions(groupedPointsByType.map((item) => item.type), groupedPointsByType.map((item) => item.price), `MONEY`, moneyFormatter));
     const TransportGraph = new Chart(statTransport, getOptions(groupedPointsByType.map((item) => item.type), groupedPointsByType.map((item) => item.number), `TRANSPORT`, transportFormatter));
