@@ -136,8 +136,8 @@ class AddEdit extends AbstractComponent {
         visually-hidden"
         type="radio"
         name="event-type"
-        value="${type}"
-        ${this._type.type === type ? `checked` : ``}
+        value="${transportLowCase}"
+        ${this._type.type === transportLowCase ? `checked` : ``}
       >
       <label
         class="event__type-label
@@ -158,8 +158,8 @@ class AddEdit extends AbstractComponent {
         visually-hidden"
         type="radio"
         name="event-type"
-        value="${type}"
-        ${this._type.type === type ? `checked` : ``}
+        value="${activityLowCase}"
+        ${this._type.type === activityLowCase ? `checked` : ``}
       >
       <label
         class="event__type-label
@@ -189,12 +189,12 @@ class AddEdit extends AbstractComponent {
   </button>`;
   }
 
-  _getOfferTemplate({id, text, price, checked}) {
+  _getOfferTemplate({title, price, accepted}) {
     return `
   <div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden" id="${id}-1" type="checkbox" name="event-offer" value="${id}" ${checked === true ? `checked` : ``}>
-  <label class="event__offer-label" for="${id}-1">
-    <span class="event__offer-title">${text}</span>
+  <input class="event__offer-checkbox  visually-hidden" id="${title}-1" type="checkbox" name="event-offer" value="${title}" ${accepted === true ? `checked` : ``}>
+  <label class="event__offer-label" for="${title}-1">
+    <span class="event__offer-title">${title}</span>
     &plus;
     &euro;&nbsp;<span class="event__offer-price">${price}</span>
   </label>

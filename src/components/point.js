@@ -58,7 +58,7 @@ class Point extends AbstractComponent {
 
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${this._offers.filter((it) => it.checked === true).map(this._getOfferBlock).join(`\n`)}
+          ${this._offers.filter((it) => it.accepted === true).map(this._getOfferBlock).join(`\n`)}
         </ul>
 
         <button class="event__rollup-btn" type="button">
@@ -68,10 +68,10 @@ class Point extends AbstractComponent {
     `;
   }
 
-  _getOfferBlock({text, price}) {
+  _getOfferBlock({title, price}) {
     return `
     <li class="event__offer">
-    <span class="event__offer-title">${text}</span>
+    <span class="event__offer-title">${title}</span>
     &plus;
     &euro;&nbsp;<span class="event__offer-price">${price}</span>
     </li>`;

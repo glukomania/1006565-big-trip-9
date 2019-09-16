@@ -45,9 +45,10 @@ class PointController {
       .addEventListener(`click`, (evt) => {
         evt.preventDefault();
         const formData = new FormData(this._pointAddEdit.getElement().querySelector(`.trip-events__item`));
+        console.log(formData.get(`event-type`));
         const entry = {
           number: this._point.number,
-          type: {type: formData.get(`event-type`), label: transports.concat(activities).find((x) => x.type === formData.get(`event-type`)).label},
+          type: {type: formData.get(`event-type`), label: transports.concat(activities).find((x) => x.type.toLowerCase() === formData.get(`event-type`)).label},
           city: formData.get(`event-destination`),
           pointText: this._getCityDesc(formData.get(`event-destination`)),
           timeStart: new Date(formData.get(`event-start-time`)),
@@ -56,9 +57,9 @@ class PointController {
           offers: offers
           .map((it) => ({
             id: it.querySelector(`.event__offer-checkbox`).id,
-            text: it.querySelector(`.event__offer-title`).textContent,
+            title: it.querySelector(`.event__offer-title`).textContent,
             price: +it.querySelector(`.event__offer-price`).textContent,
-            checked: it.querySelector(`.event__offer-checkbox`).checked
+            accepted: it.querySelector(`.event__offer-checkbox`).checked
           }))
         };
 

@@ -16,6 +16,8 @@ import {
   sortToChange
 } from "../utils/util";
 
+import {getDatesFiltering, getPointsWithDuration} from "../data";
+
 import PointController from "./point-controller";
 
 import flatpickr from "flatpickr";
@@ -23,9 +25,9 @@ import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/light.css";
 
 class TripController {
-  constructor(container, dates) {
+  constructor(container) {
     this._container = container;
-    this._dates = dates;
+    this._dates = null;
     this.onChangeSort = this.onChangeSort.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._daysContainer = null;
@@ -34,7 +36,9 @@ class TripController {
     this._pointAdd = null;
   }
 
-  init() {
+  init(dates) {
+    this._dates = getDatesFiltering(dates);
+    getPointsWithDuration(this._dates);
     // Rendering
     if (this._dates.length > 0) {
       this._renderSorting();
