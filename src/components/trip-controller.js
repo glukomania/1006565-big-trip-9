@@ -16,7 +16,7 @@ import {
   sortToChange
 } from "../utils/util";
 
-import {getDatesFiltering, getPointsWithDuration} from "../data";
+import Price from "./price";
 
 import PointController from "./point-controller";
 
@@ -36,11 +36,15 @@ class TripController {
     this._pointAdd = null;
   }
 
-  init(dates) {
-    this._dates = getDatesFiltering(dates);
-    getPointsWithDuration(this._dates);
+  init(filterType, dates) {
+    if (dates) {
+      this._dates = dates;
+    }
+
+    this._datesToFilter = this._getFilteredPoints(this._dates, filterType);
+
     // Rendering
-    if (this._dates.length > 0) {
+    if (this._datesToFilter.length > 0) {
       this._renderSorting();
       this._daysContainer = createElement(null, `ul`, [`trip-days`]);
       appendSection(this._container, this._daysContainer);
@@ -49,6 +53,16 @@ class TripController {
     } else {
       this._showStubMessage();
     }
+  }
+
+  _getFilteredPoints(datesToFilter, filterType) {
+    const dateNow = new Date();
+    if (filterType === `Future`) {
+      return datesToFilter.filter((item) => item.timeStart > dateNow);
+    } else if (filterType === `Past`) {
+      return datesToFilter.filter((item) => item.timeStart < dateNow);
+    }
+    return datesToFilter;
   }
 
   onChangeSort(typeSort) {
@@ -115,7 +129,7 @@ class TripController {
 
   _renderGroupedPoints() {
     const groupeByDayNumber = groupByKey(`number`);
-    const groupedPoints = groupeByDayNumber(this._dates);
+    const groupedPoints = groupeByDayNumber(this._datesToFilter);
     //
 
     for (const [key, value] of Object.entries(groupedPoints)) {

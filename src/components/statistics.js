@@ -1,32 +1,47 @@
 import AbstractComponent from "./abstract-component";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {groupedPointsByType} from "../data";
 import {duration} from "./point-date";
+import {groupeByType} from "../utils/util";
 
 class Statistics extends AbstractComponent {
   constructor() {
     super();
+    this._points = null;
     this._moneyGraph = null;
     this._transportGraph = null;
     this._timeGraph = null;
+    this._pointsGroupedByType = null;
+  }
+
+  getElement(dates) {
+    if (dates) {
+      this._points = dates;
+    }
+    if (this._element === null) {
+      this._element = document.createElement(`section`);
+      this._element.classList.add(`statistics`);
+      this._element.classList.add(`visually-hidden`);
+      this._element.innerHTML = this.getTemplate();
+    }
+    return this._element;
   }
 
   getTemplate() {
     return `
-    <h2 class="visually-hidden">Trip statistics</h2>
+      <h2 class="visually-hidden">Trip statistics</h2>
 
-    <div class="statistics__item statistics__item--money">
-      <canvas class="statistics__chart  statistics__chart--money" width="900" height="300"></canvas>
-    </div>
+      <div class="statistics__item statistics__item--money">
+        <canvas class="statistics__chart  statistics__chart--money" width="900" height="300"></canvas>
+      </div>
 
-    <div class="statistics__item statistics__item--transport">
-      <canvas class="statistics__chart  statistics__chart--transport" width="900" height="300"></canvas>
-    </div>
+      <div class="statistics__item statistics__item--transport">
+        <canvas class="statistics__chart  statistics__chart--transport" width="900" height="300"></canvas>
+      </div>
 
-    <div class="statistics__item statistics__item--time-spend">
-      <canvas class="statistics__chart  statistics__chart--time" width="900" height="300"></canvas>
-    </div>
+      <div class="statistics__item statistics__item--time-spend">
+        <canvas class="statistics__chart  statistics__chart--time" width="900" height="300"></canvas>
+      </div>
     `;
   }
 
@@ -109,9 +124,10 @@ class Statistics extends AbstractComponent {
       }
     });
 
-    this._moneyGraph = new Chart(statMoney, getOptions(groupedPointsByType.map((item) => item.type), groupedPointsByType.map((item) => item.price), `MONEY`, moneyFormatter));
-    this._transportGraph = new Chart(statTransport, getOptions(groupedPointsByType.map((item) => item.type), groupedPointsByType.map((item) => item.number), `TRANSPORT`, transportFormatter));
-    this._timeGraph = new Chart(statTime, getOptions(groupedPointsByType.map((item) => item.type), groupedPointsByType.map((item) => item.duration), `TIME SPENT`, timeSpentFormatter));
+    this._pointsGroupedByType = groupeByType(this._points);
+    this._moneyGraph = new Chart(statMoney, getOptions(this._pointsGroupedByType.map((item) => item.type), this._pointsGroupedByType.map((item) => item.price), `MONEY`, moneyFormatter));
+    this._transportGraph = new Chart(statTransport, getOptions(this._pointsGroupedByType.map((item) => item.type), this._pointsGroupedByType.map((item) => item.number), `TRANSPORT`, transportFormatter));
+    this._timeGraph = new Chart(statTime, getOptions(this._pointsGroupedByType.map((item) => item.type), this._pointsGroupedByType.map((item) => item.duration), `TIME SPENT`, timeSpentFormatter));
 
   }
 }

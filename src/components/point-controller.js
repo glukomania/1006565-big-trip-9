@@ -54,6 +54,7 @@ class PointController {
           timeStart: new Date(formData.get(`event-start-time`)),
           timeEnd: new Date(formData.get(`event-end-time`)),
           price: +formData.get(`event-price`),
+          isFavorite: formData.get(`event-favorite`),
           offers: offers
           .map((it) => ({
             id: it.querySelector(`.event__offer-checkbox`).id,

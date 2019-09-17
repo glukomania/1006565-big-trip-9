@@ -6,9 +6,6 @@ import {
   getRandomDateFinish,
 } from "./utils/time";
 import {duration} from "./components/point-date";
-import {
-  groupeByType
-} from "./utils/util";
 
 const filterTypes = [`Everything`, `Future`, `Past`];
 
@@ -131,8 +128,8 @@ const getEvents = (num) =>
 
 const points = getEvents(5);
 
-const getDatesFiltering = (unfilteredPoints) => {
-  const sortedPoints = unfilteredPoints.sort((a, b) => a.timeStart > b.timeStart ? 1 : -1);
+const getDatesSorted = (unsortedPoints) => {
+  const sortedPoints = unsortedPoints.sort((a, b) => a.timeStart > b.timeStart ? 1 : -1);
   let number = 1;
   sortedPoints[0].number = number;
   for (let i = 1; i < sortedPoints.length; i++) {
@@ -150,9 +147,9 @@ const getPointsWithDuration = (initialPoints) => {
   });
 };
 
-const dates = getDatesFiltering(points);
+// const dates = getDatesSorted(points);
 
-getPointsWithDuration(dates);
+// getPointsWithDuration(dates);
 
 const getRoutePoints = () => [
   {
@@ -170,7 +167,7 @@ if (points.length > 0) {
 
 // get data for stats
 
-const groupedPointsByType = groupeByType(dates);
+// const groupedPointsByType = groupeByType(dates);
 
 export {
   routePoints,
@@ -179,10 +176,8 @@ export {
   transports,
   activities,
   cities,
-  dates,
   points,
   offersMock,
-  getDatesFiltering,
-  groupedPointsByType,
+  getDatesSorted,
   getPointsWithDuration
 };

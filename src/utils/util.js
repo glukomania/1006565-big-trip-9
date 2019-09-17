@@ -20,7 +20,7 @@ const getPriceForKey = (arrayOfObj, key) => {
 };
 
 const getNumberOfTransports = (arrayOfObj, key) => {
-  let number = 1;
+  let number = 0;
   let filteredArray = arrayOfObj.filter((item) => {
     const itemType = item.type;
     return itemType.type === key;
@@ -31,15 +31,27 @@ const getNumberOfTransports = (arrayOfObj, key) => {
   return number;
 };
 
+const getDuration = (arrayOfObj, key) => {
+  let duration = 0;
+  let filteredArray = arrayOfObj.filter((item) => {
+    const itemType = item.type;
+    return itemType.type === key;
+  });
+  filteredArray.forEach((item) => {
+    duration = duration + item.duration;
+  });
+  return duration;
+};
+
 export const groupeByType = (array) => {
-  const groupped = [];
+  let groupped = [];
   array.forEach((item, index) => {
     const typeArray = item.type;
     groupped[index] = {};
     groupped[index].type = typeArray.type;
     groupped[index].price = getPriceForKey(array, typeArray.type);
     groupped[index].number = getNumberOfTransports(array, typeArray.type);
-    groupped[index].duration = item.duration;
+    groupped[index].duration = getDuration(array, typeArray.type);
   });
   return groupped.filter((item, index, initialarray) => {
     return initialarray.map((mapItem) => mapItem[`type`]).indexOf(item[`type`]) === index;

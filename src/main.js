@@ -3,9 +3,9 @@ import TripController from "./components/trip-controller";
 import {routePoints} from "./data";
 import {
   Route,
+  Price,
   Menu,
   Filter,
-  Price,
   Statistics
 } from "./components/index";
 import {
@@ -15,6 +15,11 @@ import {
   unrender
 } from "./utils/dom";
 import API from "./api";
+
+import {
+  getDatesSorted,
+  getPointsWithDuration
+} from "./data";
 
 const pageMain = document.querySelector(`.main-container`);
 const pageBody = document.querySelector(`.page-body__container`);
@@ -28,20 +33,17 @@ const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip/`;
 const api = new API(END_POINT, AUTHORIZATION);
 
-const totalPrice = new Price();
+
 const menu = new Menu();
 const filter = new Filter();
 
-const renderRoute = (routeMock) => {
-  const route = new Route(routeMock, `section`, [`board`, `container`]);
-  return route.getTemplate();
-};
+// const renderRoute = (routeMock) => {
+//   const route = new Route(points);
+//   return route.getTemplate();
+// };
 
-const route = routePoints.map(renderRoute).join(`\n`);
-const routeBlock = createElement(route, `div`, [`trip-info__main`]);
+// appendSection(routePlace, routeBlock);
 
-appendSection(routePlace, routeBlock);
-addSection(routePlace, totalPrice.getTemplate(), `beforeend`);
 addSection(menuPlace, menu.getTemplate(), `afterend`);
 addSection(filtersPlace, filter.getTemplate(), `afterend`);
 
@@ -49,27 +51,40 @@ const contentPlace = document.querySelector(`.trip-events`);
 
 // points
 
-const onDataChange = (actionType, update) => {
-  switch (actionType) {
-    case `delete`:
-      api.deleteTask({
-        id: update.id
-      })
-        .then(() => api.getTasks())
-        .then((points) => tripController.show(points));
-      break;
-  }
-};
+// const onDataChange = (actionType, update) => {
+//   switch (actionType) {
+//     case `delete`:
+//       api.deleteTask({
+//         id: update.id
+//       })
+//         .then(() => api.getTasks())
+//         .then((points) => tripController.show(points));
+//       break;
+//   }
+// };
 
-let tripController = new TripController(contentPlace, onDataChange);
-api.getPoints().then((dates) => tripController.init(dates));
+const totalPrice = new Price();
+let tripController = new TripController(contentPlace);
+const statistics = new Statistics();
+
+api.getPoints()
+.then((datesFromServer) => {
+  const dates = getDatesSorted(datesFromServer);
+  getPointsWithDuration(dates);
+
+  const route = new Route(dates);
+  route.getTemplate();
+  // const route = routePoints.map(renderRoute).join(`\n`);
+  appendSection(routePlace, route.getElement(), `beforeend`);
+
+  addSection(routePlace, totalPrice.getTemplate(dates), `beforeend`);
+  appendSection(pageMain, statistics.getElement(dates), `beforeend`);
+
+  tripController.init(`Everything`, dates);
+});
 
 // statistics
 
-
-
-const statistics = new Statistics(`section`, [`statistics`]);
-appendSection(pageMain, statistics.getElement());
 statistics.getElement().classList.add(`visually-hidden`);
 
 const menuContainer = tripControls.querySelector(`.trip-tabs`);
@@ -82,10 +97,18 @@ const onMenuClick = (evt) => {
     case `table`:
       statistics.getElement().classList.add(`visually-hidden`);
       evt.target.classList.add(`trip-tabs__btn--active`);
+
+      appendSection(tripControls, filter.getElement());
+      filterContainer.addEventListener(`click`, onFilterClick);
+
       tripController.show();
       break;
     case `stats`:
       tripController.hide();
+
+      unrender(tripControls.querySelector(`.trip-filters`));
+      filterContainer.removeEventListener(`click`, onFilterClick);
+
       statistics.getElement().classList.remove(`visually-hidden`);
       evt.target.classList.add(`trip-tabs__btn--active`);
       statistics.getCharts();
@@ -96,23 +119,6 @@ const onMenuClick = (evt) => {
 menuContainer.addEventListener(`click`, onMenuClick);
 
 // filters
-const getFilteredPoints = (datesToFilter, filterType) => {
-  const dateNow = new Date();
-  if (filterType === `Future`) {
-    return datesToFilter.filter((item) => item.timeStart > dateNow);
-  } else if (filterType === `Past`) {
-    return datesToFilter.filter((item) => item.timeStart < dateNow);
-  }
-  return datesToFilter;
-};
-
-const renderFilteredPoints = (filterType) => {
-  document.querySelectorAll(`.day`).forEach(unrender);
-  unrender(document.querySelector(`.trip-sort`));
-
-  tripController = new TripController(contentPlace);
-  api.getPoints().then((dates) => tripController.init(getFilteredPoints(dates, filterType)));
-};
 
 const filterContainer = document.querySelector(`.trip-filters`);
 
@@ -127,7 +133,11 @@ const onFilterClick = (evt) => {
       unrender(document.querySelector(`.trip-events__msg`));
     }
 
-    renderFilteredPoints(target.dataset.filter);
+    document.querySelectorAll(`.day`).forEach(unrender);
+    unrender(document.querySelector(`.trip-sort`));
+    unrender(document.querySelector(`.trip-info__cost`));
+
+    tripController.init(target.dataset.filter);
   }
 };
 
@@ -139,4 +149,3 @@ const onAddNewClick = () => tripController.createPoint();
 eventAddBtn.addEventListener(`click`, onAddNewClick);
 
 // requests
-

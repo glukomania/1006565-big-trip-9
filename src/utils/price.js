@@ -1,6 +1,4 @@
 
-import {points} from "../data";
-
 const getPrice = (array, key, extraKey) => {
   let sum = 0;
   for (let item of array) {
@@ -15,6 +13,4 @@ const getPrice = (array, key, extraKey) => {
   return sum;
 };
 
-const setPrice = getPrice(points, `price`, `offers`);
-
-export {setPrice};
+export {getPrice};

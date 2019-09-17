@@ -3,7 +3,7 @@ import AbstractComponent from "./abstract-component";
 
 
 class AddEdit extends AbstractComponent {
-  constructor({type, pointText, city, timeStart, timeEnd, price, offers}, isAdd = false) {
+  constructor({type, pointText, city, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false) {
     super();
     this._city = city;
     this._type = type;
@@ -176,7 +176,7 @@ class AddEdit extends AbstractComponent {
 
   _getOptionBlock() {
     return `
-  <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+  <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${this._isFavorite ? `checked` : ``}>
   <label class="event__favorite-btn" for="event-favorite-1">
     <span class="visually-hidden">Add to favorite</span>
     <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
