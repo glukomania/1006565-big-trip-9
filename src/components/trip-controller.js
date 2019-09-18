@@ -16,8 +16,6 @@ import {
   sortToChange
 } from "../utils/util";
 
-import Price from "./price";
-
 import PointController from "./point-controller";
 
 import flatpickr from "flatpickr";

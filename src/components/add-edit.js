@@ -6,6 +6,7 @@ class AddEdit extends AbstractComponent {
   constructor({type, pointText, city, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false) {
     super();
     this._city = city;
+    this._isFavorite = isFavorite;
     this._type = type;
     this._pointText = pointText;
     this._timeStart = timeStart;

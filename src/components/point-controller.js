@@ -47,14 +47,14 @@ class PointController {
         evt.preventDefault();
         const formData = new FormData(this._pointAddEdit.getElement().querySelector(`.trip-events__item`));
         const entry = {
-          id: this._point.id.toString(),
-          type: formData.get(`event-type`),
-          destination: {name: formData.get(`event-destination`), description: this._getCityDesc(formData.get(`event-destination`)), pictures: [{src: "http://picsum.photos/300/200?r=0.7831543717223908", description: "Valencia kindergarten"}]},
-          date_from: new Date(formData.get(`event-start-time`)),
-          date_to: new Date(formData.get(`event-end-time`)),
-          base_price: +formData.get(`event-price`),
-          is_favorite: formData.get(`event-favorite`) ? true : false,
-          offers: offers
+          "id": this._point.id.toString(),
+          "type": formData.get(`event-type`),
+          "destination": {name: formData.get(`event-destination`), description: this._getCityDesc(formData.get(`event-destination`)), pictures: [{src: `http://picsum.photos/300/200?r=0.7831543717223908`, description: `Valencia kindergarten`}]},
+          "date_from": new Date(formData.get(`event-start-time`)),
+          "date_to": new Date(formData.get(`event-end-time`)),
+          "base_price": +formData.get(`event-price`),
+          "is_favorite": formData.get(`event-favorite`) ? true : false,
+          "offers": offers
           .map((it) => ({
             id: it.querySelector(`.event__offer-checkbox`).id,
             title: it.querySelector(`.event__offer-title`).textContent,
