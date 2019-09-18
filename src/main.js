@@ -1,20 +1,22 @@
-import {dates} from "./data";
 import TripController from "./components/trip-controller";
-import {routePoints} from "./data";
 import {
   Route,
+  Price,
   Menu,
   Filter,
-  Price,
   Statistics
 } from "./components/index";
 import {
-  createElement,
   appendSection,
   addSection,
   unrender
 } from "./utils/dom";
+import API from "./api";
 
+import {
+  getDatesSorted,
+  getPointsWithDuration
+} from "./data";
 
 const pageMain = document.querySelector(`.main-container`);
 const pageBody = document.querySelector(`.page-body__container`);
@@ -23,33 +25,87 @@ const menuPlace = pageBody.querySelector(`.trip-controls h2:first-child`);
 const filtersPlace = pageBody.querySelector(`.trip-controls h2:last-child`);
 const tripControls = pageBody.querySelector(`.trip-controls`);
 const eventAddBtn = pageBody.querySelector(`.trip-main__event-add-btn`);
+const tripDaysContainer = document.querySelector(`.trip-days`);
 
-const totalPrice = new Price();
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
+const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip/`;
+const api = new API(END_POINT, AUTHORIZATION);
+
 const menu = new Menu();
 const filter = new Filter();
 
-const renderRoute = (routeMock) => {
-  const route = new Route(routeMock, `section`, [`board`, `container`]);
-  return route.getTemplate();
-};
-
-const route = routePoints.map(renderRoute).join(`\n`);
-const routeBlock = createElement(route, `div`, [`trip-info__main`]);
-appendSection(routePlace, routeBlock);
-
-addSection(routePlace, totalPrice.getTemplate(), `beforeend`);
 addSection(menuPlace, menu.getTemplate(), `afterend`);
 addSection(filtersPlace, filter.getTemplate(), `afterend`);
 
 const contentPlace = document.querySelector(`.trip-events`);
 
-let tripController = new TripController(contentPlace, dates);
-tripController.init();
+const totalPrice = new Price();
+
+// change points
+
+const onDataChange = (actionType, update) => {
+  tripController.unrenderAllPoints();
+  switch (actionType) {
+    case `create`:
+      api.createPoint({
+        id: update.id,
+        data: update.toRAW()
+      }).then(() => api.getPoints())
+        .then((points) => {
+          const sortedPoints = setSortAndDuration(points);
+          tripController.init(`Everything`, sortedPoints);
+        });
+      break;
+    case `update`:
+      api.updatePoint({
+        id: update.id,
+        data: update.toRAW()
+      }).then(() => api.getPoints())
+        .then((points) => {
+          const sortedPoints = setSortAndDuration(points);
+          tripController.init(`Everything`, sortedPoints);
+        });
+      break;
+    case `delete`:
+      api.deletePoint({
+        id: update.id
+      })
+        .then(() => api.getPoints())
+        .then((points) => {
+          const sortedPoints = setSortAndDuration(points);
+          tripController.init(`Everything`, sortedPoints);
+        });
+      break;
+  }
+};
+
+let tripController = new TripController(contentPlace, onDataChange);
+const statistics = new Statistics();
+
+// load data
+
+const setSortAndDuration = (points) => {
+  const sortedDates = getDatesSorted(points);
+  getPointsWithDuration(sortedDates);
+  return sortedDates;
+};
+
+api.getPoints()
+.then((datesFromServer) => {
+  const sortedPoints = setSortAndDuration(datesFromServer);
+
+  const route = new Route(sortedPoints);
+  route.getTemplate();
+  appendSection(routePlace, route.getElement(), `beforeend`);
+
+  addSection(routePlace, totalPrice.getTemplate(sortedPoints), `beforeend`);
+  appendSection(pageMain, statistics.getElement(sortedPoints), `beforeend`);
+
+  tripController.init(`Everything`, sortedPoints);
+});
 
 // statistics
 
-const statistics = new Statistics(`section`, [`statistics`]);
-appendSection(pageMain, statistics.getElement());
 statistics.getElement().classList.add(`visually-hidden`);
 
 const menuContainer = tripControls.querySelector(`.trip-tabs`);
@@ -62,10 +118,18 @@ const onMenuClick = (evt) => {
     case `table`:
       statistics.getElement().classList.add(`visually-hidden`);
       evt.target.classList.add(`trip-tabs__btn--active`);
+
+      appendSection(tripControls, filter.getElement());
+      filterContainer.addEventListener(`click`, onFilterClick);
+
       tripController.show();
       break;
     case `stats`:
       tripController.hide();
+
+      unrender(tripControls.querySelector(`.trip-filters`));
+      filterContainer.removeEventListener(`click`, onFilterClick);
+
       statistics.getElement().classList.remove(`visually-hidden`);
       evt.target.classList.add(`trip-tabs__btn--active`);
       statistics.getCharts();
@@ -76,40 +140,31 @@ const onMenuClick = (evt) => {
 menuContainer.addEventListener(`click`, onMenuClick);
 
 // filters
-const getFilteredPoints = (filterType) => {
-  const dateNow = new Date();
-  if (filterType === `Future`) {
-    return dates.filter((item) => item.timeStart > dateNow);
-  } else if (filterType === `Past`) {
-    return dates.filter((item) => item.timeStart < dateNow);
-  }
-  return dates;
-};
-
-const renderFilteredPoints = (filterType) => {
-  document.querySelectorAll(`.day`).forEach(unrender);
-  unrender(document.querySelector(`.trip-sort`));
-  const filteredDates = getFilteredPoints(filterType);
-  tripController = new TripController(contentPlace, filteredDates);
-  tripController.init();
-};
 
 const filterContainer = document.querySelector(`.trip-filters`);
 
 const onFilterClick = (evt) => {
   const target = evt.target;
 
-  if (document.querySelector(`.trip-events__msg`)) {
-    unrender(document.querySelector(`.trip-events__msg`));
+  if (target.tagName !== `INPUT`) {
+    return;
+  } else {
+
+    if (document.querySelector(`.trip-events__msg`)) {
+      unrender(document.querySelector(`.trip-events__msg`));
+    }
+
+    document.querySelectorAll(`.day`).forEach(unrender);
+    unrender(document.querySelector(`.trip-sort`));
+    unrender(document.querySelector(`.trip-info__cost`));
+
+    tripController.init(target.dataset.filter);
   }
-  renderFilteredPoints(target.dataset.filter);
 };
 
 filterContainer.addEventListener(`click`, onFilterClick);
 
 // add a new event
 const onAddNewClick = () => tripController.createPoint();
-//
 eventAddBtn.addEventListener(`click`, onAddNewClick);
-
 

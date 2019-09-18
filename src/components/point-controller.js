@@ -2,10 +2,11 @@ import AddEdit from "./add-edit";
 import Point from "./point";
 import {isEscapeKey} from "../utils/predicators";
 import {appendSection, unrender} from "../utils/dom";
-import {transports, activities, cities} from "../data";
+import {cities} from "../data";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/light.css";
+import {ModelPoint} from "../model-task";
 
 class PointController {
   constructor(container, point, onDataChange, onChangeView) {
@@ -46,23 +47,24 @@ class PointController {
         evt.preventDefault();
         const formData = new FormData(this._pointAddEdit.getElement().querySelector(`.trip-events__item`));
         const entry = {
-          number: this._point.number,
-          type: {type: formData.get(`event-type`), label: transports.concat(activities).find((x) => x.type === formData.get(`event-type`)).label},
-          city: formData.get(`event-destination`),
-          pointText: this._getCityDesc(formData.get(`event-destination`)),
-          timeStart: new Date(formData.get(`event-start-time`)),
-          timeEnd: new Date(formData.get(`event-end-time`)),
-          price: +formData.get(`event-price`),
-          offers: offers
+          "id": this._point.id.toString(),
+          "type": formData.get(`event-type`),
+          "destination": {name: formData.get(`event-destination`), description: this._getCityDesc(formData.get(`event-destination`)), pictures: [{src: `http://picsum.photos/300/200?r=0.7831543717223908`, description: `Valencia kindergarten`}]},
+          "date_from": new Date(formData.get(`event-start-time`)),
+          "date_to": new Date(formData.get(`event-end-time`)),
+          "base_price": +formData.get(`event-price`),
+          "is_favorite": formData.get(`event-favorite`) ? true : false,
+          "offers": offers
           .map((it) => ({
             id: it.querySelector(`.event__offer-checkbox`).id,
-            text: it.querySelector(`.event__offer-title`).textContent,
+            title: it.querySelector(`.event__offer-title`).textContent,
             price: +it.querySelector(`.event__offer-price`).textContent,
-            checked: it.querySelector(`.event__offer-checkbox`).checked
+            accepted: it.querySelector(`.event__offer-checkbox`).checked
           }))
         };
+        const changedPoint = new ModelPoint(entry);
 
-        this._onDataChange(this._point, entry);
+        this._onDataChange(`update`, changedPoint);
         unrender(this._element);
         this._element = null;
 
@@ -95,7 +97,7 @@ class PointController {
     this._pointAddEdit.getElement()
       .querySelector(`.event__reset-btn`)
       .addEventListener(`click`, () => {
-        this._onDataChange(this._point, null);
+        this._onDataChange(`delete`, this._point);
       });
 
     const city = this._pointAddEdit.getElement().querySelector(`.event__input--destination`);

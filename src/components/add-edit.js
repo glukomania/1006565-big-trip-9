@@ -3,9 +3,10 @@ import AbstractComponent from "./abstract-component";
 
 
 class AddEdit extends AbstractComponent {
-  constructor({type, pointText, city, timeStart, timeEnd, price, offers}, isAdd = false) {
+  constructor({type, pointText, city, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false) {
     super();
     this._city = city;
+    this._isFavorite = isFavorite;
     this._type = type;
     this._pointText = pointText;
     this._timeStart = timeStart;
@@ -136,8 +137,8 @@ class AddEdit extends AbstractComponent {
         visually-hidden"
         type="radio"
         name="event-type"
-        value="${type}"
-        ${this._type.type === type ? `checked` : ``}
+        value="${transportLowCase}"
+        ${this._type.type === transportLowCase ? `checked` : ``}
       >
       <label
         class="event__type-label
@@ -158,8 +159,8 @@ class AddEdit extends AbstractComponent {
         visually-hidden"
         type="radio"
         name="event-type"
-        value="${type}"
-        ${this._type.type === type ? `checked` : ``}
+        value="${activityLowCase}"
+        ${this._type.type === activityLowCase ? `checked` : ``}
       >
       <label
         class="event__type-label
@@ -176,7 +177,7 @@ class AddEdit extends AbstractComponent {
 
   _getOptionBlock() {
     return `
-  <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+  <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${this._isFavorite ? `checked` : ``}>
   <label class="event__favorite-btn" for="event-favorite-1">
     <span class="visually-hidden">Add to favorite</span>
     <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -189,12 +190,12 @@ class AddEdit extends AbstractComponent {
   </button>`;
   }
 
-  _getOfferTemplate({id, text, price, checked}) {
+  _getOfferTemplate({title, price, accepted}) {
     return `
   <div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden" id="${id}-1" type="checkbox" name="event-offer" value="${id}" ${checked === true ? `checked` : ``}>
-  <label class="event__offer-label" for="${id}-1">
-    <span class="event__offer-title">${text}</span>
+  <input class="event__offer-checkbox  visually-hidden" id="${title}-1" type="checkbox" name="event-offer" value="${title}" ${accepted === true ? `checked` : ``}>
+  <label class="event__offer-label" for="${title}-1">
+    <span class="event__offer-title">${title}</span>
     &plus;
     &euro;&nbsp;<span class="event__offer-price">${price}</span>
   </label>
