@@ -44,11 +44,12 @@ class API {
       .then(ModelPoint.parsePoint);
   }
 
-  updatePoint({id, point}) {
+  updatePoint({id, data}) {
+    // const modelPoint = new ModelPoint(point);
     return this._load({
       url: `points/${id}`,
-      method: Method.POST,
-      body: JSON.stringify(point),
+      method: Method.PUT,
+      body: JSON.stringify(data),
       headers: new Headers({'Content-type': `application/json`})
     })
       .then(toJSON)
@@ -56,7 +57,10 @@ class API {
   }
 
   deletePoint({id}) {
-    return this._load({url: `points/${id}`, method: Method.DELETE});
+    return this._load({
+      url: `points/${id}`,
+      method: Method.DELETE
+    });
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {

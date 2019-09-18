@@ -1,6 +1,4 @@
-// import {dates} from "./data";
 import TripController from "./components/trip-controller";
-import {routePoints} from "./data";
 import {
   Route,
   Price,
@@ -9,7 +7,6 @@ import {
   Statistics
 } from "./components/index";
 import {
-  createElement,
   appendSection,
   addSection,
   unrender
@@ -28,59 +25,83 @@ const menuPlace = pageBody.querySelector(`.trip-controls h2:first-child`);
 const filtersPlace = pageBody.querySelector(`.trip-controls h2:last-child`);
 const tripControls = pageBody.querySelector(`.trip-controls`);
 const eventAddBtn = pageBody.querySelector(`.trip-main__event-add-btn`);
+const tripDaysContainer = document.querySelector(`.trip-days`);
 
 const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip/`;
 const api = new API(END_POINT, AUTHORIZATION);
 
-
 const menu = new Menu();
 const filter = new Filter();
-
-// const renderRoute = (routeMock) => {
-//   const route = new Route(points);
-//   return route.getTemplate();
-// };
-
-// appendSection(routePlace, routeBlock);
 
 addSection(menuPlace, menu.getTemplate(), `afterend`);
 addSection(filtersPlace, filter.getTemplate(), `afterend`);
 
 const contentPlace = document.querySelector(`.trip-events`);
 
-// points
-
-// const onDataChange = (actionType, update) => {
-//   switch (actionType) {
-//     case `delete`:
-//       api.deleteTask({
-//         id: update.id
-//       })
-//         .then(() => api.getTasks())
-//         .then((points) => tripController.show(points));
-//       break;
-//   }
-// };
-
 const totalPrice = new Price();
-let tripController = new TripController(contentPlace);
+
+// change points
+
+const onDataChange = (actionType, update) => {
+  tripController.unrenderAllPoints();
+  switch (actionType) {
+    case `create`:
+      api.createPoint({
+        id: update.id,
+        data: update.toRAW()
+      }).then(() => api.getPoints())
+        .then((points) => {
+          const sortedPoints = setSortAndDuration(points);
+          tripController.init(`Everything`, sortedPoints);
+        });
+      break;
+    case `update`:
+      api.updatePoint({
+        id: update.id,
+        data: update.toRAW()
+      }).then(() => api.getPoints())
+        .then((points) => {
+          const sortedPoints = setSortAndDuration(points);
+          tripController.init(`Everything`, sortedPoints);
+        });
+      break;
+    case `delete`:
+      api.deletePoint({
+        id: update.id
+      })
+        .then(() => api.getPoints())
+        .then((points) => {
+          const sortedPoints = setSortAndDuration(points);
+          tripController.init(`Everything`, sortedPoints);
+        });
+      break;
+  }
+};
+
+let tripController = new TripController(contentPlace, onDataChange);
 const statistics = new Statistics();
+
+// load data
+
+const setSortAndDuration = (points) => {
+  const sortedDates = getDatesSorted(points);
+  getPointsWithDuration(sortedDates);
+  return sortedDates;
+};
 
 api.getPoints()
 .then((datesFromServer) => {
-  const dates = getDatesSorted(datesFromServer);
-  getPointsWithDuration(dates);
+  const sortedPoints = setSortAndDuration(datesFromServer);
 
-  const route = new Route(dates);
+  const route = new Route(sortedPoints);
   route.getTemplate();
-  // const route = routePoints.map(renderRoute).join(`\n`);
   appendSection(routePlace, route.getElement(), `beforeend`);
 
-  addSection(routePlace, totalPrice.getTemplate(dates), `beforeend`);
-  appendSection(pageMain, statistics.getElement(dates), `beforeend`);
+  addSection(routePlace, totalPrice.getTemplate(sortedPoints), `beforeend`);
+  appendSection(pageMain, statistics.getElement(sortedPoints), `beforeend`);
 
-  tripController.init(`Everything`, dates);
+  tripController.init(`Everything`, sortedPoints);
 });
 
 // statistics
@@ -145,7 +166,5 @@ filterContainer.addEventListener(`click`, onFilterClick);
 
 // add a new event
 const onAddNewClick = () => tripController.createPoint();
-//
 eventAddBtn.addEventListener(`click`, onAddNewClick);
 
-// requests

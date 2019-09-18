@@ -25,15 +25,17 @@ import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/light.css";
 
 class TripController {
-  constructor(container) {
+  constructor(container, onDataChange) {
     this._container = container;
     this._dates = null;
     this.onChangeSort = this.onChangeSort.bind(this);
-    this._onDataChange = this._onDataChange.bind(this);
+    this._onDataChange = onDataChange;
+    // this._onDataChange.bind(this);
     this._daysContainer = null;
     this._subscriptions = [];
     this._onChangeView = this._onChangeView.bind(this);
     this._pointAdd = null;
+    this._renderSorting = this._renderSorting.bind(this);
   }
 
   init(filterType, dates) {
@@ -123,8 +125,8 @@ class TripController {
   }
 
   _renderSorting() {
-    const sorting = new Sort(this.onChangeSort);
-    appendSection(this._container, sorting.getElement());
+    this._sorting = new Sort(this.onChangeSort);
+    appendSection(this._container, this._sorting.getElement());
   }
 
   _renderGroupedPoints() {
@@ -156,19 +158,9 @@ class TripController {
     appendSection(this._daysContainer, date.getElement());
   }
 
-  _onDataChange(oldPoint, newPoint) {
-    const indexOfEditedPoint = this._dates.findIndex((it) => {
-      return it === oldPoint;
-    });
-
-    this._dates[indexOfEditedPoint] = newPoint;
+  unrenderAllPoints() {
     this._daysContainer.innerHTML = ``;
-
-    if (this._dates.every((element) => element === null)) {
-      this._showStubMessage();
-    } else {
-      this._renderGroupedPoints();
-    }
+    unrender(this._sorting.getElement());
   }
 
   _onChangeView() {
