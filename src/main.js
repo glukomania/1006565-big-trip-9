@@ -25,7 +25,6 @@ const menuPlace = pageBody.querySelector(`.trip-controls h2:first-child`);
 const filtersPlace = pageBody.querySelector(`.trip-controls h2:last-child`);
 const tripControls = pageBody.querySelector(`.trip-controls`);
 const eventAddBtn = pageBody.querySelector(`.trip-main__event-add-btn`);
-const tripDaysContainer = document.querySelector(`.trip-days`);
 
 const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip/`;
@@ -47,10 +46,8 @@ const onDataChange = (actionType, update) => {
   tripController.unrenderAllPoints();
   switch (actionType) {
     case `create`:
-      api.createPoint({
-        id: update.id,
-        data: update.toRAW()
-      }).then(() => api.getPoints())
+      api.createPoint(update)
+        .then(() => api.getPoints())
         .then((points) => {
           const sortedPoints = setSortAndDuration(points);
           tripController.init(`Everything`, sortedPoints);
@@ -81,6 +78,16 @@ const onDataChange = (actionType, update) => {
 
 let tripController = new TripController(contentPlace, onDataChange);
 const statistics = new Statistics();
+
+// destinations;
+api.getDestinations().then((items) => {
+  tripController.getDestinations(items);
+});
+
+// offers
+api.getOffers().then((items) => {
+  tripController.getOffers(items);
+});
 
 // load data
 
@@ -165,6 +172,9 @@ const onFilterClick = (evt) => {
 filterContainer.addEventListener(`click`, onFilterClick);
 
 // add a new event
-const onAddNewClick = () => tripController.createPoint();
+const onAddNewClick = () => {
+  tripController.createPoint();
+  tripController.removeAddPoint();
+};
 eventAddBtn.addEventListener(`click`, onAddNewClick);
 

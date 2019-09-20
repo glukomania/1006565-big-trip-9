@@ -33,9 +33,19 @@ class API {
       .then(ModelPoint.parsePoints);
   }
 
-  createPoint({point}) {
+  getDestinations() {
+    return this._load({url: `destinations`})
+      .then(toJSON);
+  }
+
+  getOffers() {
+    return this._load({url: `offers`})
+      .then(toJSON);
+  }
+
+  createPoint(point) {
     return this._load({
-      url: `point`,
+      url: `points`,
       method: Method.POST,
       body: JSON.stringify(point),
       headers: new Headers({'Content-Type': `application/json`})
@@ -45,6 +55,7 @@ class API {
   }
 
   updatePoint({id, data}) {
+    console.log(data);
     // const modelPoint = new ModelPoint(point);
     return this._load({
       url: `points/${id}`,

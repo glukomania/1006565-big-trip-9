@@ -1,10 +1,13 @@
-import {transports, activities, cities} from "../data";
+import {transports, activities} from "../data";
 import AbstractComponent from "./abstract-component";
+import {ModelPoint} from "../model-task";
+import {unrender} from "../utils/dom";
 
 
 class AddEdit extends AbstractComponent {
-  constructor({type, pointText, city, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false) {
+  constructor({id, type, pointText, city, pictures, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false, onDataChange, allDestinations, allOffers) {
     super();
+    this._id = id;
     this._city = city;
     this._isFavorite = isFavorite;
     this._type = type;
@@ -14,6 +17,10 @@ class AddEdit extends AbstractComponent {
     this._price = price;
     this._offers = offers;
     this._isAdd = isAdd;
+    this._allDestinations = allDestinations;
+    this._allOffers = allOffers;
+    this._pictures = pictures;
+    this._onDataChange = onDataChange;
     this._getOfferTemplate = this._getOfferTemplate.bind(this);
     this._getTransportTemplate = this._getTransportTemplate.bind(this);
     this._getActivityTemplate = this._getActivityTemplate.bind(this);
@@ -67,7 +74,8 @@ class AddEdit extends AbstractComponent {
             list="destination-list-1"
           >
           <datalist id="destination-list-1">
-            ${cities.map(this._getCityListTemplate).join(`\n`)}
+            ${console.log(this._allDestinations)}
+            ${this._allDestinations.map(this._getCityListTemplate).join(`\n`)}
           </datalist>
         </div>
 
@@ -114,7 +122,7 @@ class AddEdit extends AbstractComponent {
           >
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">
+        <button class="event__save-btn btn  btn--blue" type="submit">
           Save
         </button>
         <button class="event__reset-btn" type="reset">
@@ -125,6 +133,71 @@ class AddEdit extends AbstractComponent {
       ${this._isAdd ? `` : this._getEventDetailsTemplate(this._pointText)}
     </form>
     `;
+  }
+
+  addListeners() {
+    const offers = Array.from(this.getElement().querySelectorAll(`.event__offer-selector`));
+
+    const onSaveClick = (evt) => {
+      evt.preventDefault();
+      const formData = new FormData(document.querySelector(`.trip-events__item`));
+      const entry = {
+        "id": this._id ? this._id : ``,
+        "type": formData.get(`event-type`),
+        "destination": {
+          name: formData.get(`event-destination`),
+          description: this._getCityDesc(formData.get(`event-destination`)),
+          pictures: this._getCityPictures(formData.get(`event-destination`))
+        },
+        "date_from": new Date(formData.get(`event-start-time`)),
+        "date_to": new Date(formData.get(`event-end-time`)),
+        "base_price": +formData.get(`event-price`),
+        "is_favorite": formData.get(`event-favorite`) ? true : false,
+        "offers": offers
+        .map((it) => ({
+          id: it.querySelector(`.event__offer-checkbox`).id,
+          title: it.querySelector(`.event__offer-title`).textContent,
+          price: +it.querySelector(`.event__offer-price`).textContent,
+          accepted: it.querySelector(`.event__offer-checkbox`).checked
+        }))
+      };
+
+      if (this._isAdd) {
+        this._onDataChange(`create`, entry);
+      } else {
+        const changedPoint = new ModelPoint(entry);
+        this._onDataChange(`update`, changedPoint);
+      }
+
+      unrender(this._element);
+      this._element = null;
+    };
+
+    const onCancelClick = () => {
+      unrender(document.querySelector(`.event--edit`));
+      this._element = null;
+    };
+
+    const city = document.querySelector(`.event__input--destination`);
+
+    const changeCityDescription = (evtCity) => {
+      const target = evtCity.target;
+      if (document.querySelector(`.event__destination-description`)) {
+        const description = document.querySelector(`.event__destination-description`);
+        description.textContent = this._getCityDesc(target.value);
+      }
+    };
+
+    city.addEventListener(`change`, changeCityDescription);
+
+    document.querySelector(`.event__reset-btn`).addEventListener(`click`, onCancelClick);
+    document.querySelector(`.event__save-btn`).addEventListener(`click`, onSaveClick);
+  }
+  _getCityDesc(destination) {
+    return this._allDestinations.find((item) => item.name === destination).description;
+  }
+  _getCityPictures(destination) {
+    return this._allDestinations.find((item) => item.name === destination).pictures;
   }
 
   _getTransportTemplate({type}) {
@@ -221,17 +294,18 @@ class AddEdit extends AbstractComponent {
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
-          <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
+          ${this._pictures.map(this._getpicturesElement).join(`\n`)}
         </div>
       </div>
     </section>
   </section>
   `;
   }
+
+  _getpicturesElement({src, description}) {
+    return `<img class="event__photo" src="${src}" alt="${description}">`;
+  }
+
 }
 
 export default AddEdit;

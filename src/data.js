@@ -1,10 +1,3 @@
-import {
-  getRandomNumber,
-  getRandomItem} from "./utils/randomizers";
-import {
-  getRandomDateStart,
-  getRandomDateFinish,
-} from "./utils/time";
 import {duration} from "./components/point-date";
 
 const filterTypes = [`Everything`, `Future`, `Past`];
@@ -27,21 +20,21 @@ const sortTypes = [
   }];
 
 const transports = [
-  {type: `Taxi`, label: `Taxi to airport`},
-  {type: `Bus`, label: `Going by bus to`},
-  {type: `Train`, label: `Going by train to`},
+  {type: `Taxi`, label: `Taxi to`},
+  {type: `Bus`, label: `Bus to`},
+  {type: `Train`, label: `Train to`},
   {type: `Ship`, label: `Ship to`},
-  {type: `Transport`, label: `Time in transport of`},
+  {type: `Transport`, label: `Transport in`},
   {type: `Drive`, label: `Drive to`},
   {type: `Flight`, label: `Flight to`},
 ];
 const activities = [
-  {type: `Check-in`, label: `Check in the hotel of`},
+  {type: `Check-in`, label: `Hotel in`},
   {type: `Sightseeing`, label: `Sightseeing in`},
   {type: `Restaurant`, label: `Restaurant in`},
 ];
 
-const cities = [
+const allCities = [
   {name: `Venice`, description: `Venice, is a beautiful city, a true asian pearl, with crowded streets, in a middle of Europe, famous for its crowded street markets with the best street food in Asia.`, photos: []},
   {name: `Tokio`, description: `Tokio, is a beautiful city, for those who value comfort and coziness.`, photos: []},
   {name: `Milan`, description: `Milan, a true asian pearl, with crowded streets, middle-eastern paradise.`, photos: []},
@@ -73,61 +66,6 @@ const cities = [
   {name: `Oslo`, description: `Oslo, with crowded streets, middle-eastern paradise, a perfect place to stay with a family.`, photos: []},
 ];
 
-
-const getOffersMock = () => (
-  [{
-    id: `event-offer-luggage`,
-    text: `Add luggage`,
-    price: 30,
-    checked: Boolean(Math.round(Math.random()))
-  },
-  {
-    id: `event-offer-comfort`,
-    text: `Switch to comfort class`,
-    price: 100,
-    checked: Boolean(Math.round(Math.random()))
-  },
-  {
-    id: `event-offer-meal`,
-    text: `Add meal`,
-    price: 15,
-    checked: Boolean(Math.round(Math.random()))
-  },
-  {
-    id: `event-offer-seats`,
-    text: `Choose seats`,
-    price: 5,
-    checked: Boolean(Math.round(Math.random()))
-  },
-  {
-    id: `event-offer-train`,
-    text: `Travel by train`,
-    price: 40,
-    checked: Boolean(Math.round(Math.random()))
-  }
-  ]
-);
-
-const offersMock = getOffersMock();
-
-const makeEvent = () => {
-  const point = {
-    type: getRandomItem(transports.concat(activities)),
-    city: getRandomItem(cities).name,
-    pointText: getRandomItem(cities).description,
-    timeStart: getRandomDateStart(),
-    timeEnd: getRandomDateFinish(),
-    price: getRandomNumber(10, 200),
-    offers: getOffersMock(),
-  };
-  return point;
-};
-
-const getEvents = (num) =>
-  new Array(num).fill(null).map(makeEvent);
-
-const points = getEvents(5);
-
 const getDatesSorted = (unsortedPoints) => {
   const sortedPoints = unsortedPoints.sort((a, b) => a.timeStart > b.timeStart ? 1 : -1);
   let number = 1;
@@ -147,37 +85,12 @@ const getPointsWithDuration = (initialPoints) => {
   });
 };
 
-// const dates = getDatesSorted(points);
-
-// getPointsWithDuration(dates);
-
-const getRoutePoints = () => [
-  {
-    cityStart: points[0].city,
-    cityFinish: points[points.length - 1].city,
-    dateStart: points[0].timeStart,
-    dateEnd: points[points.length - 1].timeEnd
-  }
-];
-
-let routePoints = [];
-if (points.length > 0) {
-  routePoints = getRoutePoints();
-}
-
-// get data for stats
-
-// const groupedPointsByType = groupeByType(dates);
-
 export {
-  routePoints,
   filterTypes,
   sortTypes,
   transports,
   activities,
-  cities,
-  points,
-  offersMock,
+  allCities,
   getDatesSorted,
   getPointsWithDuration
 };

@@ -28,12 +28,13 @@ class TripController {
     this._dates = null;
     this.onChangeSort = this.onChangeSort.bind(this);
     this._onDataChange = onDataChange;
-    // this._onDataChange.bind(this);
     this._daysContainer = null;
     this._subscriptions = [];
     this._onChangeView = this._onChangeView.bind(this);
     this._pointAdd = null;
     this._renderSorting = this._renderSorting.bind(this);
+    this._destinations = null;
+    this._allOffers = null;
   }
 
   init(filterType, dates) {
@@ -53,6 +54,14 @@ class TripController {
     } else {
       this._showStubMessage();
     }
+  }
+
+  getDestinations(items) {
+    this._allDestinations = items;
+  }
+
+  getOffers(items) {
+    this._allOffers = items;
   }
 
   _getFilteredPoints(datesToFilter, filterType) {
@@ -84,6 +93,7 @@ class TripController {
   show() {
     this._container.classList.remove(`visually-hidden`);
   }
+
   createPoint() {
     if (this._pointAdd) {
       return;
@@ -96,11 +106,13 @@ class TripController {
       pointText: ``,
       timeStart: new Date(),
       timeEnd: new Date(),
-      price: 0,
+      price: 10,
       offers: []
     };
-    this._pointAdd = new AddEdit(defaultPoint, true);
+    this._pointAdd = new AddEdit(defaultPoint, true, this._onDataChange, this._allDestinations, this._allOffers);
+
     addSection(this._container, this._pointAdd.getTemplate(), `afterbegin`);
+    this._pointAdd.addListeners();
 
     flatpickr(this._pointAdd.getElement().querySelector(`#event-start-time-1`), {
       altInput: true,
@@ -149,7 +161,7 @@ class TripController {
       date = new Day(``, ``, `li`, [`trip-days__item`, `day`], points);
     }
     points.forEach((point) => {
-      const pointController = new PointController(date.getElement(), point, this._onDataChange, this._onChangeView);
+      const pointController = new PointController(date.getElement(), point, this._onDataChange, this._onChangeView, this._allDestinations, this._allOffers);
       pointController.init();
       this._subscriptions.push(pointController.setDefaultView.bind(pointController));
     });
@@ -157,8 +169,15 @@ class TripController {
   }
 
   unrenderAllPoints() {
+    if (this._container.querySelector(`.event--edit`)) {
+      unrender(this._container.querySelector(`.event--edit`));
+    }
     this._daysContainer.innerHTML = ``;
     unrender(this._sorting.getElement());
+  }
+
+  removeAddPoint() {
+    this._pointAdd = null;
   }
 
   _onChangeView() {
