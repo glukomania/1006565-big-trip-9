@@ -2,6 +2,7 @@ import {transports, activities} from "../data";
 import AbstractComponent from "./abstract-component";
 import {ModelPoint} from "../model-task";
 import {unrender} from "../utils/dom";
+import moment from 'moment';
 
 
 class AddEdit extends AbstractComponent {
@@ -74,7 +75,6 @@ class AddEdit extends AbstractComponent {
             list="destination-list-1"
           >
           <datalist id="destination-list-1">
-            ${console.log(this._allDestinations)}
             ${this._allDestinations.map(this._getCityListTemplate).join(`\n`)}
           </datalist>
         </div>
@@ -89,7 +89,7 @@ class AddEdit extends AbstractComponent {
             id="event-start-time-1"
             type="text"
             name="event-start-time"
-            value="${this._timeStart}"
+            value="${moment(this._timeStart).format(`DD/MM/YY`)}"
           >
           &mdash;
           <label
@@ -103,7 +103,7 @@ class AddEdit extends AbstractComponent {
             id="event-end-time-1"
             type="text"
             name="event-end-time"
-            value="${this._timeEnd}"
+            value="${moment(this._timeEnd).format(`DD/MM/YY`)}"
           >
         </div>
 
@@ -136,46 +136,73 @@ class AddEdit extends AbstractComponent {
   }
 
   addListeners() {
-    const offers = Array.from(this.getElement().querySelectorAll(`.event__offer-selector`));
+    const saveButton = document.querySelector(`.event__save-btn`);
+    const cancelButton = document.querySelector(`.event__reset-btn`);
+
+    const changeOffers = (evtOffers) => {
+      const name = evtOffers.target.value;
+      const offersAvailable = this._allOffers.find((item) => item.type === name).offers;
+
+      const offersPlace = document.querySelector(`.event__available-offers`);
+      offersPlace.innerHTML = offersAvailable.map(this._getOfferTemplate).join(`\n`);
+    };
+
+    const block = (button) => {
+      this._element.querySelectorAll(`input`).forEach((item) => {
+        item.disabled = true;
+      });
+      button.disabled = true;
+      button.textContent = `Saving...`;
+    };
 
     const onSaveClick = (evt) => {
       evt.preventDefault();
       const formData = new FormData(document.querySelector(`.trip-events__item`));
-      const entry = {
-        "id": this._id ? this._id : ``,
-        "type": formData.get(`event-type`),
-        "destination": {
-          name: formData.get(`event-destination`),
-          description: this._getCityDesc(formData.get(`event-destination`)),
-          pictures: this._getCityPictures(formData.get(`event-destination`))
-        },
-        "date_from": new Date(formData.get(`event-start-time`)),
-        "date_to": new Date(formData.get(`event-end-time`)),
-        "base_price": +formData.get(`event-price`),
-        "is_favorite": formData.get(`event-favorite`) ? true : false,
-        "offers": offers
-        .map((it) => ({
-          id: it.querySelector(`.event__offer-checkbox`).id,
-          title: it.querySelector(`.event__offer-title`).textContent,
-          price: +it.querySelector(`.event__offer-price`).textContent,
-          accepted: it.querySelector(`.event__offer-checkbox`).checked
-        }))
+
+      const validateFields = () => {
+        return formData.get(`event-destination`)
+          && this._allDestinations.find((item) => item.name === formData.get(`event-destination`))
+          && (new Date(formData.get(`event-end-time`))) > (new Date(formData.get(`event-start-time`)))
+          && (new Date(formData.get(`event-end-time`)))
+          && (new Date(formData.get(`event-start-time`)));
       };
 
-      if (this._isAdd) {
-        this._onDataChange(`create`, entry);
-      } else {
-        const changedPoint = new ModelPoint(entry);
-        this._onDataChange(`update`, changedPoint);
+      const offers = Array.from(this.getElement().querySelectorAll(`.event__offer-selector`));
+
+      if (validateFields()) {
+        const entry = {
+          "id": this._id ? this._id : ``,
+          "type": formData.get(`event-type`),
+          "destination": {
+            name: formData.get(`event-destination`),
+            description: this._getCityDesc(formData.get(`event-destination`)),
+            pictures: this._getCityPictures(formData.get(`event-destination`))
+          },
+          "date_from": new Date(formData.get(`event-start-time`)),
+          "date_to": new Date(formData.get(`event-end-time`)),
+          "base_price": +formData.get(`event-price`),
+          "is_favorite": formData.get(`event-favorite`) ? true : false,
+          "offers": offers
+          .map((it) => ({
+            id: it.querySelector(`.event__offer-checkbox`).id,
+            title: it.querySelector(`.event__offer-title`).textContent,
+            price: +it.querySelector(`.event__offer-price`).textContent,
+            accepted: it.querySelector(`.event__offer-checkbox`).checked
+          }))
+        };
+
+        block(saveButton);
+
+        if (this._isAdd) {
+          this._onDataChange(`create`, entry);
+        } else {
+          const changedPoint = new ModelPoint(entry);
+          this._onDataChange(`update`, changedPoint);
+        }
+        unrender(this._element);
+        this._element = null;
       }
 
-      unrender(this._element);
-      this._element = null;
-    };
-
-    const onCancelClick = () => {
-      unrender(document.querySelector(`.event--edit`));
-      this._element = null;
     };
 
     const city = document.querySelector(`.event__input--destination`);
@@ -190,8 +217,15 @@ class AddEdit extends AbstractComponent {
 
     city.addEventListener(`change`, changeCityDescription);
 
-    document.querySelector(`.event__reset-btn`).addEventListener(`click`, onCancelClick);
-    document.querySelector(`.event__save-btn`).addEventListener(`click`, onSaveClick);
+    document.querySelector(`.event__type-group`).addEventListener(`change`, changeOffers);
+
+    const onCancelClick = () => {
+      unrender(document.querySelector(`.event--edit`));
+      this._element = null;
+    };
+
+    cancelButton.addEventListener(`click`, onCancelClick);
+    saveButton.addEventListener(`click`, onSaveClick);
   }
   _getCityDesc(destination) {
     return this._allDestinations.find((item) => item.name === destination).description;

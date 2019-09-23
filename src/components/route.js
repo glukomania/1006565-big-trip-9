@@ -25,7 +25,6 @@ class Route extends AbstractComponent {
 
   getTemplate() {
     return `
-<section class="board container">
   <div class="trip-info__main">
     <h1 class="trip-info__title">
       ${this._citiesNames[0]} ${this._citiesNames.length <= 3 ? this._citiesNames[1] : `&mdash; ...`} ${`&mdash;` + this._citiesNames[this._citiesNames.length - 1]}
@@ -35,7 +34,6 @@ class Route extends AbstractComponent {
       ${formatDate(this._points[0].timeStart, this._points[this._points.length - 1].timeEnd)}
     </p>
   </div>
-</section>
     `;
   }
 }

@@ -95,9 +95,6 @@ class TripController {
   }
 
   createPoint() {
-    if (this._pointAdd) {
-      return;
-    }
 
     const defaultPoint = {
       number: 1,
@@ -112,19 +109,25 @@ class TripController {
     this._pointAdd = new AddEdit(defaultPoint, true, this._onDataChange, this._allDestinations, this._allOffers);
 
     addSection(this._container, this._pointAdd.getTemplate(), `afterbegin`);
+
+
+    flatpickr(this._container.querySelector(`#event-start-time-1`), {
+      altInput: true,
+      allowInput: true,
+      format: `d.m.Y h:m`,
+      altFormat: `d.m.Y  h:m`,
+      defaultDate: new Date(),
+    });
+
+    flatpickr(this._container.querySelector(`#event-end-time-1`), {
+      altInput: true,
+      allowInput: true,
+      format: `d.m.Y h:m`,
+      altFormat: `d.m.Y  h:m`,
+      defaultDate: new Date(),
+    });
+
     this._pointAdd.addListeners();
-
-    flatpickr(this._pointAdd.getElement().querySelector(`#event-start-time-1`), {
-      altInput: true,
-      allowInput: true,
-      defaultDate: new Date(),
-    });
-
-    flatpickr(this._pointAdd.getElement().querySelector(`#event-end-time-1`), {
-      altInput: true,
-      allowInput: true,
-      defaultDate: new Date(),
-    });
   }
 
   _showStubMessage() {

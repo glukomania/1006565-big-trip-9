@@ -4,7 +4,8 @@ import {
   Price,
   Menu,
   Filter,
-  Statistics
+  Statistics,
+  RouteStubMessage
 } from "./components/index";
 import {
   appendSection,
@@ -32,25 +33,40 @@ const api = new API(END_POINT, AUTHORIZATION);
 
 const menu = new Menu();
 const filter = new Filter();
+const routeStubMessage = new RouteStubMessage();
 
 addSection(menuPlace, menu.getTemplate(), `afterend`);
 addSection(filtersPlace, filter.getTemplate(), `afterend`);
+appendSection(routePlace, routeStubMessage.getElement());
 
 const contentPlace = document.querySelector(`.trip-events`);
 
 const totalPrice = new Price();
 
+const renewAllPage = (points) => {
+  const sortedPoints = setSortAndDuration(points);
+  const route = new Route(sortedPoints);
+  appendSection(routePlace, route.getElement());
+
+  addSection(routePlace, totalPrice.getTemplate(sortedPoints), `beforeend`);
+  appendSection(pageMain, statistics.getElement(sortedPoints));
+  tripController.init(`Everything`, sortedPoints);
+};
+
 // change points
 
-const onDataChange = (actionType, update) => {
-  tripController.unrenderAllPoints();
+const onDataChange = (actionType, update, onError) => {
+
+
   switch (actionType) {
     case `create`:
       api.createPoint(update)
         .then(() => api.getPoints())
         .then((points) => {
-          const sortedPoints = setSortAndDuration(points);
-          tripController.init(`Everything`, sortedPoints);
+          renewAllPage(points);
+        })
+        .catch(() => {
+          onError();
         });
       break;
     case `update`:
@@ -59,8 +75,10 @@ const onDataChange = (actionType, update) => {
         data: update.toRAW()
       }).then(() => api.getPoints())
         .then((points) => {
-          const sortedPoints = setSortAndDuration(points);
-          tripController.init(`Everything`, sortedPoints);
+          renewAllPage(points);
+        })
+        .catch(() => {
+          onError();
         });
       break;
     case `delete`:
@@ -69,8 +87,15 @@ const onDataChange = (actionType, update) => {
       })
         .then(() => api.getPoints())
         .then((points) => {
-          const sortedPoints = setSortAndDuration(points);
-          tripController.init(`Everything`, sortedPoints);
+          tripController.unrenderAllPoints();
+          const routeBlock = pageBody.querySelector(`.trip-info__main`);
+          const priceBlock = pageBody.querySelector(`.trip-info__cost`);
+          unrender(routeBlock);
+          unrender(priceBlock);
+          renewAllPage(points);
+        })
+        .catch(() => {
+          onError();
         });
       break;
   }
@@ -102,12 +127,11 @@ api.getPoints()
   const sortedPoints = setSortAndDuration(datesFromServer);
 
   const route = new Route(sortedPoints);
-  route.getTemplate();
-  appendSection(routePlace, route.getElement(), `beforeend`);
+  appendSection(routePlace, route.getElement());
 
   addSection(routePlace, totalPrice.getTemplate(sortedPoints), `beforeend`);
-  appendSection(pageMain, statistics.getElement(sortedPoints), `beforeend`);
-
+  appendSection(pageMain, statistics.getElement(sortedPoints));
+  unrender(routeStubMessage.getElement());
   tripController.init(`Everything`, sortedPoints);
 });
 
@@ -178,3 +202,11 @@ const onAddNewClick = () => {
 };
 eventAddBtn.addEventListener(`click`, onAddNewClick);
 
+
+// back connection
+
+const load = (isSuccess) => {
+  return new Promise((res, rej) => {
+    setTimeout(isSuccess ? res : rej, 2000)
+  });
+};

@@ -7,6 +7,7 @@ import AddEdit from "./add-edit";
 import Price from "./price";
 import Day from "./day";
 import Statistics from "./statistics";
+import RouteStubMessage from "./routeStubMessage";
 
 export {
   Route,
@@ -17,5 +18,6 @@ export {
   AddEdit,
   Price,
   Day,
-  Statistics
+  Statistics,
+  RouteStubMessage
 };

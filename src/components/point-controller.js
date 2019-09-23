@@ -6,6 +6,8 @@ import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/light.css";
 
+import {shakeStyle} from "../utils/constants";
+
 class PointController {
   constructor(container, point, onDataChange, onChangeView, allDestinations, allOffers) {
     this._container = container.querySelector(`.trip-events__list`);
@@ -17,18 +19,25 @@ class PointController {
     this._pointItem = new Point(this._point);
     this._pointAddEdit = new AddEdit(this._point, false, this._onDataChange, this._allDestinations, this._allOffers);
     this.onEscKeyDown = this.onEscKeyDown.bind(this);
+    this._oneError = this._oneError.bind(this);
   }
 
   init() {
     flatpickr(this._pointAddEdit.getElement().querySelector(`#event-start-time-1`), {
       altInput: true,
       allowInput: true,
+      enableTime: true,
+      format: `d.m.Y h:m`,
+      altFormat: `d.m.Y  h:m`,
       defaultDate: this._point.timeStart,
     });
 
     flatpickr(this._pointAddEdit.getElement().querySelector(`#event-end-time-1`), {
       altInput: true,
       allowInput: true,
+      enableTime: true,
+      format: `d.m.Y h:m`,
+      altFormat: `d.m.Y  h:m`,
       defaultDate: this._point.timeEnd,
     });
 
@@ -42,25 +51,41 @@ class PointController {
       });
 
     this._pointAddEdit.getElement()
-      .querySelector(`.event__save-btn`)
-      .addEventListener(`click`, () => {
-        document.addEventListener(`keydown`, this.onEscKeyDown);
-      });
-
-    this._pointAddEdit.getElement()
     .querySelector(`.event__rollup-btn`)
     .addEventListener(`click`, () => {
       this._container.replaceChild(this._pointItem.getElement(), this._pointAddEdit.getElement());
       document.removeEventListener(`keydown`, this.onEscKeyDown);
     });
 
-    this._pointAddEdit.getElement()
-    .querySelector(`.event__reset-btn`)
-    .addEventListener(`click`, () => {
-      this._onDataChange(`delete`, this._point);
+    const deleteButton = this._pointAddEdit.getElement().querySelector(`.event__reset-btn`);
+
+    deleteButton.addEventListener(`click`, () => {
+      this._pointAddEdit.getElement().querySelectorAll(`input`).forEach((item) => {
+        item.disabled = true;
+      });
+      deleteButton.disabled = true;
+      deleteButton.textContent = `Deleting...`;
+
+      setTimeout(this._onDataChange(`delete`, this._point, this._oneError), 1000000);
     });
 
     appendSection(this._container, this._pointItem.getElement());
+
+  }
+
+  _oneError() {
+    this._shake();
+    // document.querySelectorAll(`input`).forEach((item) => {
+    //   item.disabled = false;
+    // });
+
+  }
+
+  _shake() {
+    this._pointAddEdit.getElement().querySelector(`.event--edit`).style = shakeStyle;
+    setTimeout(() => {
+      this._pointAddEdit.getElement().style.animation = ``;
+    }, 600);
   }
 
   onEscKeyDown(evt) {
