@@ -6,8 +6,6 @@ import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/light.css";
 
-import {shakeStyle} from "../utils/constants";
-
 class PointController {
   constructor(container, point, onDataChange, onChangeView, allDestinations, allOffers) {
     this._container = container.querySelector(`.trip-events__list`);
@@ -57,6 +55,7 @@ class PointController {
       document.removeEventListener(`keydown`, this.onEscKeyDown);
     });
 
+
     const deleteButton = this._pointAddEdit.getElement().querySelector(`.event__reset-btn`);
 
     deleteButton.addEventListener(`click`, () => {
@@ -82,9 +81,8 @@ class PointController {
   }
 
   _shake() {
-    this._pointAddEdit.getElement().querySelector(`.event--edit`).style = shakeStyle;
     setTimeout(() => {
-      this._pointAddEdit.getElement().style.animation = ``;
+      document.querySelector(`.event--edit`).classList.add(`apply-shake`);
     }, 600);
   }
 

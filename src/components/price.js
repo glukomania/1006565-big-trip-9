@@ -4,7 +4,7 @@ import AbstractComponent from "./abstract-component";
 class Price extends AbstractComponent {
 
   getTemplate(points) {
-    const totalPrice = getPrice(points, `price`, `offers`);
+    const totalPrice = getPrice(points);
 
     return `
     <p class="trip-info__cost">

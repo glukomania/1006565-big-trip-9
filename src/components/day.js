@@ -1,5 +1,6 @@
 import {formatDate} from "./point-date";
 import AbstractComponent from "./abstract-component";
+import moment from 'moment';
 
 class Day extends AbstractComponent {
   constructor(number, timeStart, selector, classes, points) {
@@ -15,7 +16,7 @@ class Day extends AbstractComponent {
     return `
       <div class="day__info">
         <span class="day__counter">${this._number}</span>
-        <time class="day__date" datetime="${formatDate(this._timeStart)}">${formatDate(this._timeStart)}</time>
+        <time class="day__date" datetime="${formatDate(this._timeStart)}">${moment(this._timeStart).format(`MMM DD`)}</time>
       </div>
 
       <ul class="trip-events__list">

@@ -55,8 +55,6 @@ class API {
   }
 
   updatePoint({id, data}) {
-    console.log(data);
-    // const modelPoint = new ModelPoint(point);
     return this._load({
       url: `points/${id}`,
       method: Method.PUT,

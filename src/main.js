@@ -44,6 +44,10 @@ const contentPlace = document.querySelector(`.trip-events`);
 const totalPrice = new Price();
 
 const renewAllPage = (points) => {
+  tripController.unrenderAllPoints();
+  unrender(pageBody.querySelector(`.trip-info__main`));
+  unrender(pageBody.querySelector(`.trip-info__cost`));
+
   const sortedPoints = setSortAndDuration(points);
   const route = new Route(sortedPoints);
   appendSection(routePlace, route.getElement());
@@ -57,8 +61,8 @@ const renewAllPage = (points) => {
 
 const onDataChange = (actionType, update, onError) => {
 
-
   switch (actionType) {
+
     case `create`:
       api.createPoint(update)
         .then(() => api.getPoints())
@@ -69,7 +73,9 @@ const onDataChange = (actionType, update, onError) => {
           onError();
         });
       break;
+
     case `update`:
+      console.log(update);
       api.updatePoint({
         id: update.id,
         data: update.toRAW()
@@ -81,21 +87,17 @@ const onDataChange = (actionType, update, onError) => {
           onError();
         });
       break;
+
     case `delete`:
       api.deletePoint({
         id: update.id
       })
         .then(() => api.getPoints())
-        .then((points) => {
-          tripController.unrenderAllPoints();
-          const routeBlock = pageBody.querySelector(`.trip-info__main`);
-          const priceBlock = pageBody.querySelector(`.trip-info__cost`);
-          unrender(routeBlock);
-          unrender(priceBlock);
-          renewAllPage(points);
-        })
         .catch(() => {
           onError();
+        })
+        .then((points) => {
+          renewAllPage(points);
         });
       break;
   }
@@ -104,36 +106,34 @@ const onDataChange = (actionType, update, onError) => {
 let tripController = new TripController(contentPlace, onDataChange);
 const statistics = new Statistics();
 
-// destinations;
-api.getDestinations().then((items) => {
-  tripController.getDestinations(items);
-});
-
-// offers
-api.getOffers().then((items) => {
-  tripController.getOffers(items);
-});
-
-// load data
-
 const setSortAndDuration = (points) => {
   const sortedDates = getDatesSorted(points);
   getPointsWithDuration(sortedDates);
   return sortedDates;
 };
 
-api.getPoints()
-.then((datesFromServer) => {
-  const sortedPoints = setSortAndDuration(datesFromServer);
+// get data
 
-  const route = new Route(sortedPoints);
-  appendSection(routePlace, route.getElement());
+api.getDestinations().then((items) => {
+  tripController.getDestinations(items);
+})
+  .then(() => api.getOffers().then((items) => {
+    tripController.getOffers(items);
+  }))
+  .then(() => api.getPoints()
+  .then((datesFromServer) => {
+    const sortedPoints = setSortAndDuration(datesFromServer);
 
-  addSection(routePlace, totalPrice.getTemplate(sortedPoints), `beforeend`);
-  appendSection(pageMain, statistics.getElement(sortedPoints));
-  unrender(routeStubMessage.getElement());
-  tripController.init(`Everything`, sortedPoints);
-});
+    const route = new Route(sortedPoints);
+    appendSection(routePlace, route.getElement());
+
+    unrender(routeStubMessage.getElement());
+    addSection(routePlace, totalPrice.getTemplate(sortedPoints), `beforeend`);
+
+    appendSection(pageMain, statistics.getElement(sortedPoints));
+
+    tripController.init(`Everything`, sortedPoints);
+  }));
 
 // statistics
 
@@ -201,12 +201,3 @@ const onAddNewClick = () => {
   tripController.removeAddPoint();
 };
 eventAddBtn.addEventListener(`click`, onAddNewClick);
-
-
-// back connection
-
-const load = (isSuccess) => {
-  return new Promise((res, rej) => {
-    setTimeout(isSuccess ? res : rej, 2000)
-  });
-};

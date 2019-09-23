@@ -1,7 +1,7 @@
 import {transports, activities} from "../data";
 import AbstractComponent from "./abstract-component";
 import {ModelPoint} from "../model-task";
-import {unrender} from "../utils/dom";
+import {unrender, addSection} from "../utils/dom";
 import moment from 'moment';
 
 
@@ -130,7 +130,7 @@ class AddEdit extends AbstractComponent {
         </button>
         ${this._isAdd ? `` : this._getOptionBlock()}
       </header>
-      ${this._isAdd ? `` : this._getEventDetailsTemplate(this._pointText)}
+      ${this._getEventDetailsTemplate(this._pointText)}
     </form>
     `;
   }
@@ -138,13 +138,23 @@ class AddEdit extends AbstractComponent {
   addListeners() {
     const saveButton = document.querySelector(`.event__save-btn`);
     const cancelButton = document.querySelector(`.event__reset-btn`);
+    const addEditForm = this.getElement().querySelector(`.event--edit`);
+    const detailsBlock = document.querySelector(`.event__details`);
+    const offersBlock = document.querySelector(`.event__section--offers`);
 
     const changeOffers = (evtOffers) => {
       const name = evtOffers.target.value;
-      const offersAvailable = this._allOffers.find((item) => item.type === name).offers;
 
+      const offersAvailable = this._allOffers.find((item) => item.type === name).offers;
+      if (offersBlock.classList.contains(`visually-hidden`)) {
+        offersBlock.classList.remove(`visually-hidden`);
+        if (detailsBlock.classList.contains(`visually-hidden`)) {
+          detailsBlock.classList.remove(`visually-hidden`);
+        }
+      }
       const offersPlace = document.querySelector(`.event__available-offers`);
       offersPlace.innerHTML = offersAvailable.map(this._getOfferTemplate).join(`\n`);
+
     };
 
     const block = (button) => {
@@ -209,10 +219,20 @@ class AddEdit extends AbstractComponent {
 
     const changeCityDescription = (evtCity) => {
       const target = evtCity.target;
-      if (document.querySelector(`.event__destination-description`)) {
-        const description = document.querySelector(`.event__destination-description`);
-        description.textContent = this._getCityDesc(target.value);
+
+      const descriptionBlock = document.querySelector(`.event__section--destination`);
+
+      if (descriptionBlock.classList.contains(`visually-hidden`)) {
+        descriptionBlock.classList.remove(`visually-hidden`);
+        if (detailsBlock.classList.contains(`visually-hidden`)) {
+          detailsBlock.classList.remove(`visually-hidden`);
+        }
       }
+      const descriptionText = document.querySelector(`.event__destination-description`);
+      descriptionText.textContent = this._getCityDesc(target.value);
+      const pictureBlock = document.querySelector(`.event__photos-tape`);
+      pictureBlock.innerHTML = this._getCityPictures(target.value).map(this._getpicturesElement);
+
     };
 
     city.addEventListener(`change`, changeCityDescription);
@@ -220,16 +240,17 @@ class AddEdit extends AbstractComponent {
     document.querySelector(`.event__type-group`).addEventListener(`change`, changeOffers);
 
     const onCancelClick = () => {
-      unrender(document.querySelector(`.event--edit`));
+      unrender(addEditForm);
       this._element = null;
     };
-
     cancelButton.addEventListener(`click`, onCancelClick);
     saveButton.addEventListener(`click`, onSaveClick);
   }
+
   _getCityDesc(destination) {
     return this._allDestinations.find((item) => item.name === destination).description;
   }
+
   _getCityPictures(destination) {
     return this._allDestinations.find((item) => item.name === destination).pictures;
   }
@@ -311,24 +332,23 @@ class AddEdit extends AbstractComponent {
 
   _getEventDetailsTemplate() {
     return `
-  <section class="event__details">
+  <section class="event__details ${!this._pointText ? `visually-hidden` : ``}" >
 
-    <section class="event__section  event__section--offers">
+    <section class="event__section  event__section--offers ${!this._pointText ? `visually-hidden` : ``}" >
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
       <div class="event__available-offers">
        ${this._offers.map(this._getOfferTemplate).join(`\n`)}
-
       </div>
     </section>
 
-    <section class="event__section  event__section--destination">
+    <section class="event__section  event__section--destination ${!this._pointText ? `visually-hidden` : ``}">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${this._pointText}</p>
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
-          ${this._pictures.map(this._getpicturesElement).join(`\n`)}
+          ${this._pictures ? this._pictures.map(this._getpicturesElement).join(`\n`) : ``}
         </div>
       </div>
     </section>
