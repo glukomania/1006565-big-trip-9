@@ -20,7 +20,7 @@ export class ModelPoint {
     this.type.label = types.find((item) => item.type === data[`type`]).label;
     this.city = data[`destination`].name;
     this.pointText = data[`destination`].description;
-    this.photos = data[`destination`].pictures;
+    this.pictures = data[`destination`].pictures;
     this.timeStart = new Date(data[`date_from`]);
     this.timeEnd = new Date(data[`date_to`]);
     this.price = data[`base_price`];
@@ -40,7 +40,7 @@ export class ModelPoint {
     return {
       'id': this.id,
       'type': this.type.type,
-      'destination': {name: this.city, description: this.pointText, pictures: [{src: "http://picsum.photos/300/200?r=0.7831543717223908", description: "Valencia kindergarten"}]},
+      'destination': {name: this.city, description: this.pointText, pictures: this.pictures},
       'date_from': this.timeStart,
       'date_to': this.timeEnd,
       'base_price': this.price,

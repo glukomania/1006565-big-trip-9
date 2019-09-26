@@ -1,3 +1,5 @@
+import DOMPurify from 'dompurify';
+
 // utility module
 
 // gets all html parts together
@@ -21,7 +23,7 @@ const createElement = (template, selector = `div`, classNames) => {
       newElement.classList.add(item);
     }
   }
-  newElement.innerHTML = template;
+  newElement.innerHTML = DOMPurify.sanitize(template);
   return newElement;
 };
 

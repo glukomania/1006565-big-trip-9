@@ -1,10 +1,16 @@
-import {transports, activities, cities} from "../data";
+import {transports, activities} from "../data";
 import AbstractComponent from "./abstract-component";
+import {ModelPoint} from "../model-point";
+import {unrender} from "../utils/dom";
+import moment from 'moment';
+import DOMPurify from 'dompurify';
+import {isEscapeKey} from "../utils/predicators";
 
 
 class AddEdit extends AbstractComponent {
-  constructor({type, pointText, city, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false) {
+  constructor({id, type, pointText, city, pictures, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false, onDataChange, allDestinations, allOffers, clearNewPointAddView) {
     super();
+    this._id = id;
     this._city = city;
     this._isFavorite = isFavorite;
     this._type = type;
@@ -14,9 +20,14 @@ class AddEdit extends AbstractComponent {
     this._price = price;
     this._offers = offers;
     this._isAdd = isAdd;
+    this._allDestinations = allDestinations;
+    this._allOffers = allOffers;
+    this._pictures = pictures;
+    this._onDataChange = onDataChange;
     this._getOfferTemplate = this._getOfferTemplate.bind(this);
     this._getTransportTemplate = this._getTransportTemplate.bind(this);
     this._getActivityTemplate = this._getActivityTemplate.bind(this);
+    this._clearNewPointAddView = clearNewPointAddView;
   }
 
   getTemplate() {
@@ -67,7 +78,7 @@ class AddEdit extends AbstractComponent {
             list="destination-list-1"
           >
           <datalist id="destination-list-1">
-            ${cities.map(this._getCityListTemplate).join(`\n`)}
+            ${this._allDestinations.map(this._getCityListTemplate).join(`\n`)}
           </datalist>
         </div>
 
@@ -81,7 +92,7 @@ class AddEdit extends AbstractComponent {
             id="event-start-time-1"
             type="text"
             name="event-start-time"
-            value="${this._timeStart}"
+            value="${moment(this._timeStart).format(`DD/MM/YY`)}"
           >
           &mdash;
           <label
@@ -95,7 +106,7 @@ class AddEdit extends AbstractComponent {
             id="event-end-time-1"
             type="text"
             name="event-end-time"
-            value="${this._timeEnd}"
+            value="${moment(this._timeEnd).format(`DD/MM/YY`)}"
           >
         </div>
 
@@ -114,7 +125,7 @@ class AddEdit extends AbstractComponent {
           >
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">
+        <button class="event__save-btn btn  btn--blue" type="submit">
           Save
         </button>
         <button class="event__reset-btn" type="reset">
@@ -122,9 +133,165 @@ class AddEdit extends AbstractComponent {
         </button>
         ${this._isAdd ? `` : this._getOptionBlock()}
       </header>
-      ${this._isAdd ? `` : this._getEventDetailsTemplate(this._pointText)}
+      ${this._getEventDetailsTemplate(this._pointText)}
     </form>
     `;
+  }
+
+  addListeners() {
+    const saveButton = document.querySelector(`.event__save-btn`);
+    const cancelButton = document.querySelector(`.event__reset-btn`);
+    const detailsBlock = document.querySelector(`.event__details`);
+    const offersBlock = document.querySelector(`.event__section--offers`);
+
+    const changeOffers = (evtOffers) => {
+      const name = evtOffers.target.value;
+
+      const offersAvailable = this._allOffers.find((item) => item.type === name).offers;
+      if (offersBlock.classList.contains(`visually-hidden`)) {
+        offersBlock.classList.remove(`visually-hidden`);
+        if (detailsBlock.classList.contains(`visually-hidden`)) {
+          detailsBlock.classList.remove(`visually-hidden`);
+        }
+      }
+      const offersPlace = document.querySelector(`.event__available-offers`);
+      offersPlace.innerHTML = offersAvailable.map(this._getOfferTemplate).join(`\n`);
+
+    };
+
+    const blockForm = (button) => {
+      this._element.querySelectorAll(`input`).forEach((item) => {
+        item.disabled = true;
+      });
+      button.disabled = true;
+      button.textContent = `Saving...`;
+    };
+
+    const onSaveClick = (evt) => {
+      evt.preventDefault();
+      const formData = new FormData(document.querySelector(`.event--edit`));
+
+      const validateFields = () => {
+        return formData.get(`event-destination`)
+          && this._allDestinations.find((item) => item.name === formData.get(`event-destination`))
+          && (new Date(formData.get(`event-end-time`))) >= (new Date(formData.get(`event-start-time`)))
+          && (new Date(formData.get(`event-end-time`)))
+          && (new Date(formData.get(`event-start-time`)));
+      };
+
+      const offers = Array.from(this.getElement().querySelectorAll(`.event__offer-selector`));
+
+      if (validateFields()) {
+        const entry = {
+          "id": this._id ? this._id : ``,
+          "type": formData.get(`event-type`),
+          "destination": {
+            name: formData.get(`event-destination`),
+            description: this._getCityDesc(formData.get(`event-destination`)),
+            pictures: this._getCityPictures(formData.get(`event-destination`))
+          },
+          "date_from": new Date(formData.get(`event-start-time`)),
+          "date_to": new Date(formData.get(`event-end-time`)),
+          "base_price": +formData.get(`event-price`),
+          "is_favorite": formData.get(`event-favorite`) ? true : false,
+          "offers": offers
+          .map((it) => ({
+            id: it.querySelector(`.event__offer-checkbox`).id,
+            title: it.querySelector(`.event__offer-title`).textContent,
+            price: +it.querySelector(`.event__offer-price`).textContent,
+            accepted: it.querySelector(`.event__offer-checkbox`).checked
+          }))
+        };
+
+        blockForm(saveButton);
+
+        if (this._isAdd) {
+          this._onDataChange(`create`, entry);
+        } else {
+          const changedPoint = new ModelPoint(entry);
+          this._onDataChange(`update`, changedPoint);
+        }
+        unrender(this._element);
+        this._element = null;
+      } else {
+        document.querySelector(`.event--edit`).classList.add(`apply-shake`);
+      }
+
+    };
+
+    const city = document.querySelector(`.event__input--destination`);
+
+    const changeCityDescription = (evtCity) => {
+      const target = evtCity.target;
+
+      const descriptionBlock = document.querySelector(`.event__section--destination`);
+
+      if (descriptionBlock.classList.contains(`visually-hidden`)) {
+        descriptionBlock.classList.remove(`visually-hidden`);
+        if (detailsBlock.classList.contains(`visually-hidden`)) {
+          detailsBlock.classList.remove(`visually-hidden`);
+        }
+      }
+      const descriptionText = document.querySelector(`.event__destination-description`);
+      if (target.value !== ``) {
+        descriptionText.textContent = this._getCityDesc(target.value);
+        const pictureBlock = document.querySelector(`.event__photos-tape`);
+
+        pictureBlock.innerHTML = DOMPurify.sanitize(this._getCityPictures(target.value).map(this._getpicturesElement));
+      }
+
+
+    };
+
+    const onCancelClick = () => {
+      if (this._isAdd) {
+        unrender(document.querySelector(`.event--edit`));
+        this._clearNewPointAddView();
+        this._element = null;
+      }
+    };
+
+    const onEscapePress = (evt) => {
+      if (isEscapeKey(evt)) {
+        unrender(document.querySelector(`.event--edit`));
+        this._clearNewPointAddView();
+        this._element = null;
+      }
+    };
+
+    city.addEventListener(`change`, changeCityDescription);
+
+    document.querySelector(`.event__type-group`).addEventListener(`change`, changeOffers);
+
+    document.addEventListener(`keydown`, onEscapePress);
+    cancelButton.addEventListener(`click`, onCancelClick);
+    saveButton.addEventListener(`click`, onSaveClick);
+  }
+
+  onCancelClick() {
+    if (this._isAdd) {
+      unrender(document.querySelector(`.event--edit`));
+      this._clearNewPointAddView();
+      this._element = null;
+    }
+  }
+
+  _getCityDesc(destination) {
+    const destinationFromList = this._allDestinations.find((item) => item.name === destination);
+    let description = ``;
+    if (destinationFromList !== undefined) {
+      description = this._allDestinations.find((item) => item.name === destination).description;
+    }
+    return description;
+  }
+
+  _getCityPictures(destination) {
+    const destinationFromList = this._allDestinations.find((item) => item.name === destination);
+    let pictures = [];
+    if (destinationFromList !== undefined) {
+      pictures = this._allDestinations.find((item) => item.name === destination).pictures;
+    }
+    return pictures;
   }
 
   _getTransportTemplate({type}) {
@@ -138,7 +305,7 @@ class AddEdit extends AbstractComponent {
         type="radio"
         name="event-type"
         value="${transportLowCase}"
-        ${this._type.type === transportLowCase ? `checked` : ``}
+        ${this._type.type.toLowerCase() === transportLowCase ? `checked` : ``}
       >
       <label
         class="event__type-label
@@ -204,33 +371,32 @@ class AddEdit extends AbstractComponent {
 
   _getEventDetailsTemplate() {
     return `
-  <section class="event__details">
+  <section class="event__details ${!this._pointText ? `visually-hidden` : ``}" >
 
-    <section class="event__section  event__section--offers">
+    <section class="event__section  event__section--offers ${!this._pointText ? `visually-hidden` : ``}" >
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
       <div class="event__available-offers">
        ${this._offers.map(this._getOfferTemplate).join(`\n`)}
-
       </div>
     </section>
 
-    <section class="event__section  event__section--destination">
+    <section class="event__section  event__section--destination ${!this._pointText ? `visually-hidden` : ``}">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${this._pointText}</p>
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
-          <img class="event__photo" src="img/photos/1.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/2.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/3.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/4.jpg" alt="Event photo">
-          <img class="event__photo" src="img/photos/5.jpg" alt="Event photo">
+          ${this._pictures ? this._pictures.map(this._getpicturesElement).join(`\n`) : ``}
         </div>
       </div>
     </section>
   </section>
   `;
+  }
+
+  _getpicturesElement({src, description}) {
+    return `<img class="event__photo" src="${src}" alt="${description}">`;
   }
 }
 

@@ -23,28 +23,32 @@ import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/light.css";
 
 class TripController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, getNewPointAddView) {
     this._container = container;
     this._dates = null;
     this.onChangeSort = this.onChangeSort.bind(this);
     this._onDataChange = onDataChange;
-    // this._onDataChange.bind(this);
+    this._getNewPointAddView = getNewPointAddView;
     this._daysContainer = null;
     this._subscriptions = [];
     this._onChangeView = this._onChangeView.bind(this);
     this._pointAdd = null;
     this._renderSorting = this._renderSorting.bind(this);
+    this._destinations = null;
+    this._allOffers = null;
   }
 
   init(filterType, dates) {
     if (dates) {
       this._dates = dates;
+    } else if (this._dates.length === 1) {
+      this._dates = null;
     }
 
     this._datesToFilter = this._getFilteredPoints(this._dates, filterType);
 
     // Rendering
-    if (this._datesToFilter.length > 0) {
+    if (this._datesToFilter) {
       this._renderSorting();
       this._daysContainer = createElement(null, `ul`, [`trip-days`]);
       appendSection(this._container, this._daysContainer);
@@ -55,12 +59,22 @@ class TripController {
     }
   }
 
+  getDestinations(items) {
+    this._allDestinations = items;
+  }
+
+  getOffers(items) {
+    this._allOffers = items;
+  }
+
   _getFilteredPoints(datesToFilter, filterType) {
     const dateNow = new Date();
-    if (filterType === `Future`) {
-      return datesToFilter.filter((item) => item.timeStart > dateNow);
-    } else if (filterType === `Past`) {
-      return datesToFilter.filter((item) => item.timeStart < dateNow);
+    if (datesToFilter) {
+      if (filterType === `Future`) {
+        return datesToFilter.filter((item) => item.timeStart > dateNow);
+      } else if (filterType === `Past`) {
+        return datesToFilter.filter((item) => item.timeStart < dateNow);
+      }
     }
     return datesToFilter;
   }
@@ -84,10 +98,8 @@ class TripController {
   show() {
     this._container.classList.remove(`visually-hidden`);
   }
-  createPoint() {
-    if (this._pointAdd) {
-      return;
-    }
+
+  createPoint(clearNewPointAddView) {
 
     const defaultPoint = {
       number: 1,
@@ -96,23 +108,32 @@ class TripController {
       pointText: ``,
       timeStart: new Date(),
       timeEnd: new Date(),
-      price: 0,
+      price: 10,
       offers: []
     };
-    this._pointAdd = new AddEdit(defaultPoint, true);
+    this._pointAdd = new AddEdit(defaultPoint, true, this._onDataChange, this._allDestinations, this._allOffers, clearNewPointAddView);
+
     addSection(this._container, this._pointAdd.getTemplate(), `afterbegin`);
 
-    flatpickr(this._pointAdd.getElement().querySelector(`#event-start-time-1`), {
+
+    flatpickr(this._container.querySelector(`#event-start-time-1`), {
       altInput: true,
       allowInput: true,
+      format: `d.m.Y h:m`,
+      altFormat: `d.m.Y  h:m`,
       defaultDate: new Date(),
     });
 
-    flatpickr(this._pointAdd.getElement().querySelector(`#event-end-time-1`), {
+    flatpickr(this._container.querySelector(`#event-end-time-1`), {
       altInput: true,
       allowInput: true,
+      format: `d.m.Y h:m`,
+      altFormat: `d.m.Y  h:m`,
       defaultDate: new Date(),
     });
+
+    this._pointAdd.addListeners();
+    return this._pointAdd;
   }
 
   _showStubMessage() {
@@ -149,7 +170,7 @@ class TripController {
       date = new Day(``, ``, `li`, [`trip-days__item`, `day`], points);
     }
     points.forEach((point) => {
-      const pointController = new PointController(date.getElement(), point, this._onDataChange, this._onChangeView);
+      const pointController = new PointController(date.getElement(), point, this._onDataChange, this._onChangeView, this._allDestinations, this._allOffers, this._getNewPointAddView);
       pointController.init();
       this._subscriptions.push(pointController.setDefaultView.bind(pointController));
     });
@@ -157,8 +178,15 @@ class TripController {
   }
 
   unrenderAllPoints() {
+    if (this._container.querySelector(`.event--edit`)) {
+      unrender(this._container.querySelector(`.event--edit`));
+    }
     this._daysContainer.innerHTML = ``;
     unrender(this._sorting.getElement());
+  }
+
+  removeAddPoint() {
+    this._pointAdd = null;
   }
 
   _onChangeView() {

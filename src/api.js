@@ -1,6 +1,6 @@
 import {
   ModelPoint
-} from "./model-task";
+} from "./model-point";
 
 const Method = {
   GET: `GET`,
@@ -33,9 +33,19 @@ class API {
       .then(ModelPoint.parsePoints);
   }
 
-  createPoint({point}) {
+  getDestinations() {
+    return this._load({url: `destinations`})
+      .then(toJSON);
+  }
+
+  getOffers() {
+    return this._load({url: `offers`})
+      .then(toJSON);
+  }
+
+  createPoint(point) {
     return this._load({
-      url: `point`,
+      url: `points`,
       method: Method.POST,
       body: JSON.stringify(point),
       headers: new Headers({'Content-Type': `application/json`})
@@ -45,7 +55,6 @@ class API {
   }
 
   updatePoint({id, data}) {
-    // const modelPoint = new ModelPoint(point);
     return this._load({
       url: `points/${id}`,
       method: Method.PUT,
@@ -65,12 +74,12 @@ class API {
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
-    return fetch(`${this._endPoint}/${url}`, {method, body, headers})
-      .then(checkStatus)
-      .catch((err) => {
-        console.error(`fetch error: ${err}`);
-        throw err;
-      });
+    return fetch(`${this._endPoint}/${url}`, {
+      method,
+      body,
+      headers
+    })
+      .then(checkStatus);
   }
 }
 
