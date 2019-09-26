@@ -9,7 +9,7 @@ class Route extends AbstractComponent {
     super();
     this._points = points;
     this._groupByCity = groupByKey(`city`);
-    this._cities = this._groupByCity(this._points);
+    this._cities = this._points ? this._groupByCity(this._points) : [];
     this._citiesNames = Object.keys(this._cities);
   }
 
@@ -23,15 +23,29 @@ class Route extends AbstractComponent {
     return this._element;
   }
 
+  getRoute(cities) {
+    if (!cities) {
+      return ``;
+    } else if (cities.length === 1) {
+      return cities[0];
+    } else if (cities.length === 2) {
+      return cities[0] + ` &mdash; ` + cities[1];
+    } else if (cities.length === 3) {
+      return cities[0] + ` &mdash; ` + cities[1] + ` &mdash; ` + cities[2];
+    }
+    return cities[0] + ` &mdash; ... &mdash; ` + cities[cities.length - 1];
+
+  }
+
   getTemplate() {
     return `
   <div class="trip-info__main">
     <h1 class="trip-info__title">
-      ${this._citiesNames[0]} ${this._citiesNames.length <= 3 ? this._citiesNames[1] : `&mdash; ...`} ${`&mdash;` + this._citiesNames[this._citiesNames.length - 1]}
+      ${this.getRoute(this._citiesNames)}
     </h1>
 
     <p class="trip-info__dates">
-      ${formatDate(this._points[0].timeStart, this._points[this._points.length - 1].timeEnd)}
+      ${this._points ? formatDate(this._points[0].timeStart, this._points[this._points.length - 1].timeEnd) : ``}
     </p>
   </div>
     `;

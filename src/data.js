@@ -35,22 +35,27 @@ const activities = [
 ];
 
 const getDatesSorted = (unsortedPoints) => {
-  const sortedPoints = unsortedPoints.sort((a, b) => a.timeStart > b.timeStart ? 1 : -1);
-  let number = 1;
-  sortedPoints[0].number = number;
-  for (let i = 1; i < sortedPoints.length; i++) {
-    if (sortedPoints[i].timeStart.getDate() !== sortedPoints[i - 1].timeStart.getDate()) {
-      number++;
+  if (unsortedPoints.length !== 0) {
+    const sortedPoints = unsortedPoints.sort((a, b) => a.timeStart > b.timeStart ? 1 : -1);
+    let number = 1;
+    sortedPoints[0].number = number;
+    for (let i = 1; i < sortedPoints.length; i++) {
+      if (sortedPoints[i].timeStart.getDate() !== sortedPoints[i - 1].timeStart.getDate()) {
+        number++;
+      }
+      sortedPoints[i].number = number;
     }
-    sortedPoints[i].number = number;
+    return sortedPoints;
   }
-  return sortedPoints;
 };
 
 const getPointsWithDuration = (initialPoints) => {
-  initialPoints.forEach((item) => {
-    item.duration = duration.getNumericDuration(item.timeStart, item.timeEnd);
-  });
+  if (initialPoints) {
+    initialPoints.forEach((item) => {
+      item.duration = duration.getNumericDuration(item.timeStart, item.timeEnd);
+    });
+  }
+
 };
 
 export {

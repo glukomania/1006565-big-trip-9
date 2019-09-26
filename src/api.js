@@ -1,6 +1,6 @@
 import {
   ModelPoint
-} from "./model-task";
+} from "./model-point";
 
 const Method = {
   GET: `GET`,

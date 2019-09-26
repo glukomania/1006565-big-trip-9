@@ -7,7 +7,7 @@ import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/light.css";
 
 class PointController {
-  constructor(container, point, onDataChange, onChangeView, allDestinations, allOffers) {
+  constructor(container, point, onDataChange, onChangeView, allDestinations, allOffers, getNewPointAddView) {
     this._container = container.querySelector(`.trip-events__list`);
     this._point = point;
     this._onDataChange = onDataChange;
@@ -15,6 +15,7 @@ class PointController {
     this._allDestinations = allDestinations;
     this._allOffers = allOffers;
     this._pointItem = new Point(this._point);
+    this._getNewPointAddView = getNewPointAddView;
     this._pointAddEdit = new AddEdit(this._point, false, this._onDataChange, this._allDestinations, this._allOffers);
     this.onEscKeyDown = this.onEscKeyDown.bind(this);
     this._oneError = this._oneError.bind(this);
@@ -42,6 +43,10 @@ class PointController {
     this._pointItem.getElement()
       .querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, () => {
+        const newPointAddView = this._getNewPointAddView()
+        if (newPointAddView) {
+          newPointAddView.onCancelClick();
+        }
         this._onChangeView();
         this._container.replaceChild(this._pointAddEdit.getElement(), this._pointItem.getElement());
         this._pointAddEdit.addListeners();
@@ -49,11 +54,11 @@ class PointController {
       });
 
     this._pointAddEdit.getElement()
-    .querySelector(`.event__rollup-btn`)
-    .addEventListener(`click`, () => {
-      this._container.replaceChild(this._pointItem.getElement(), this._pointAddEdit.getElement());
-      document.removeEventListener(`keydown`, this.onEscKeyDown);
-    });
+      .querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, () => {
+        this._container.replaceChild(this._pointItem.getElement(), this._pointAddEdit.getElement());
+        document.removeEventListener(`keydown`, this.onEscKeyDown);
+      });
 
 
     const deleteButton = this._pointAddEdit.getElement().querySelector(`.event__reset-btn`);
@@ -65,7 +70,7 @@ class PointController {
       deleteButton.disabled = true;
       deleteButton.textContent = `Deleting...`;
 
-      setTimeout(this._onDataChange(`delete`, this._point, this._oneError), 1000000);
+      this._onDataChange(`delete`, this._point, this._oneError);
     });
 
     appendSection(this._container, this._pointItem.getElement());
@@ -74,16 +79,14 @@ class PointController {
 
   _oneError() {
     this._shake();
-    // document.querySelectorAll(`input`).forEach((item) => {
-    //   item.disabled = false;
-    // });
+    document.querySelectorAll(`input`).forEach((item) => {
+      item.disabled = false;
+    });
 
   }
 
   _shake() {
-    setTimeout(() => {
-      document.querySelector(`.event--edit`).classList.add(`apply-shake`);
-    }, 600);
+    document.querySelector(`.event--edit`).classList.add(`apply-shake`);
   }
 
   onEscKeyDown(evt) {

@@ -15,9 +15,10 @@ class Day extends AbstractComponent {
   getTemplate() {
     return `
       <div class="day__info">
-        <span class="day__counter">${this._number}</span>
-        <time class="day__date" datetime="${formatDate(this._timeStart)}">${moment(this._timeStart).format(`MMM DD`)}</time>
-      </div>
+      ${this._number ? `<span class="day__counter">${this._number}</span>
+      <time class="day__date" datetime="${formatDate(this._timeStart)}">${moment(this._timeStart).format(`MMM DD`)}</time>
+` : ``}
+       </div>
 
       <ul class="trip-events__list">
 

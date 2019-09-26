@@ -1,12 +1,14 @@
 import {transports, activities} from "../data";
 import AbstractComponent from "./abstract-component";
-import {ModelPoint} from "../model-task";
-import {unrender, addSection} from "../utils/dom";
+import {ModelPoint} from "../model-point";
+import {unrender} from "../utils/dom";
 import moment from 'moment';
+import DOMPurify from 'dompurify';
+import {isEscapeKey} from "../utils/predicators";
 
 
 class AddEdit extends AbstractComponent {
-  constructor({id, type, pointText, city, pictures, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false, onDataChange, allDestinations, allOffers) {
+  constructor({id, type, pointText, city, pictures, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false, onDataChange, allDestinations, allOffers, clearNewPointAddView) {
     super();
     this._id = id;
     this._city = city;
@@ -25,6 +27,7 @@ class AddEdit extends AbstractComponent {
     this._getOfferTemplate = this._getOfferTemplate.bind(this);
     this._getTransportTemplate = this._getTransportTemplate.bind(this);
     this._getActivityTemplate = this._getActivityTemplate.bind(this);
+    this._clearNewPointAddView = clearNewPointAddView;
   }
 
   getTemplate() {
@@ -138,7 +141,6 @@ class AddEdit extends AbstractComponent {
   addListeners() {
     const saveButton = document.querySelector(`.event__save-btn`);
     const cancelButton = document.querySelector(`.event__reset-btn`);
-    const addEditForm = this.getElement().querySelector(`.event--edit`);
     const detailsBlock = document.querySelector(`.event__details`);
     const offersBlock = document.querySelector(`.event__section--offers`);
 
@@ -157,7 +159,7 @@ class AddEdit extends AbstractComponent {
 
     };
 
-    const block = (button) => {
+    const blockForm = (button) => {
       this._element.querySelectorAll(`input`).forEach((item) => {
         item.disabled = true;
       });
@@ -167,12 +169,12 @@ class AddEdit extends AbstractComponent {
 
     const onSaveClick = (evt) => {
       evt.preventDefault();
-      const formData = new FormData(document.querySelector(`.trip-events__item`));
+      const formData = new FormData(document.querySelector(`.event--edit`));
 
       const validateFields = () => {
         return formData.get(`event-destination`)
           && this._allDestinations.find((item) => item.name === formData.get(`event-destination`))
-          && (new Date(formData.get(`event-end-time`))) > (new Date(formData.get(`event-start-time`)))
+          && (new Date(formData.get(`event-end-time`))) >= (new Date(formData.get(`event-start-time`)))
           && (new Date(formData.get(`event-end-time`)))
           && (new Date(formData.get(`event-start-time`)));
       };
@@ -201,7 +203,7 @@ class AddEdit extends AbstractComponent {
           }))
         };
 
-        block(saveButton);
+        blockForm(saveButton);
 
         if (this._isAdd) {
           this._onDataChange(`create`, entry);
@@ -211,6 +213,8 @@ class AddEdit extends AbstractComponent {
         }
         unrender(this._element);
         this._element = null;
+      } else {
+        document.querySelector(`.event--edit`).classList.add(`apply-shake`);
       }
 
     };
@@ -229,30 +233,65 @@ class AddEdit extends AbstractComponent {
         }
       }
       const descriptionText = document.querySelector(`.event__destination-description`);
-      descriptionText.textContent = this._getCityDesc(target.value);
-      const pictureBlock = document.querySelector(`.event__photos-tape`);
-      pictureBlock.innerHTML = this._getCityPictures(target.value).map(this._getpicturesElement);
+      if (target.value !== ``) {
+        descriptionText.textContent = this._getCityDesc(target.value);
+        const pictureBlock = document.querySelector(`.event__photos-tape`);
 
+        pictureBlock.innerHTML = DOMPurify.sanitize(this._getCityPictures(target.value).map(this._getpicturesElement));
+      }
+
+
+    };
+
+    const onCancelClick = () => {
+      if (this._isAdd) {
+        unrender(document.querySelector(`.event--edit`));
+        this._clearNewPointAddView();
+        this._element = null;
+      }
+    };
+
+    const onEscapePress = (evt) => {
+      if (isEscapeKey(evt)) {
+        unrender(document.querySelector(`.event--edit`));
+        this._clearNewPointAddView();
+        this._element = null;
+      }
     };
 
     city.addEventListener(`change`, changeCityDescription);
 
     document.querySelector(`.event__type-group`).addEventListener(`change`, changeOffers);
 
-    const onCancelClick = () => {
-      unrender(addEditForm);
-      this._element = null;
-    };
+    document.addEventListener(`keydown`, onEscapePress);
     cancelButton.addEventListener(`click`, onCancelClick);
     saveButton.addEventListener(`click`, onSaveClick);
   }
 
+  onCancelClick() {
+    if (this._isAdd) {
+      unrender(document.querySelector(`.event--edit`));
+      this._clearNewPointAddView();
+      this._element = null;
+    }
+  }
+
   _getCityDesc(destination) {
-    return this._allDestinations.find((item) => item.name === destination).description;
+    const destinationFromList = this._allDestinations.find((item) => item.name === destination);
+    let description = ``;
+    if (destinationFromList !== undefined) {
+      description = this._allDestinations.find((item) => item.name === destination).description;
+    }
+    return description;
   }
 
   _getCityPictures(destination) {
-    return this._allDestinations.find((item) => item.name === destination).pictures;
+    const destinationFromList = this._allDestinations.find((item) => item.name === destination);
+    let pictures = [];
+    if (destinationFromList !== undefined) {
+      pictures = this._allDestinations.find((item) => item.name === destination).pictures;
+    }
+    return pictures;
   }
 
   _getTransportTemplate({type}) {
@@ -266,7 +305,7 @@ class AddEdit extends AbstractComponent {
         type="radio"
         name="event-type"
         value="${transportLowCase}"
-        ${this._type.type === transportLowCase ? `checked` : ``}
+        ${this._type.type.toLowerCase() === transportLowCase ? `checked` : ``}
       >
       <label
         class="event__type-label
@@ -359,7 +398,6 @@ class AddEdit extends AbstractComponent {
   _getpicturesElement({src, description}) {
     return `<img class="event__photo" src="${src}" alt="${description}">`;
   }
-
 }
 
 export default AddEdit;

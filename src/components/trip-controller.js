@@ -23,11 +23,12 @@ import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/light.css";
 
 class TripController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, getNewPointAddView) {
     this._container = container;
     this._dates = null;
     this.onChangeSort = this.onChangeSort.bind(this);
     this._onDataChange = onDataChange;
+    this._getNewPointAddView = getNewPointAddView;
     this._daysContainer = null;
     this._subscriptions = [];
     this._onChangeView = this._onChangeView.bind(this);
@@ -40,12 +41,14 @@ class TripController {
   init(filterType, dates) {
     if (dates) {
       this._dates = dates;
+    } else if (this._dates.length === 1) {
+      this._dates = null;
     }
 
     this._datesToFilter = this._getFilteredPoints(this._dates, filterType);
 
     // Rendering
-    if (this._datesToFilter.length > 0) {
+    if (this._datesToFilter) {
       this._renderSorting();
       this._daysContainer = createElement(null, `ul`, [`trip-days`]);
       appendSection(this._container, this._daysContainer);
@@ -66,10 +69,12 @@ class TripController {
 
   _getFilteredPoints(datesToFilter, filterType) {
     const dateNow = new Date();
-    if (filterType === `Future`) {
-      return datesToFilter.filter((item) => item.timeStart > dateNow);
-    } else if (filterType === `Past`) {
-      return datesToFilter.filter((item) => item.timeStart < dateNow);
+    if (datesToFilter) {
+      if (filterType === `Future`) {
+        return datesToFilter.filter((item) => item.timeStart > dateNow);
+      } else if (filterType === `Past`) {
+        return datesToFilter.filter((item) => item.timeStart < dateNow);
+      }
     }
     return datesToFilter;
   }
@@ -94,7 +99,7 @@ class TripController {
     this._container.classList.remove(`visually-hidden`);
   }
 
-  createPoint() {
+  createPoint(clearNewPointAddView) {
 
     const defaultPoint = {
       number: 1,
@@ -106,7 +111,7 @@ class TripController {
       price: 10,
       offers: []
     };
-    this._pointAdd = new AddEdit(defaultPoint, true, this._onDataChange, this._allDestinations, this._allOffers);
+    this._pointAdd = new AddEdit(defaultPoint, true, this._onDataChange, this._allDestinations, this._allOffers, clearNewPointAddView);
 
     addSection(this._container, this._pointAdd.getTemplate(), `afterbegin`);
 
@@ -128,6 +133,7 @@ class TripController {
     });
 
     this._pointAdd.addListeners();
+    return this._pointAdd;
   }
 
   _showStubMessage() {
@@ -164,7 +170,7 @@ class TripController {
       date = new Day(``, ``, `li`, [`trip-days__item`, `day`], points);
     }
     points.forEach((point) => {
-      const pointController = new PointController(date.getElement(), point, this._onDataChange, this._onChangeView, this._allDestinations, this._allOffers);
+      const pointController = new PointController(date.getElement(), point, this._onDataChange, this._onChangeView, this._allDestinations, this._allOffers, this._getNewPointAddView);
       pointController.init();
       this._subscriptions.push(pointController.setDefaultView.bind(pointController));
     });

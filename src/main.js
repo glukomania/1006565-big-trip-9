@@ -31,6 +31,7 @@ const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip/`;
 const api = new API(END_POINT, AUTHORIZATION);
 
+let newPointAddView = null;
 const menu = new Menu();
 const filter = new Filter();
 const routeStubMessage = new RouteStubMessage();
@@ -50,10 +51,12 @@ const renewAllPage = (points) => {
 
   const sortedPoints = setSortAndDuration(points);
   const route = new Route(sortedPoints);
-  appendSection(routePlace, route.getElement());
+  if (points.length !== 0) {
+    appendSection(routePlace, route.getElement());
+    addSection(routePlace, totalPrice.getTemplate(sortedPoints), `beforeend`);
+    appendSection(pageMain, statistics.getElement(sortedPoints));
+  }
 
-  addSection(routePlace, totalPrice.getTemplate(sortedPoints), `beforeend`);
-  appendSection(pageMain, statistics.getElement(sortedPoints));
   tripController.init(`Everything`, sortedPoints);
 };
 
@@ -75,7 +78,6 @@ const onDataChange = (actionType, update, onError) => {
       break;
 
     case `update`:
-      console.log(update);
       api.updatePoint({
         id: update.id,
         data: update.toRAW()
@@ -93,17 +95,17 @@ const onDataChange = (actionType, update, onError) => {
         id: update.id
       })
         .then(() => api.getPoints())
-        .catch(() => {
-          onError();
-        })
         .then((points) => {
           renewAllPage(points);
+        })
+        .catch(() => {
+          onError();
         });
       break;
   }
 };
 
-let tripController = new TripController(contentPlace, onDataChange);
+let tripController = new TripController(contentPlace, onDataChange, () => newPointAddView);
 const statistics = new Statistics();
 
 const setSortAndDuration = (points) => {
@@ -121,19 +123,19 @@ api.getDestinations().then((items) => {
     tripController.getOffers(items);
   }))
   .then(() => api.getPoints()
-  .then((datesFromServer) => {
-    const sortedPoints = setSortAndDuration(datesFromServer);
+    .then((datesFromServer) => {
+      const sortedPoints = setSortAndDuration(datesFromServer);
 
-    const route = new Route(sortedPoints);
-    appendSection(routePlace, route.getElement());
+      const route = new Route(sortedPoints);
+      appendSection(routePlace, route.getElement());
 
-    unrender(routeStubMessage.getElement());
-    addSection(routePlace, totalPrice.getTemplate(sortedPoints), `beforeend`);
+      unrender(routeStubMessage.getElement());
+      addSection(routePlace, totalPrice.getTemplate(sortedPoints), `beforeend`);
 
-    appendSection(pageMain, statistics.getElement(sortedPoints));
+      appendSection(pageMain, statistics.getElement(sortedPoints));
 
-    tripController.init(`Everything`, sortedPoints);
-  }));
+      tripController.init(`Everything`, sortedPoints);
+    }));
 
 // statistics
 
@@ -152,7 +154,7 @@ const onMenuClick = (evt) => {
 
       appendSection(tripControls, filter.getElement());
       filterContainer.addEventListener(`click`, onFilterClick);
-
+      eventAddBtn.disabled = false;
       tripController.show();
       break;
     case `stats`:
@@ -163,6 +165,7 @@ const onMenuClick = (evt) => {
 
       statistics.getElement().classList.remove(`visually-hidden`);
       evt.target.classList.add(`trip-tabs__btn--active`);
+      eventAddBtn.disabled = true;
       statistics.getCharts();
       break;
   }
@@ -188,7 +191,7 @@ const onFilterClick = (evt) => {
     document.querySelectorAll(`.day`).forEach(unrender);
     unrender(document.querySelector(`.trip-sort`));
     unrender(document.querySelector(`.trip-info__cost`));
-
+    console.log(target.dataset.filter);
     tripController.init(target.dataset.filter);
   }
 };
@@ -197,7 +200,12 @@ filterContainer.addEventListener(`click`, onFilterClick);
 
 // add a new event
 const onAddNewClick = () => {
-  tripController.createPoint();
-  tripController.removeAddPoint();
+  if (!newPointAddView) {
+    newPointAddView = tripController.createPoint(() => {
+      newPointAddView = null;
+    });
+    tripController._onChangeView();
+  }
 };
+
 eventAddBtn.addEventListener(`click`, onAddNewClick);
