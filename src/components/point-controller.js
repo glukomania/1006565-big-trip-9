@@ -43,7 +43,7 @@ class PointController {
     this._pointItem.getElement()
       .querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, () => {
-        const newPointAddView = this._getNewPointAddView()
+        const newPointAddView = this._getNewPointAddView();
         if (newPointAddView) {
           newPointAddView.onCancelClick();
         }
