@@ -2,10 +2,15 @@ import {filterTypes} from "../data";
 import AbstractComponent from "./abstract-component";
 
 class Filter extends AbstractComponent {
+  constructor(selector, classes) {
+    super();
+    this._selector = selector;
+    this._classes = classes;
+  }
 
   getTemplate() {
     return `
-    <form class="trip-filters" action="#" method="get">
+    <form class="trip-filters">
       ${filterTypes.map(this._getFilterTemplate).join(`\n`)}
 
       <button class="visually-hidden" type="submit">

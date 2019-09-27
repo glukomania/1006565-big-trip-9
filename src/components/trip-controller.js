@@ -108,7 +108,7 @@ class TripController {
       pointText: ``,
       timeStart: new Date(),
       timeEnd: new Date(),
-      price: 10,
+      price: 0,
       offers: []
     };
     this._pointAdd = new AddEdit(defaultPoint, true, this._onDataChange, this._allDestinations, this._allOffers, clearNewPointAddView);
@@ -118,7 +118,8 @@ class TripController {
 
     flatpickr(this._container.querySelector(`#event-start-time-1`), {
       altInput: true,
-      allowInput: true,
+      allowInput: false,
+      enableTime: true,
       format: `d.m.Y h:m`,
       altFormat: `d.m.Y  h:m`,
       defaultDate: new Date(),
@@ -126,7 +127,8 @@ class TripController {
 
     flatpickr(this._container.querySelector(`#event-end-time-1`), {
       altInput: true,
-      allowInput: true,
+      allowInput: false,
+      enableTime: true,
       format: `d.m.Y h:m`,
       altFormat: `d.m.Y  h:m`,
       defaultDate: new Date(),

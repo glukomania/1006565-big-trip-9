@@ -24,7 +24,7 @@ class PointController {
   init() {
     flatpickr(this._pointAddEdit.getElement().querySelector(`#event-start-time-1`), {
       altInput: true,
-      allowInput: true,
+      allowInput: false,
       enableTime: true,
       format: `d.m.Y h:m`,
       altFormat: `d.m.Y  h:m`,
@@ -33,7 +33,7 @@ class PointController {
 
     flatpickr(this._pointAddEdit.getElement().querySelector(`#event-end-time-1`), {
       altInput: true,
-      allowInput: true,
+      allowInput: false,
       enableTime: true,
       format: `d.m.Y h:m`,
       altFormat: `d.m.Y  h:m`,
@@ -97,7 +97,7 @@ class PointController {
   }
 
   setDefaultView() {
-    if (this._container.contains(this._pointAddEdit.getElement())) {
+    if (document.contains(this._pointAddEdit.getElement())) {
       this._container.replaceChild(this._pointItem.getElement(), this._pointAddEdit.getElement());
     }
   }

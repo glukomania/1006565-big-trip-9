@@ -1,14 +1,14 @@
-import {transports, activities} from "../data";
+import { transports, activities } from "../data";
 import AbstractComponent from "./abstract-component";
-import {ModelPoint} from "../model-point";
-import {unrender} from "../utils/dom";
+import { ModelPoint } from "../model-point";
+import { unrender } from "../utils/dom";
 import moment from 'moment';
 import DOMPurify from 'dompurify';
-import {isEscapeKey} from "../utils/predicators";
+import { isEscapeKey } from "../utils/predicators";
 
 
 class AddEdit extends AbstractComponent {
-  constructor({id, type, pointText, city, pictures, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false, onDataChange, allDestinations, allOffers, clearNewPointAddView) {
+  constructor({ id, type, pointText, city, pictures, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false, onDataChange, allDestinations, allOffers, clearNewPointAddView) {
     super();
     this._id = id;
     this._city = city;
@@ -24,6 +24,7 @@ class AddEdit extends AbstractComponent {
     this._allOffers = allOffers;
     this._pictures = pictures;
     this._onDataChange = onDataChange;
+
     this._getOfferTemplate = this._getOfferTemplate.bind(this);
     this._getTransportTemplate = this._getTransportTemplate.bind(this);
     this._getActivityTemplate = this._getActivityTemplate.bind(this);
@@ -143,10 +144,10 @@ class AddEdit extends AbstractComponent {
     const cancelButton = document.querySelector(`.event__reset-btn`);
     const detailsBlock = document.querySelector(`.event__details`);
     const offersBlock = document.querySelector(`.event__section--offers`);
+    const offersPlace = document.querySelector(`.event__available-offers`);
 
-    const changeOffers = (evtOffers) => {
+    const onOfferChoose = (evtOffers) => {
       const name = evtOffers.target.value;
-
       const offersAvailable = this._allOffers.find((item) => item.type === name).offers;
       if (offersBlock.classList.contains(`visually-hidden`)) {
         offersBlock.classList.remove(`visually-hidden`);
@@ -154,9 +155,12 @@ class AddEdit extends AbstractComponent {
           detailsBlock.classList.remove(`visually-hidden`);
         }
       }
-      const offersPlace = document.querySelector(`.event__available-offers`);
-      offersPlace.innerHTML = offersAvailable.map(this._getOfferTemplate).join(`\n`);
 
+      if (name === `Check-in`) {
+        offersPlace.innerHTML = ``;
+      } else {
+        offersPlace.innerHTML = offersAvailable.map(this._getOfferTemplate).join(`\n`);
+      }
     };
 
     const blockForm = (button) => {
@@ -167,6 +171,7 @@ class AddEdit extends AbstractComponent {
       button.textContent = `Saving...`;
     };
 
+
     const onSaveClick = (evt) => {
       evt.preventDefault();
       const formData = new FormData(document.querySelector(`.event--edit`));
@@ -176,7 +181,8 @@ class AddEdit extends AbstractComponent {
           && this._allDestinations.find((item) => item.name === formData.get(`event-destination`))
           && (new Date(formData.get(`event-end-time`))) >= (new Date(formData.get(`event-start-time`)))
           && (new Date(formData.get(`event-end-time`)))
-          && (new Date(formData.get(`event-start-time`)));
+          && (new Date(formData.get(`event-start-time`)))
+          && (formData.get(`event-price`)).match(/^\d+(\.\d+)?$/);
       };
 
       const offers = Array.from(this.getElement().querySelectorAll(`.event__offer-selector`));
@@ -195,12 +201,12 @@ class AddEdit extends AbstractComponent {
           "base_price": +formData.get(`event-price`),
           "is_favorite": formData.get(`event-favorite`) ? true : false,
           "offers": offers
-          .map((it) => ({
-            id: it.querySelector(`.event__offer-checkbox`).id,
-            title: it.querySelector(`.event__offer-title`).textContent,
-            price: +it.querySelector(`.event__offer-price`).textContent,
-            accepted: it.querySelector(`.event__offer-checkbox`).checked
-          }))
+            .map((it) => ({
+              id: it.querySelector(`.event__offer-checkbox`).id,
+              title: it.querySelector(`.event__offer-title`).textContent,
+              price: +it.querySelector(`.event__offer-price`).textContent,
+              accepted: it.querySelector(`.event__offer-checkbox`).checked
+            }))
         };
 
         blockForm(saveButton);
@@ -221,7 +227,7 @@ class AddEdit extends AbstractComponent {
 
     const city = document.querySelector(`.event__input--destination`);
 
-    const changeCityDescription = (evtCity) => {
+    const onCitySelectChoose = (evtCity) => {
       const target = evtCity.target;
 
       const descriptionBlock = document.querySelector(`.event__section--destination`);
@@ -251,19 +257,11 @@ class AddEdit extends AbstractComponent {
       }
     };
 
-    const onEscapePress = (evt) => {
-      if (isEscapeKey(evt)) {
-        unrender(document.querySelector(`.event--edit`));
-        this._clearNewPointAddView();
-        this._element = null;
-      }
-    };
+    city.addEventListener(`change`, onCitySelectChoose);
 
-    city.addEventListener(`change`, changeCityDescription);
+    document.querySelector(`.event__type-group`).addEventListener(`change`, onOfferChoose);
 
-    document.querySelector(`.event__type-group`).addEventListener(`change`, changeOffers);
 
-    document.addEventListener(`keydown`, onEscapePress);
     cancelButton.addEventListener(`click`, onCancelClick);
     saveButton.addEventListener(`click`, onSaveClick);
   }
@@ -294,7 +292,7 @@ class AddEdit extends AbstractComponent {
     return pictures;
   }
 
-  _getTransportTemplate({type}) {
+  _getTransportTemplate({ type }) {
     const transportLowCase = type.toLowerCase();
     return `
     <div class="event__type-item">
@@ -316,7 +314,7 @@ class AddEdit extends AbstractComponent {
     </div>`;
   }
 
-  _getActivityTemplate({type}) {
+  _getActivityTemplate({ type }) {
     const activityLowCase = type.toLowerCase();
     return `
     <div class="event__type-item">
@@ -338,7 +336,7 @@ class AddEdit extends AbstractComponent {
     </div>`;
   }
 
-  _getCityListTemplate({name}) {
+  _getCityListTemplate({ name }) {
     return `<option value="${name}" name="city"></option>`;
   }
 
@@ -357,7 +355,7 @@ class AddEdit extends AbstractComponent {
   </button>`;
   }
 
-  _getOfferTemplate({title, price, accepted}) {
+  _getOfferTemplate({ title, price, accepted }) {
     return `
   <div class="event__offer-selector">
   <input class="event__offer-checkbox  visually-hidden" id="${title}-1" type="checkbox" name="event-offer" value="${title}" ${accepted === true ? `checked` : ``}>
@@ -395,7 +393,7 @@ class AddEdit extends AbstractComponent {
   `;
   }
 
-  _getpicturesElement({src, description}) {
+  _getpicturesElement({ src, description }) {
     return `<img class="event__photo" src="${src}" alt="${description}">`;
   }
 }

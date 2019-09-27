@@ -33,11 +33,11 @@ const api = new API(END_POINT, AUTHORIZATION);
 
 let newPointAddView = null;
 const menu = new Menu();
-const filter = new Filter();
+const filter = new Filter(`form`, [`trip-filters`]);
 const routeStubMessage = new RouteStubMessage();
 
 addSection(menuPlace, menu.getTemplate(), `afterend`);
-addSection(filtersPlace, filter.getTemplate(), `afterend`);
+appendSection(tripControls, filter.getElement());
 appendSection(routePlace, routeStubMessage.getElement());
 
 const contentPlace = document.querySelector(`.trip-events`);
@@ -46,6 +46,7 @@ const totalPrice = new Price();
 
 const renewAllPage = (points) => {
   tripController.unrenderAllPoints();
+  unrender(pageBody.querySelector(`.trip-events__msg`));
   unrender(pageBody.querySelector(`.trip-info__main`));
   unrender(pageBody.querySelector(`.trip-info__cost`));
 
@@ -71,6 +72,7 @@ const onDataChange = (actionType, update, onError) => {
         .then(() => api.getPoints())
         .then((points) => {
           renewAllPage(points);
+          newPointAddView = null;
         })
         .catch(() => {
           onError();
@@ -151,9 +153,9 @@ const onMenuClick = (evt) => {
     case `table`:
       statistics.getElement().classList.add(`visually-hidden`);
       evt.target.classList.add(`trip-tabs__btn--active`);
-
+      filter.getElement().addEventListener(`click`, onFilterClick);
       appendSection(tripControls, filter.getElement());
-      filterContainer.addEventListener(`click`, onFilterClick);
+
       eventAddBtn.disabled = false;
       tripController.show();
       break;
@@ -161,7 +163,7 @@ const onMenuClick = (evt) => {
       tripController.hide();
 
       unrender(tripControls.querySelector(`.trip-filters`));
-      filterContainer.removeEventListener(`click`, onFilterClick);
+      // filterContainer.removeEventListener(`click`, onFilterClick);
 
       statistics.getElement().classList.remove(`visually-hidden`);
       evt.target.classList.add(`trip-tabs__btn--active`);
@@ -190,8 +192,11 @@ const onFilterClick = (evt) => {
 
     document.querySelectorAll(`.day`).forEach(unrender);
     unrender(document.querySelector(`.trip-sort`));
-    unrender(document.querySelector(`.trip-info__cost`));
-    console.log(target.dataset.filter);
+    if ((target.value === `Future`) || (target.value === `Past`)) {
+      pageBody.querySelector(`.trip-info__cost`).style.visibility = `hidden`;
+    } else {
+      pageBody.querySelector(`.trip-info__cost`).style.visibility = `visible`;
+    }
     tripController.init(target.dataset.filter);
   }
 };
