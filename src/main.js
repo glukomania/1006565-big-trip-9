@@ -45,7 +45,7 @@ const totalPrice = new Price();
 
 const renewAllPage = (points) => {
   tripController.unrenderAllPoints();
-  unrender(pageBody.querySelector(`.trip-events__msg`));
+  unrender(document.querySelector(`.trip-events__msg`));
   unrender(pageBody.querySelector(`.trip-info__main`));
   unrender(pageBody.querySelector(`.trip-info__cost`));
 
