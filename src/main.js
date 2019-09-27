@@ -23,7 +23,6 @@ const pageMain = document.querySelector(`.main-container`);
 const pageBody = document.querySelector(`.page-body__container`);
 const routePlace = pageBody.querySelector(`.trip-main__trip-info`);
 const menuPlace = pageBody.querySelector(`.trip-controls h2:first-child`);
-const filtersPlace = pageBody.querySelector(`.trip-controls h2:last-child`);
 const tripControls = pageBody.querySelector(`.trip-controls`);
 const eventAddBtn = pageBody.querySelector(`.trip-main__event-add-btn`);
 

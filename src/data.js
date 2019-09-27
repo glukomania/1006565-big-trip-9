@@ -47,6 +47,7 @@ const getDatesSorted = (unsortedPoints) => {
     }
     return sortedPoints;
   }
+  return undefined;
 };
 
 const getPointsWithDuration = (initialPoints) => {
