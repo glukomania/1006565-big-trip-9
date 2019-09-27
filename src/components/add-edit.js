@@ -1,14 +1,13 @@
-import { transports, activities } from "../data";
+import {transports, activities} from "../data";
 import AbstractComponent from "./abstract-component";
-import { ModelPoint } from "../model-point";
-import { unrender } from "../utils/dom";
+import {ModelPoint} from "../model-point";
+import {unrender} from "../utils/dom";
 import moment from 'moment';
 import DOMPurify from 'dompurify';
-import { isEscapeKey } from "../utils/predicators";
 
 
 class AddEdit extends AbstractComponent {
-  constructor({ id, type, pointText, city, pictures, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false, onDataChange, allDestinations, allOffers, clearNewPointAddView) {
+  constructor({id, type, pointText, city, pictures, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false, onDataChange, allDestinations, allOffers, clearNewPointAddView) {
     super();
     this._id = id;
     this._city = city;
@@ -292,7 +291,7 @@ class AddEdit extends AbstractComponent {
     return pictures;
   }
 
-  _getTransportTemplate({ type }) {
+  _getTransportTemplate({type}) {
     const transportLowCase = type.toLowerCase();
     return `
     <div class="event__type-item">
@@ -314,7 +313,7 @@ class AddEdit extends AbstractComponent {
     </div>`;
   }
 
-  _getActivityTemplate({ type }) {
+  _getActivityTemplate({type}) {
     const activityLowCase = type.toLowerCase();
     return `
     <div class="event__type-item">
@@ -336,7 +335,7 @@ class AddEdit extends AbstractComponent {
     </div>`;
   }
 
-  _getCityListTemplate({ name }) {
+  _getCityListTemplate({name}) {
     return `<option value="${name}" name="city"></option>`;
   }
 
@@ -355,7 +354,7 @@ class AddEdit extends AbstractComponent {
   </button>`;
   }
 
-  _getOfferTemplate({ title, price, accepted }) {
+  _getOfferTemplate({title, price, accepted}) {
     return `
   <div class="event__offer-selector">
   <input class="event__offer-checkbox  visually-hidden" id="${title}-1" type="checkbox" name="event-offer" value="${title}" ${accepted === true ? `checked` : ``}>
@@ -393,7 +392,7 @@ class AddEdit extends AbstractComponent {
   `;
   }
 
-  _getpicturesElement({ src, description }) {
+  _getpicturesElement({src, description}) {
     return `<img class="event__photo" src="${src}" alt="${description}">`;
   }
 }
