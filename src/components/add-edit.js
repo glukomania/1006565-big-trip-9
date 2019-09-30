@@ -24,7 +24,7 @@ class AddEdit extends AbstractComponent {
     this._pictures = pictures;
     this._onError = onError;
     this._onDataChange = onDataChange;
-
+    this.onSaveClick = this.onSaveClick.bind(this);
     this._getOfferTemplate = this._getOfferTemplate.bind(this);
     this._getTransportTemplate = this._getTransportTemplate.bind(this);
     this._getActivityTemplate = this._getActivityTemplate.bind(this);
@@ -139,6 +139,61 @@ class AddEdit extends AbstractComponent {
     `;
   }
 
+  onSaveClick(evt) {
+
+    evt.preventDefault();
+    const saveButton = document.querySelector(`.event__save-btn`);
+    const formData = new FormData(document.querySelector(`.event--edit`));
+
+    const validateFields = () => {
+      return formData.get(`event-destination`)
+        && this._allDestinations.find((item) => item.name === formData.get(`event-destination`))
+        && (new Date(formData.get(`event-end-time`))) >= (new Date(formData.get(`event-start-time`)))
+        && (new Date(formData.get(`event-end-time`)))
+        && (new Date(formData.get(`event-start-time`)))
+        && (formData.get(`event-price`)).match(/^\d+(\.\d+)?$/);
+    };
+
+    const offers = Array.from(document.querySelectorAll(`.event__offer-selector`));
+
+    if (validateFields()) {
+      const entry = {
+        "id": this._id ? this._id : ``,
+        "type": formData.get(`event-type`),
+        "destination": {
+          name: formData.get(`event-destination`),
+          description: this._getCityDesc(formData.get(`event-destination`)),
+          pictures: this._getCityPictures(formData.get(`event-destination`))
+        },
+        "date_from": new Date(formData.get(`event-start-time`)),
+        "date_to": new Date(formData.get(`event-end-time`)),
+        "base_price": +formData.get(`event-price`),
+        "is_favorite": formData.get(`event-favorite`) ? true : false,
+        "offers": offers
+          .map((it) => ({
+            id: it.querySelector(`.event__offer-checkbox`).id,
+            title: it.querySelector(`.event__offer-title`).textContent,
+            price: +it.querySelector(`.event__offer-price`).textContent,
+            accepted: it.querySelector(`.event__offer-checkbox`).checked
+          }))
+      };
+
+      this._blockForm(saveButton);
+
+      if (this._isAdd) {
+        this._onDataChange(`create`, entry, this._onError);
+      } else {
+        const changedPoint = new ModelPoint(entry);
+        this._onDataChange(`update`, changedPoint, this._onError);
+      }
+      unrender(this._element);
+      this._element = null;
+    } else {
+      document.querySelector(`.event--edit`).classList.add(`apply-shake`);
+    }
+
+  }
+
   addListeners() {
     const saveButton = document.querySelector(`.event__save-btn`);
     const cancelButton = document.querySelector(`.event__reset-btn`);
@@ -171,72 +226,6 @@ class AddEdit extends AbstractComponent {
       }
     };
 
-    const blockForm = (button) => {
-      this._element.querySelectorAll(`input`).forEach((item) => {
-        item.disabled = true;
-      });
-      button.disabled = true;
-      button.textContent = `Saving...`;
-    };
-
-
-    const onSaveClick = (evt) => {
-      evt.preventDefault();
-
-      let formData = new FormData(document.querySelector(`.event--edit`));
-      if (this.isAdd === false) {
-        formData = new FormData(this._element.querySelector(`.event--edit`));
-      }
-
-      const validateFields = () => {
-        return formData.get(`event-destination`)
-          && this._allDestinations.find((item) => item.name === formData.get(`event-destination`))
-          && (new Date(formData.get(`event-end-time`))) >= (new Date(formData.get(`event-start-time`)))
-          && (new Date(formData.get(`event-end-time`)))
-          && (new Date(formData.get(`event-start-time`)))
-          && (formData.get(`event-price`)).match(/^\d+(\.\d+)?$/);
-      };
-
-      const offers = Array.from(this.getElement().querySelectorAll(`.event__offer-selector`));
-
-      if (validateFields()) {
-        const entry = {
-          "id": this._id ? this._id : ``,
-          "type": formData.get(`event-type`),
-          "destination": {
-            name: formData.get(`event-destination`),
-            description: this._getCityDesc(formData.get(`event-destination`)),
-            pictures: this._getCityPictures(formData.get(`event-destination`))
-          },
-          "date_from": new Date(formData.get(`event-start-time`)),
-          "date_to": new Date(formData.get(`event-end-time`)),
-          "base_price": +formData.get(`event-price`),
-          "is_favorite": formData.get(`event-favorite`) ? true : false,
-          "offers": offers
-            .map((it) => ({
-              id: it.querySelector(`.event__offer-checkbox`).id,
-              title: it.querySelector(`.event__offer-title`).textContent,
-              price: +it.querySelector(`.event__offer-price`).textContent,
-              accepted: it.querySelector(`.event__offer-checkbox`).checked
-            }))
-        };
-
-        blockForm(saveButton);
-
-        if (this._isAdd) {
-          this._onDataChange(`create`, entry, this._onError);
-        } else {
-          const changedPoint = new ModelPoint(entry);
-          this._onDataChange(`update`, changedPoint, this._onError);
-        }
-        unrender(this._element);
-        this._element = null;
-      } else {
-        document.querySelector(`.event--edit`).classList.add(`apply-shake`);
-      }
-
-    };
-
     const city = document.querySelector(`.event__input--destination`);
 
     const onCitySelectChoose = (evtCity) => {
@@ -258,7 +247,6 @@ class AddEdit extends AbstractComponent {
         pictureBlock.innerHTML = DOMPurify.sanitize(this._getCityPictures(target.value).map(this._getpicturesElement).join(`\n`));
       }
 
-
     };
 
     const onCancelClick = () => {
@@ -275,7 +263,11 @@ class AddEdit extends AbstractComponent {
     eventType.addEventListener(`change`, onOfferChoose);
 
     cancelButton.addEventListener(`click`, onCancelClick);
-    saveButton.addEventListener(`click`, onSaveClick);
+    saveButton.addEventListener(`click`, this.onSaveClick);
+  }
+
+  removeListeners() {
+
   }
 
   onCancelClick() {
@@ -284,6 +276,14 @@ class AddEdit extends AbstractComponent {
       this._clearNewPointAddView();
       this._element = null;
     }
+  }
+
+  _blockForm(button) {
+    document.querySelectorAll(`input`).forEach((item) => {
+      item.disabled = true;
+    });
+    button.disabled = true;
+    button.textContent = `Saving...`;
   }
 
   _getCityDesc(destination) {
