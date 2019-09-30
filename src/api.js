@@ -16,6 +16,8 @@ const toJSON = (response) => {
 const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
     return response;
+  } else if (response.status === 503) {
+    throw new Error(`Server error, let's ignore it =)`);
   } else {
     throw new Error(`${response.status}: ${response.statusText}`);
   }

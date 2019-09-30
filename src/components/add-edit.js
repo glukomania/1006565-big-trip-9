@@ -7,7 +7,7 @@ import DOMPurify from 'dompurify';
 
 
 class AddEdit extends AbstractComponent {
-  constructor({id, type, pointText, city, pictures, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false, onDataChange, allDestinations, allOffers, clearNewPointAddView) {
+  constructor({id, type, pointText, city, pictures, timeStart, timeEnd, price, offers, isFavorite}, isAdd = false, onDataChange, allDestinations, allOffers, onError, clearNewPointAddView) {
     super();
     this._id = id;
     this._city = city;
@@ -22,6 +22,7 @@ class AddEdit extends AbstractComponent {
     this._allDestinations = allDestinations;
     this._allOffers = allOffers;
     this._pictures = pictures;
+    this._onError = onError;
     this._onDataChange = onDataChange;
 
     this._getOfferTemplate = this._getOfferTemplate.bind(this);
@@ -144,10 +145,18 @@ class AddEdit extends AbstractComponent {
     const detailsBlock = document.querySelector(`.event__details`);
     const offersBlock = document.querySelector(`.event__section--offers`);
     const offersPlace = document.querySelector(`.event__available-offers`);
+    const eventType = document.querySelector(`.event__type-group`);
+    const eventTypeButton = document.querySelector(`.event__type-btn img`);
+    const eventTypeOutput = document.querySelector(`.event__type-output`);
 
     const onOfferChoose = (evtOffers) => {
       const name = evtOffers.target.value;
       const offersAvailable = this._allOffers.find((item) => item.type === name).offers;
+
+      eventTypeButton.src = `img/icons/${evtOffers.target.value}.png`;
+
+      eventTypeOutput.textContent = transports.concat(activities).find((item) => item.type.toLowerCase() === evtOffers.target.value).label;
+
       if (offersBlock.classList.contains(`visually-hidden`)) {
         offersBlock.classList.remove(`visually-hidden`);
         if (detailsBlock.classList.contains(`visually-hidden`)) {
@@ -173,7 +182,11 @@ class AddEdit extends AbstractComponent {
 
     const onSaveClick = (evt) => {
       evt.preventDefault();
-      const formData = new FormData(document.querySelector(`.event--edit`));
+
+      let formData = new FormData(document.querySelector(`.event--edit`));
+      if (this.isAdd === false) {
+        formData = new FormData(this._element.querySelector(`.event--edit`));
+      }
 
       const validateFields = () => {
         return formData.get(`event-destination`)
@@ -211,10 +224,10 @@ class AddEdit extends AbstractComponent {
         blockForm(saveButton);
 
         if (this._isAdd) {
-          this._onDataChange(`create`, entry);
+          this._onDataChange(`create`, entry, this._onError);
         } else {
           const changedPoint = new ModelPoint(entry);
-          this._onDataChange(`update`, changedPoint);
+          this._onDataChange(`update`, changedPoint, this._onError);
         }
         unrender(this._element);
         this._element = null;
@@ -242,7 +255,7 @@ class AddEdit extends AbstractComponent {
         descriptionText.textContent = this._getCityDesc(target.value);
         const pictureBlock = document.querySelector(`.event__photos-tape`);
 
-        pictureBlock.innerHTML = DOMPurify.sanitize(this._getCityPictures(target.value).map(this._getpicturesElement));
+        pictureBlock.innerHTML = DOMPurify.sanitize(this._getCityPictures(target.value).map(this._getpicturesElement).join(`\n`));
       }
 
 
@@ -256,10 +269,10 @@ class AddEdit extends AbstractComponent {
       }
     };
 
+
     city.addEventListener(`change`, onCitySelectChoose);
 
-    document.querySelector(`.event__type-group`).addEventListener(`change`, onOfferChoose);
-
+    eventType.addEventListener(`change`, onOfferChoose);
 
     cancelButton.addEventListener(`click`, onCancelClick);
     saveButton.addEventListener(`click`, onSaveClick);

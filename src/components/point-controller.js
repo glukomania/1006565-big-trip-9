@@ -7,18 +7,19 @@ import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/light.css";
 
 class PointController {
-  constructor(container, point, onDataChange, onChangeView, allDestinations, allOffers, getNewPointAddView) {
+  constructor(container, point, onDataChange, onChangeView, allDestinations, allOffers, getNewPointAddView, onError) {
     this._container = container.querySelector(`.trip-events__list`);
     this._point = point;
+    this.onError = onError;
     this._onDataChange = onDataChange;
     this._onChangeView = onChangeView;
     this._allDestinations = allDestinations;
     this._allOffers = allOffers;
     this._pointItem = new Point(this._point);
     this._getNewPointAddView = getNewPointAddView;
-    this._pointAddEdit = new AddEdit(this._point, false, this._onDataChange, this._allDestinations, this._allOffers);
+    this._pointAddEdit = new AddEdit(this._point, false, this._onDataChange, this._allDestinations, this._allOffers, this.onError);
     this.onEscKeyDown = this.onEscKeyDown.bind(this);
-    this._oneError = this._oneError.bind(this);
+    this.onError = this.onError.bind(this);
   }
 
   init() {
@@ -70,23 +71,10 @@ class PointController {
       deleteButton.disabled = true;
       deleteButton.textContent = `Deleting...`;
 
-      this._onDataChange(`delete`, this._point, this._oneError);
+      this._onDataChange(`delete`, this._point, this.onError);
     });
 
     appendSection(this._container, this._pointItem.getElement());
-
-  }
-
-  _oneError() {
-    this._shake();
-    document.querySelectorAll(`input`).forEach((item) => {
-      item.disabled = false;
-    });
-
-  }
-
-  _shake() {
-    document.querySelector(`.event--edit`).classList.add(`apply-shake`);
   }
 
   onEscKeyDown(evt) {
@@ -101,6 +89,5 @@ class PointController {
       this._container.replaceChild(this._pointItem.getElement(), this._pointAddEdit.getElement());
     }
   }
-
 }
 export default PointController;

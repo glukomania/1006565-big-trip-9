@@ -36,6 +36,7 @@ class TripController {
     this._renderSorting = this._renderSorting.bind(this);
     this._destinations = null;
     this._allOffers = null;
+    this.onError = this.onError.bind(this);
   }
 
   init(filterType, dates) {
@@ -111,7 +112,7 @@ class TripController {
       price: 0,
       offers: []
     };
-    this._pointAdd = new AddEdit(defaultPoint, true, this._onDataChange, this._allDestinations, this._allOffers, clearNewPointAddView);
+    this._pointAdd = new AddEdit(defaultPoint, true, this._onDataChange, this._allDestinations, this._allOffers, this.onError, clearNewPointAddView);
 
     addSection(this._container, this._pointAdd.getTemplate(), `afterbegin`);
 
@@ -172,7 +173,7 @@ class TripController {
       date = new Day(``, ``, `li`, [`trip-days__item`, `day`], points);
     }
     points.forEach((point) => {
-      const pointController = new PointController(date.getElement(), point, this._onDataChange, this._onChangeView, this._allDestinations, this._allOffers, this._getNewPointAddView);
+      const pointController = new PointController(date.getElement(), point, this._onDataChange, this._onChangeView, this._allDestinations, this._allOffers, this._getNewPointAddView, this.onError);
       pointController.init();
       this._subscriptions.push(pointController.setDefaultView.bind(pointController));
     });
@@ -189,6 +190,19 @@ class TripController {
 
   removeAddPoint() {
     this._pointAdd = null;
+  }
+
+
+  onError() {
+    this._shake();
+    document.querySelectorAll(`input`).forEach((item) => {
+      item.disabled = false;
+    });
+
+  }
+
+  _shake() {
+    document.querySelector(`.event--edit`).classList.add(`apply-shake`);
   }
 
   _onChangeView() {
